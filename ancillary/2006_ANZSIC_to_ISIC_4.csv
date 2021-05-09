@@ -1,0 +1,1144 @@
+ISIC,ISIC TITLE,2006 ANZSIC,2006 ANZSIC TITLE
+111,"Growing of cereals (except rice), leguminous crops and oil seeds",0122p,Vegetable Growing (Under Cover)
+111,"Growing of cereals (except rice), leguminous crops and oil seeds",0123p,Vegetable Growing (Outdoors)
+111,"Growing of cereals (except rice), leguminous crops and oil seeds",0149p,Other Grain Growing
+111,"Growing of cereals (except rice), leguminous crops and oil seeds",0159p,Other Crop Growing n.e.c.
+112,Growing of rice,146,Rice Growing
+113,"Growing of vegetables and melons, roots and tubers",0121p,Mushroom Growing
+113,"Growing of vegetables and melons, roots and tubers",0122p,Vegetable Growing (Under Cover)
+113,"Growing of vegetables and melons, roots and tubers",0123p,Vegetable Growing (Outdoors)
+114,Growing of sugar cane,151,Sugar Cane Growing
+115,Growing of tobacco,0159p,Other Crop Growing n.e.c.
+116,Growing of fibre crops,152,Cotton Growing
+116,Growing of fibre crops,0159p,Other Crop Growing n.e.c.
+119,Growing of other non-perennial crops,0114p,Floriculture Production (Under Cover)
+119,Growing of other non-perennial crops,0115p,Floriculture Production (Outdoors)
+119,Growing of other non-perennial crops,0122p,Vegetable Growing (Under Cover)
+119,Growing of other non-perennial crops,0123p,Vegetable Growing (Outdoors)
+119,Growing of other non-perennial crops,0149p,Other Grain Growing
+119,Growing of other non-perennial crops,0159p,Other Crop Growing n.e.c.
+121,Growing of grapes,131,Grape Growing
+122,Growing of tropical and subtropical fruits,0139p,Other Fruit and Tree Nut Growing
+123,Growing of citrus fruits,136,Citrus Fruit Growing
+124,Growing of pome fruits and stone fruits,134,Apple and Pear Growing
+124,Growing of pome fruits and stone fruits,135,Stone Fruit Growing
+125,Growing of other tree and bush fruits and nuts,132,Kiwifruit Growing
+125,Growing of other tree and bush fruits and nuts,133,Berry Fruit Growing
+125,Growing of other tree and bush fruits and nuts,0139p,Other Fruit and Tree Nut Growing
+126,Growing of oleaginous fruits,137,Olive Growing
+126,Growing of oleaginous fruits,0139p,Other Fruit and Tree Nut Growing
+127,Growing of beverage crops,0159p,Other Crop Growing n.e.c.
+128,"Growing of spices, aromatic, drug and pharmaceutical crops",0122p,Vegetable Growing (Under Cover)
+128,"Growing of spices, aromatic, drug and pharmaceutical crops",0123p,Vegetable Growing (Outdoors)
+128,"Growing of spices, aromatic, drug and pharmaceutical crops",0159p,Other Crop Growing n.e.c.
+129,Growing of other perennial crops,0111p,Nursery Production (Under Cover)
+129,Growing of other perennial crops,0112p,Nursery Production (Outdoors)
+129,Growing of other perennial crops,0114p,Floriculture Production (Under Cover)
+129,Growing of other perennial crops,0115p,Floriculture Production (Outdoors)
+129,Growing of other perennial crops,0122p,Vegetable Growing (Under Cover)
+129,Growing of other perennial crops,0123p,Vegetable Growing (Outdoors)
+129,Growing of other perennial crops,0159p,Other Crop Growing n.e.c.
+130,Plant propagation,0111p,Nursery Production (Under Cover)
+130,Plant propagation,0112p,Nursery Production (Outdoors)
+130,Plant propagation,113,Turf Growing
+130,Plant propagation,0121p,Mushroom Growing
+141,Raising of cattle and buffaloes,0142p,Beef Cattle Farming (Specialised)
+141,Raising of cattle and buffaloes,143,Beef Cattle Feedlots (Specialised)
+141,Raising of cattle and buffaloes,0144p,Sheep-Beef Cattle Farming
+141,Raising of cattle and buffaloes,160,Dairy Cattle Farming
+142,Raising of horses and other equines,0191p,Horse Farming
+142,Raising of horses and other equines,0199p,Other Livestock Farming n.e.c.
+143,Raising of camels and camelids,0199p,Other Livestock Farming n.e.c.
+144,Raising of sheep and goats,0141p,Sheep Farming (Specialised)
+144,Raising of sheep and goats,0144p,Sheep-Beef Cattle Farming
+144,Raising of sheep and goats,0199p,Other Livestock Farming n.e.c.
+145,Raising of swine/pigs,192,Pig Farming
+146,Raising of poultry,171,Poultry Farming (Meat)
+146,Raising of poultry,172,Poultry Farming (Eggs) 
+149,Raising of other animals,180,Deer Farming
+149,Raising of other animals,193,Beekeeping
+149,Raising of other animals,0199p,Other Livestock Farming n.e.c.
+150,Mixed farming,145,Grain-Sheep or Grain-Beef Cattle Farming
+161,Support activities for crop production,0529p,Other Agriculture and Fishing Support Services
+162,Support activities for animal production,0141p,Sheep Farming (Specialised)
+162,Support activities for animal production,0142p,Beef Cattle Farming (Specialised)
+162,Support activities for animal production,0191p,Horse Farming
+162,Support activities for animal production,522,Shearing Services
+162,Support activities for animal production,0529p,Other Agriculture and Fishing Support Services
+163,Post-harvest crop activities,521,Cotton Ginning
+163,Post-harvest crop activities,0529p,Other Agriculture and Fishing Support Services
+164,Seed processing for propagation,0529p,Other Agriculture and Fishing Support Services
+170,"Hunting, trapping and related service activities",420,Hunting and Trapping
+210,Silviculture and other forestry activities,0301p,Forestry
+210,Silviculture and other forestry activities,0510p,Forestry Support Services
+220,Logging,302,Logging
+230,Gathering of non-wood forest products,0301p,Forestry
+240,Support services to forestry,0510p,Forestry Support Services
+240,Support services to forestry,6962p,Management Advice and Related Consulting Services
+240,Support services to forestry,7713p,Fire Protection and Other Emergency Services
+311,Marine fishing,411,Rock Lobster and Crab Potting
+311,Marine fishing,412,Prawn Fishing
+311,Marine fishing,413,Line Fishing
+311,Marine fishing,414,"Fish Trawling, Seining and Netting"
+311,Marine fishing,0419p,Other Fishing
+311,Marine fishing,0529p,Other Agriculture and Fishing Support Services
+311,Marine fishing,1120p,Seafood Processing
+312,Freshwater fishing,0419p,Other Fishing
+312,Freshwater fishing,0529p,Other Agriculture and Fishing Support Services
+321,Marine aquaculture,201,Offshore Longline and Rack Aquaculture
+321,Marine aquaculture,202,Offshore Caged Aquaculture
+321,Marine aquaculture,0203p,Onshore Aquaculture
+322,Freshwater aquaculture,0203p,Onshore Aquaculture
+510,Mining of hard coal,0600p,Coal Mining
+510,Mining of hard coal,6999p,"Other Professional, Scientific and Technical Services n.e.c."
+520,Mining of lignite,0600p,Coal Mining
+610,Extraction of crude petroleum,0700p,Oil and Gas Extraction
+620,Extraction of natural gas,0700p,Oil and Gas Extraction
+710,Mining of iron ores,801,Iron Ore Mining
+721,Mining of uranium and thorium ores,0809p,Other Metal Ore Mining
+729,Mining of other non-ferrous metal ores,802,Bauxite Mining
+729,Mining of other non-ferrous metal ores,803,Copper Ore Mining
+729,Mining of other non-ferrous metal ores,804,Gold Ore Mining
+729,Mining of other non-ferrous metal ores,805,Mineral Sand Mining
+729,Mining of other non-ferrous metal ores,806,Nickel Ore Mining
+729,Mining of other non-ferrous metal ores,807,Silver-Lead-Zinc Ore Mining
+729,Mining of other non-ferrous metal ores,0809p,Other Metal Ore Mining
+810,"Quarrying of stone, sand and clay",911,Gravel and Sand Quarrying
+810,"Quarrying of stone, sand and clay",919,Other Construction Material Mining
+810,"Quarrying of stone, sand and clay",0990p,Other Non-Metallic Mineral Mining and Quarrying
+891,Mining of chemical and fertilizer minerals,0990p,Other Non-Metallic Mineral Mining and Quarrying
+892,Extraction of peat,0600p,Coal Mining
+893,Extraction of salt,0990p,Other Non-Metallic Mineral Mining and Quarrying
+899,Other mining and quarrying n.e.c.,0990p,Other Non-Metallic Mineral Mining and Quarrying
+910,Support activities for petroleum and natural gas extraction,0700p,Oil and Gas Extraction
+910,Support activities for petroleum and natural gas extraction,1011,Petroleum Exploration
+910,Support activities for petroleum and natural gas extraction,1090p,Other Mining Support Services
+910,Support activities for petroleum and natural gas extraction,6999p,"Other Professional, Scientific and Technical Services n.e.c."
+910,Support activities for petroleum and natural gas extraction,7713p,Fire Protection and Other Emergency Services
+990,Support activities for other mining and quarrying,1012,Mineral Exploration
+990,Support activities for other mining and quarrying,1090p,Other Mining Support Services
+990,Support activities for other mining and quarrying,6999p,"Other Professional, Scientific and Technical Services n.e.c."
+1010,Processing and preserving of meat,1111p,Meat Processing
+1010,Processing and preserving of meat,1112p,Poultry Processing
+1010,Processing and preserving of meat,1113p,Cured Meat and Smallgoods Manufacturing
+1020,"Processing and preserving of fish, crustaceans and molluscs",1120p,Seafood Processing
+1030,Processing and preserving of fruit and vegetables,1140p,Fruit and Vegetable Processing
+1030,Processing and preserving of fruit and vegetables,1191p,"Potato, Corn and Other Crisp Manufacturing"
+1030,Processing and preserving of fruit and vegetables,1199p,Other Food Product Manufacturing n.e.c.
+1030,Processing and preserving of fruit and vegetables,1211p,"Soft Drink, Cordial and Syrup Manufacturing"
+1040,Manufacture of vegetable and animal oils and fats,1150p,Oil and Fat Manufacturing
+1050,Manufacture of dairy products,1131,Milk and Cream Processing
+1050,Manufacture of dairy products,1132,Ice Cream Manufacturing
+1050,Manufacture of dairy products,1133p,Cheese and Other Dairy Product Manufacturing
+1061,Manufacture of grain mill products,1161p,Grain Mill Product Manufacturing
+1061,Manufacture of grain mill products,1162p,"Cereal, Pasta and Baking Mix Manufacturing"
+1061,Manufacture of grain mill products,1171p,Bread Manufacturing (Factory based)
+1062,Manufacture of starches and starch products,1150p,Oil and Fat Manufacturing
+1062,Manufacture of starches and starch products,1161p,Grain Mill Product Manufacturing
+1071,Manufacture of bakery products,1171p,Bread Manufacturing (Factory based)
+1071,Manufacture of bakery products,1172,Cake and Pastry Manufacturing (Factory based)
+1071,Manufacture of bakery products,1173,Biscuit Manufacturing (Factory based)
+1071,Manufacture of bakery products,1174,Bakery Product Manufacturing (Non-factory based)
+1071,Manufacture of bakery products,1191p,"Potato, Corn and Other Crisp Manufacturing"
+1071,Manufacture of bakery products,1199p,Other Food Product Manufacturing n.e.c.
+1072,Manufacture of sugar,1181,Sugar Manufacturing
+1073,"Manufacture of cocoa, chocolate and sugar confectionery",1150p,Oil and Fat Manufacturing
+1073,"Manufacture of cocoa, chocolate and sugar confectionery",1182,Confectionery Manufacturing
+1074,"Manufacture of macaroni, noodles, couscous and similar farinaceous products",1162p,"Cereal, Pasta and Baking Mix Manufacturing"
+1075,Manufacture of prepared meals and dishes,1111p,Meat Processing
+1075,Manufacture of prepared meals and dishes,1112p,Poultry Processing
+1075,Manufacture of prepared meals and dishes,1113p,Cured Meat and Smallgoods Manufacturing
+1075,Manufacture of prepared meals and dishes,1120p,Seafood Processing
+1075,Manufacture of prepared meals and dishes,1140p,Fruit and Vegetable Processing
+1075,Manufacture of prepared meals and dishes,1161p,Grain Mill Product Manufacturing
+1075,Manufacture of prepared meals and dishes,1199p,Other Food Product Manufacturing n.e.c.
+1079,Manufacture of other food products n.e.c.,1133p,Cheese and Other Dairy Product Manufacturing
+1079,Manufacture of other food products n.e.c.,1140p,Fruit and Vegetable Processing
+1079,Manufacture of other food products n.e.c.,1161p,Grain Mill Product Manufacturing
+1079,Manufacture of other food products n.e.c.,1191p,"Potato, Corn and Other Crisp Manufacturing"
+1079,Manufacture of other food products n.e.c.,1199p,Other Food Product Manufacturing n.e.c.
+1079,Manufacture of other food products n.e.c.,1211p,"Soft Drink, Cordial and Syrup Manufacturing"
+1079,Manufacture of other food products n.e.c.,1214p,Wine and Other Alcoholic Beverage Manufacturing
+1080,Manufacture of prepared animal feeds,1192p,Prepared Animal and Bird Feed Manufacturing
+1101,"Distilling, rectifying and blending of spirits",1213,Spirit Manufacturing
+1102,Manufacture of wines,1214p,Wine and Other Alcoholic Beverage Manufacturing
+1103,Manufacture of malt liquors and malt,1161p,Grain Mill Product Manufacturing
+1103,Manufacture of malt liquors and malt,1212,Beer Manufacturing
+1104,Manufacture of soft drinks; production of mineral waters and other bottled waters,1211p,"Soft Drink, Cordial and Syrup Manufacturing"
+1200,Manufacture of tobacco products,1220,Cigarette and Tobacco Product Manufacturing
+1311,Preparation and spinning of textile fibres,1311p,Wool Scouring
+1311,Preparation and spinning of textile fibres,1312p,Natural Textile Manufacturing
+1311,Preparation and spinning of textile fibres,1313p,Synthetic Textile Manufacturing
+1312,Weaving of textiles,1312p,Natural Textile Manufacturing
+1312,Weaving of textiles,1313p,Synthetic Textile Manufacturing
+1313,Finishing of textiles,1334p,Textile Finishing and Other Textile Product Manufacturing
+1313,Finishing of textiles,1611p,Printing
+1391,Manufacture of knitted and crocheted fabrics,1340p,Knitted Product Manufacturing
+1392,"Manufacture of made-up textile articles, except apparel",1333p,Cut and Sewn Textile Product Manufacturing
+1392,"Manufacture of made-up textile articles, except apparel",1334p,Textile Finishing and Other Textile Product Manufacturing
+1392,"Manufacture of made-up textile articles, except apparel",1340p,Knitted Product Manufacturing
+1393,Manufacture of carpets and rugs,1331,Textile Floor Covering Manufacturing
+1394,"Manufacture of cordage, rope, twine and netting",1332,"Rope, Cordage and Twine Manufacturing"
+1399,Manufacture of other textiles n.e.c.,1313p,Synthetic Textile Manufacturing
+1399,Manufacture of other textiles n.e.c.,1333p,Cut and Sewn Textile Product Manufacturing
+1399,Manufacture of other textiles n.e.c.,1334p,Textile Finishing and Other Textile Product Manufacturing
+1399,Manufacture of other textiles n.e.c.,1351p,Clothing Manufacturing
+1410,"Manufacture of wearing apparel, except fur apparel",1340p,Knitted Product Manufacturing
+1410,"Manufacture of wearing apparel, except fur apparel",1351p,Clothing Manufacturing
+1410,"Manufacture of wearing apparel, except fur apparel",1919p,Other Polymer Product Manufacturing
+1420,Manufacture of articles of fur,1320p,"Leather Tanning, Fur Dressing and Leather Product Manufacturing"
+1420,Manufacture of articles of fur,1351p,Clothing Manufacturing
+1430,Manufacture of knitted and crocheted apparel,1340p,Knitted Product Manufacturing
+1511,Tanning and dressing of leather; dressing and dyeing of fur,1320p,"Leather Tanning, Fur Dressing and Leather Product Manufacturing"
+1512,"Manufacture of luggage, handbags and the like, saddlery and harness",1320p,"Leather Tanning, Fur Dressing and Leather Product Manufacturing"
+1512,"Manufacture of luggage, handbags and the like, saddlery and harness",1320p,"Leather Tanning, Fur Dressing and Leather Product Manufacturing"
+1520,Manufacture of footwear,1352p,Footwear Manufacturing
+1610,Sawmilling and planing of wood,1411,Log Sawmilling
+1610,Sawmilling and planing of wood,1412,Wood Chipping
+1610,Sawmilling and planing of wood,1413p,Timber Resawing and Dressing
+1621,Manufacture of veneer sheets and wood-based panels,1493,Veneer and Plywood Manufacturing
+1621,Manufacture of veneer sheets and wood-based panels,1494,Reconstituted Wood Product Manufacturing
+1622,Manufacture of builders' carpentry and joinery,1413p,Timber Resawing and Dressing
+1622,Manufacture of builders' carpentry and joinery,1491,Prefabricated Wooden Building Manufacturing
+1622,Manufacture of builders' carpentry and joinery,1492p,Wooden Structural Fitting and Component Manufacturing
+1623,Manufacture of wooden containers,1499p,Other Wood Product Manufacturing n.e.c.
+1629,"Manufacture of other products of wood; manufacture of articles of cork, straw and plaiting materials",1352p,Footwear Manufacturing
+1629,"Manufacture of other products of wood; manufacture of articles of cork, straw and plaiting materials",1499p,Other Wood Product Manufacturing n.e.c.
+1629,"Manufacture of other products of wood; manufacture of articles of cork, straw and plaiting materials",2599p,Other Manufacturing n.e.c.
+1701,"Manufacture of pulp, paper and paperboard",1510,"Pulp, Paper and Paperboard Manufacturing"
+1701,"Manufacture of pulp, paper and paperboard",2599p,Other Manufacturing n.e.c.
+1702,Manufacture of corrugated paper and paperboard and of containers of paper and paperboard,1521,Corrugated Paperboard and Paperboard Container Manufacturing
+1702,Manufacture of corrugated paper and paperboard and of containers of paper and paperboard,1522,Paper Bag Manufacturing
+1709,Manufacture of other articles of paper and paperboard,1334p,Textile Finishing and Other Textile Product Manufacturing
+1709,Manufacture of other articles of paper and paperboard,1523p,Paper Stationery Manufacturing
+1709,Manufacture of other articles of paper and paperboard,1524p,Sanitary Paper Product Manufacturing
+1709,Manufacture of other articles of paper and paperboard,1529,Other Converted Paper Product Manufacturing
+1709,Manufacture of other articles of paper and paperboard,2090p,Other Non-Metallic Mineral Product Manufacturing
+1811,Printing,1611p,Printing
+1812,Service activities related to printing,1612,Printing Support Services
+1820,Reproduction of recorded media,1620,Reproduction of Recorded Media
+1910,Manufacture of coke oven products,1709p,Other Petroleum and Coal Product Manufacturing
+1910,Manufacture of coke oven products,1811p,Industrial Gas Manufacturing
+1910,Manufacture of coke oven products,1812p,Basic Organic Chemical Manufacturing
+1920,Manufacture of refined petroleum products,1701,Petroleum Refining and Petroleum Fuel Manufacturing
+1920,Manufacture of refined petroleum products,1709p,Other Petroleum and Coal Product Manufacturing
+1920,Manufacture of refined petroleum products,1811p,Industrial Gas Manufacturing
+2011,Manufacture of basic chemicals,1709p,Other Petroleum and Coal Product Manufacturing
+2011,Manufacture of basic chemicals,1811p,Industrial Gas Manufacturing
+2011,Manufacture of basic chemicals,1812p,Basic Organic Chemical Manufacturing
+2011,Manufacture of basic chemicals,1813p,Basic Inorganic Chemical Manufacturing
+2011,Manufacture of basic chemicals,1891p,Photographic Chemical Product Manufacturing
+2011,Manufacture of basic chemicals,1892p,Explosive Manufacturing
+2011,Manufacture of basic chemicals,1899p,Other Basic Chemical Product Manufacturing n.e.c.
+2011,Manufacture of basic chemicals,1916p,Paint and Coatings Manufacturing
+2012,Manufacture of fertilizers and nitrogen compounds,1813p,Basic Inorganic Chemical Manufacturing
+2012,Manufacture of fertilizers and nitrogen compounds,1831p,Fertiliser Manufacturing
+2012,Manufacture of fertilizers and nitrogen compounds,1892p,Explosive Manufacturing
+2013,Manufacture of plastics and synthetic rubber in primary forms,1821,Synthetic Resin and Synthetic Rubber Manufacturing
+2013,Manufacture of plastics and synthetic rubber in primary forms,1829p,Other Basic Polymer Manufacturing
+2021,Manufacture of pesticides and other agrochemical products,1832,Pesticide Manufacturing
+2022,"Manufacture of paints, varnishes and similar coatings, printing ink and mastics",1916p,Paint and Coatings Manufacturing
+2023,"Manufacture of soap and detergents, cleaning and polishing preparations, perfumes and toilet preparations",1311p,Wool Scouring
+2023,"Manufacture of soap and detergents, cleaning and polishing preparations, perfumes and toilet preparations",1851,Cleaning Compound Manufacturing
+2023,"Manufacture of soap and detergents, cleaning and polishing preparations, perfumes and toilet preparations",1852,Cosmetic and Toiletry Preparation Manufacturing
+2023,"Manufacture of soap and detergents, cleaning and polishing preparations, perfumes and toilet preparations",2412p,Medical and Surgical Equipment Manufacturing
+2029,Manufacture of other chemical products n.e.c.,1709p,Other Petroleum and Coal Product Manufacturing
+2029,Manufacture of other chemical products n.e.c.,1891p,Photographic Chemical Product Manufacturing
+2029,Manufacture of other chemical products n.e.c.,1892p,Explosive Manufacturing
+2029,Manufacture of other chemical products n.e.c.,1899p,Other Basic Chemical Product Manufacturing n.e.c.
+2029,Manufacture of other chemical products n.e.c.,1915,Adhesive Manufacturing
+2029,Manufacture of other chemical products n.e.c.,1916p,Paint and Coatings Manufacturing
+2030,Manufacture of man-made fibres,1829p,Other Basic Polymer Manufacturing
+2100,"Manufacture of pharmaceuticals, medicinal chemical and botanical products",1334p,Textile Finishing and Other Textile Product Manufacturing
+2100,"Manufacture of pharmaceuticals, medicinal chemical and botanical products",1813p,Basic Inorganic Chemical Manufacturing
+2100,"Manufacture of pharmaceuticals, medicinal chemical and botanical products",1841,Human Pharmaceutical and Medicinal Product Manufacturing
+2100,"Manufacture of pharmaceuticals, medicinal chemical and botanical products",1842,Veterinary Pharmaceutical and Medicinal Product Manufacturing
+2211,Manufacture of rubber tyres and tubes; retreading and rebuilding of rubber tyres,1914,Tyre Manufacturing
+2219,Manufacture of other rubber products,1351p,Clothing Manufacturing
+2219,Manufacture of other rubber products,1352p,Footwear Manufacturing
+2219,Manufacture of other rubber products,1919p,Other Polymer Product Manufacturing
+2219,Manufacture of other rubber products,1920,Natural Rubber Product Manufacturing
+2219,Manufacture of other rubber products,2513p,Mattress Manufacturing
+2219,Manufacture of other rubber products,2599p,Other Manufacturing n.e.c.
+2220,Manufacture of plastics products,1351p,Clothing Manufacturing
+2220,Manufacture of plastics products,1352p,Footwear Manufacturing
+2220,Manufacture of plastics products,1911,Polymer Film and Sheet Packaging Material Manufacturing
+2220,Manufacture of plastics products,1912p,Rigid and Semi-Rigid Polymer Product Manufacturing
+2220,Manufacture of plastics products,1913p,Polymer Foam Product Manufacturing
+2220,Manufacture of plastics products,1919p,Other Polymer Product Manufacturing
+2220,Manufacture of plastics products,2599p,Other Manufacturing n.e.c.
+2310,Manufacture of glass and glass products,2010,Glass and Glass Product Manufacturing
+2310,Manufacture of glass and glass products,2090p,Other Non-Metallic Mineral Product Manufacturing
+2391,Manufacture of refractory products,2029p,Other Ceramic Product Manufacturing
+2392,Manufacture of clay building materials,2021,Clay Brick Manufacturing
+2392,Manufacture of clay building materials,2029p,Other Ceramic Product Manufacturing
+2393,Manufacture of other porcelain and ceramic products,2029p,Other Ceramic Product Manufacturing
+2394,"Manufacture of cement, lime and plaster",2031,Cement and Lime Manufacturing
+2394,"Manufacture of cement, lime and plaster",2032p,Plaster Product Manufacturing
+2395,"Manufacture of articles of concrete, cement and plaster",2032p,Plaster Product Manufacturing
+2395,"Manufacture of articles of concrete, cement and plaster",2033,Ready-Mixed Concrete Manufacturing
+2395,"Manufacture of articles of concrete, cement and plaster",2034,Concrete Product Manufacturing
+2395,"Manufacture of articles of concrete, cement and plaster",2090p,Other Non-Metallic Mineral Product Manufacturing
+2396,"Cutting, shaping and finishing of stone",2090p,Other Non-Metallic Mineral Product Manufacturing
+2399,Manufacture of other non-metallic mineral products n.e.c.,1709p,Other Petroleum and Coal Product Manufacturing
+2399,Manufacture of other non-metallic mineral products n.e.c.,2090p,Other Non-Metallic Mineral Product Manufacturing
+2410,Manufacture of basic iron and steel,2110p,Iron Smelting and Steel Manufacturing
+2410,Manufacture of basic iron and steel,2121p,Iron and Steel Casting
+2410,Manufacture of basic iron and steel,2122,Steel Pipe and Tube Manufacturing
+2420,Manufacture of basic precious and other non-ferrous metals,2131,Alumina Production
+2420,Manufacture of basic precious and other non-ferrous metals,2132,Aluminium Smelting
+2420,Manufacture of basic precious and other non-ferrous metals,2133,"Copper, Silver, Lead and Zinc Smelting and Refining"
+2420,Manufacture of basic precious and other non-ferrous metals,2139,Other Basic Non-Ferrous Metal Manufacturing
+2420,Manufacture of basic precious and other non-ferrous metals,2142p,"Aluminium Rolling, Drawing, Extruding"
+2420,Manufacture of basic precious and other non-ferrous metals,2149p,Other Basic Non-Ferrous Metal Product Manufacturing
+2431,Casting of iron and steel,2121p,Iron and Steel Casting
+2432,Casting of non-ferrous metals,2141,Non-Ferrous Metal Casting
+2511,Manufacture of structural metal products,2221,Structural Steel Fabricating
+2511,Manufacture of structural metal products,2222,Prefabricated Metal Building Manufacturing
+2511,Manufacture of structural metal products,2223,Architectural Aluminium Product Manufacturing
+2511,Manufacture of structural metal products,2224,Metal Roof and Guttering Manufacturing (except Aluminium)
+2511,Manufacture of structural metal products,2229,Other Structural Metal Product Manufacturing
+2511,Manufacture of structural metal products,2240p,Sheet Metal Product Manufacturing (except Metal Structural and Container Products)
+2511,Manufacture of structural metal products,2299p,Other Fabricated Metal Product Manufacturing n.e.c.
+2512,"Manufacture of tanks, reservoirs and containers of metal",2231p,"Boiler, Tank and Other Heavy Gauge Metal Container Manufacturing"
+2513,"Manufacture of steam generators, except central heating hot water boilers",2231p,"Boiler, Tank and Other Heavy Gauge Metal Container Manufacturing"
+2513,"Manufacture of steam generators, except central heating hot water boilers",2499p,Other Machinery and Equipment Manufacturing n.e.c.
+2520,Manufacture of weapons and ammunition,2299p,Other Fabricated Metal Product Manufacturing n.e.c.
+2591,"Forging, pressing, stamping and roll-forming of metal; powder metallurgy",2142p,"Aluminium Rolling, Drawing, Extruding"
+2591,"Forging, pressing, stamping and roll-forming of metal; powder metallurgy",2149p,Other Basic Non-Ferrous Metal Product Manufacturing
+2591,"Forging, pressing, stamping and roll-forming of metal; powder metallurgy",2210,Iron and Steel Forging
+2591,"Forging, pressing, stamping and roll-forming of metal; powder metallurgy",2240p,Sheet Metal Product Manufacturing (except Metal Structural and Container Products)
+2592,Treatment and coating of metals; machining,2293,Metal Coating and Finishing
+2593,"Manufacture of cutlery, hand tools and general hardware",2299p,Other Fabricated Metal Product Manufacturing n.e.c.
+2593,"Manufacture of cutlery, hand tools and general hardware",2412p,Medical and Surgical Equipment Manufacturing
+2593,"Manufacture of cutlery, hand tools and general hardware",2463p,Machine Tool and Parts Manufacturing
+2593,"Manufacture of cutlery, hand tools and general hardware",2469p,Other Specialised Machinery and Equipment Manufacturing
+2599,Manufacture of other fabricated metal products n.e.c.,2110p,Iron Smelting and Steel Manufacturing
+2599,Manufacture of other fabricated metal products n.e.c.,2121p,Iron and Steel Casting
+2599,Manufacture of other fabricated metal products n.e.c.,2142p,"Aluminium Rolling, Drawing, Extruding"
+2599,Manufacture of other fabricated metal products n.e.c.,2149p,Other Basic Non-Ferrous Metal Product Manufacturing
+2599,Manufacture of other fabricated metal products n.e.c.,2239,Other Metal Container Manufacturing
+2599,Manufacture of other fabricated metal products n.e.c.,2240p,Sheet Metal Product Manufacturing (except Metal Structural and Container Products)
+2599,Manufacture of other fabricated metal products n.e.c.,2291p,Spring and Wire Product Manufacturing
+2599,Manufacture of other fabricated metal products n.e.c.,2292,"Nut, Bolt, Screw and Rivet Manufacturing"
+2599,Manufacture of other fabricated metal products n.e.c.,2299p,Other Fabricated Metal Product Manufacturing n.e.c.
+2599,Manufacture of other fabricated metal products n.e.c.,2591p,Jewellery and Silverware Manufacturing
+2599,Manufacture of other fabricated metal products n.e.c.,2599p,Other Manufacturing n.e.c.
+2610,Manufacture of electronic components and boards,2421p,Computer and Electronic Office Equipment Manufacturing
+2610,Manufacture of electronic components and boards,2422p,Communication Equipment Manufacturing
+2610,Manufacture of electronic components and boards,2429p,Other Electronic Equipment Manufacturing
+2610,Manufacture of electronic components and boards,2431p,Electric Cable and Wire Manufacturing
+2610,Manufacture of electronic components and boards,2439p,Other Electrical Equipment Manufacturing
+2620,Manufacture of computers and peripheral equipment,2411p,"Photographic, Optical and Ophthalmic Equipment Manufacturing"
+2620,Manufacture of computers and peripheral equipment,2421p,Computer and Electronic Office Equipment Manufacturing
+2630,Manufacture of communication equipment,2422p,Communication Equipment Manufacturing
+2630,Manufacture of communication equipment,2429p,Other Electronic Equipment Manufacturing
+2630,Manufacture of communication equipment,2439p,Other Electrical Equipment Manufacturing
+2640,Manufacture of consumer electronics,2421p,Computer and Electronic Office Equipment Manufacturing
+2640,Manufacture of consumer electronics,2429p,Other Electronic Equipment Manufacturing
+2651,"Manufacture of measuring, testing, navigating and control equipment",2394p,Aircraft Manufacturing and Repair Services
+2651,"Manufacture of measuring, testing, navigating and control equipment",2411p,"Photographic, Optical and Ophthalmic Equipment Manufacturing"
+2651,"Manufacture of measuring, testing, navigating and control equipment",2412p,Medical and Surgical Equipment Manufacturing
+2651,"Manufacture of measuring, testing, navigating and control equipment",2419p,Other Professional and Scientific Equipment Manufacturing
+2651,"Manufacture of measuring, testing, navigating and control equipment",2422p,Communication Equipment Manufacturing
+2651,"Manufacture of measuring, testing, navigating and control equipment",2429p,Other Electronic Equipment Manufacturing
+2651,"Manufacture of measuring, testing, navigating and control equipment",2439p,Other Electrical Equipment Manufacturing
+2651,"Manufacture of measuring, testing, navigating and control equipment",2449p,Other Domestic Appliance Manufacturing
+2651,"Manufacture of measuring, testing, navigating and control equipment",2452p,"Fixed Space Heating, Cooling and Ventilation Equipment Manufacturing"
+2652,Manufacture of watches and clocks,2419p,Other Professional and Scientific Equipment Manufacturing
+2660,"Manufacture of irradiation, electromedical and electrotherapeutic equipment",2412p,Medical and Surgical Equipment Manufacturing
+2660,"Manufacture of irradiation, electromedical and electrotherapeutic equipment",2419p,Other Professional and Scientific Equipment Manufacturing
+2660,"Manufacture of irradiation, electromedical and electrotherapeutic equipment",2469p,Other Specialised Machinery and Equipment Manufacturing
+2670,Manufacture of optical instruments and photographic equipment,2411p,"Photographic, Optical and Ophthalmic Equipment Manufacturing"
+2670,Manufacture of optical instruments and photographic equipment,2412p,Medical and Surgical Equipment Manufacturing
+2670,Manufacture of optical instruments and photographic equipment,2419p,Other Professional and Scientific Equipment Manufacturing
+2670,Manufacture of optical instruments and photographic equipment,2422p,Communication Equipment Manufacturing
+2670,Manufacture of optical instruments and photographic equipment,2429p,Other Electronic Equipment Manufacturing
+2680,Manufacture of magnetic and optical media,2429p,Other Electronic Equipment Manufacturing
+2710,"Manufacture of electric motors, generators, transformers and electricity distribution and control apparatus",2439p,Other Electrical Equipment Manufacturing
+2720,Manufacture of batteries and accumulators,2439p,Other Electrical Equipment Manufacturing
+2731,Manufacture of fibre optic cables,2419p,Other Professional and Scientific Equipment Manufacturing
+2731,Manufacture of fibre optic cables,2431p,Electric Cable and Wire Manufacturing
+2732,Manufacture of other electronic and electric wires and cables,2431p,Electric Cable and Wire Manufacturing
+2733,Manufacture of wiring devices,1912p,Rigid and Semi-Rigid Polymer Product Manufacturing
+2733,Manufacture of wiring devices,1913p,Polymer Foam Product Manufacturing
+2733,Manufacture of wiring devices,2313p,Automotive Electrical Component Manufacturing
+2733,Manufacture of wiring devices,2422p,Communication Equipment Manufacturing
+2733,Manufacture of wiring devices,2439p,Other Electrical Equipment Manufacturing
+2740,Manufacture of electric lighting equipment,2313p,Automotive Electrical Component Manufacturing
+2740,Manufacture of electric lighting equipment,2432p,Electric Lighting Equipment Manufacturing
+2750,Manufacture of domestic appliances,2429p,Other Electronic Equipment Manufacturing
+2750,Manufacture of domestic appliances,2441,Whiteware Appliance Manufacturing
+2750,Manufacture of domestic appliances,2449p,Other Domestic Appliance Manufacturing
+2790,Manufacture of other electrical equipment,2313p,Automotive Electrical Component Manufacturing
+2790,Manufacture of other electrical equipment,2419p,Other Professional and Scientific Equipment Manufacturing
+2790,Manufacture of other electrical equipment,2422p,Communication Equipment Manufacturing
+2790,Manufacture of other electrical equipment,2429p,Other Electronic Equipment Manufacturing
+2790,Manufacture of other electrical equipment,2431p,Electric Cable and Wire Manufacturing
+2790,Manufacture of other electrical equipment,2432p,Electric Lighting Equipment Manufacturing
+2790,Manufacture of other electrical equipment,2439p,Other Electrical Equipment Manufacturing
+2790,Manufacture of other electrical equipment,2469p,Other Specialised Machinery and Equipment Manufacturing
+2811,"Manufacture of engines and turbines, except aircraft, vehicle and cycle engines",2299p,Other Fabricated Metal Product Manufacturing n.e.c.
+2811,"Manufacture of engines and turbines, except aircraft, vehicle and cycle engines",2319p,Other Motor Vehicle Parts Manufacturing
+2811,"Manufacture of engines and turbines, except aircraft, vehicle and cycle engines",2391p,Shipbuilding and Repair Services
+2811,"Manufacture of engines and turbines, except aircraft, vehicle and cycle engines",2392p,Boatbuilding and Repair Services
+2811,"Manufacture of engines and turbines, except aircraft, vehicle and cycle engines",2393p,Railway Rolling Stock Manufacturing and Repair Services
+2811,"Manufacture of engines and turbines, except aircraft, vehicle and cycle engines",2399p,Other Transport Equipment Manufacturing n.e.c.
+2811,"Manufacture of engines and turbines, except aircraft, vehicle and cycle engines",2499p,Other Machinery and Equipment Manufacturing n.e.c.
+2812,Manufacture of fluid power equipment,2299p,Other Fabricated Metal Product Manufacturing n.e.c.
+2812,Manufacture of fluid power equipment,2451p,Pump and Compressor Manufacturing
+2812,Manufacture of fluid power equipment,2499p,Other Machinery and Equipment Manufacturing n.e.c.
+2813,"Manufacture of other pumps, compressors, taps and valves",2299p,Other Fabricated Metal Product Manufacturing n.e.c.
+2813,"Manufacture of other pumps, compressors, taps and valves",2449p,Other Domestic Appliance Manufacturing
+2813,"Manufacture of other pumps, compressors, taps and valves",2451p,Pump and Compressor Manufacturing
+2813,"Manufacture of other pumps, compressors, taps and valves",2452p,"Fixed Space Heating, Cooling and Ventilation Equipment Manufacturing"
+2813,"Manufacture of other pumps, compressors, taps and valves",2499p,Other Machinery and Equipment Manufacturing n.e.c.
+2814,"Manufacture of bearings, gears, gearing and driving elements",2499p,Other Machinery and Equipment Manufacturing n.e.c.
+2815,"Manufacture of ovens, furnaces and furnace burners",2439p,Other Electrical Equipment Manufacturing
+2815,"Manufacture of ovens, furnaces and furnace burners",2449p,Other Domestic Appliance Manufacturing
+2815,"Manufacture of ovens, furnaces and furnace burners",2452p,"Fixed Space Heating, Cooling and Ventilation Equipment Manufacturing"
+2815,"Manufacture of ovens, furnaces and furnace burners",2499p,Other Machinery and Equipment Manufacturing n.e.c.
+2816,Manufacture of lifting and handling equipment,2399p,Other Transport Equipment Manufacturing n.e.c.
+2816,Manufacture of lifting and handling equipment,2491,Lifting and Material Handling Equipment Manufacturing
+2817,Manufacture of office machinery and equipment (except computers and peripheral equipment),2421p,Computer and Electronic Office Equipment Manufacturing
+2817,Manufacture of office machinery and equipment (except computers and peripheral equipment),2519p,Other Furniture Manufacturing
+2818,Manufacture of power-driven hand tools,2463p,Machine Tool and Parts Manufacturing
+2819,Manufacture of other general-purpose machinery,2419p,Other Professional and Scientific Equipment Manufacturing
+2819,Manufacture of other general-purpose machinery,2449p,Other Domestic Appliance Manufacturing
+2819,Manufacture of other general-purpose machinery,2452p,"Fixed Space Heating, Cooling and Ventilation Equipment Manufacturing"
+2819,Manufacture of other general-purpose machinery,2463p,Machine Tool and Parts Manufacturing
+2819,Manufacture of other general-purpose machinery,2469p,Other Specialised Machinery and Equipment Manufacturing
+2819,Manufacture of other general-purpose machinery,2499p,Other Machinery and Equipment Manufacturing n.e.c.
+2821,Manufacture of agricultural and forestry machinery,2461p,Agricultural Machinery and Equipment Manufacturing
+2822,Manufacture of metal-forming machinery and machine tools,2463p,Machine Tool and Parts Manufacturing
+2822,Manufacture of metal-forming machinery and machine tools,2499p,Other Machinery and Equipment Manufacturing n.e.c.
+2823,Manufacture of machinery for metallurgy,2463p,Machine Tool and Parts Manufacturing
+2824,"Manufacture of machinery for mining, quarrying and construction",2462,Mining and Construction Machinery Manufacturing
+2825,"Manufacture of machinery for food, beverage and tobacco processing",2461p,Agricultural Machinery and Equipment Manufacturing
+2825,"Manufacture of machinery for food, beverage and tobacco processing",2469p,Other Specialised Machinery and Equipment Manufacturing
+2826,"Manufacture of machinery for textile, apparel and leather production",2449p,Other Domestic Appliance Manufacturing
+2826,"Manufacture of machinery for textile, apparel and leather production",2469p,Other Specialised Machinery and Equipment Manufacturing
+2826,"Manufacture of machinery for textile, apparel and leather production",2499p,Other Machinery and Equipment Manufacturing n.e.c.
+2829,Manufacture of other special-purpose machinery,2394p,Aircraft Manufacturing and Repair Services
+2829,Manufacture of other special-purpose machinery,2469p,Other Specialised Machinery and Equipment Manufacturing
+2910,Manufacture of motor vehicles,2311,Motor Vehicle Manufacturing
+2910,Manufacture of motor vehicles,2319p,Other Motor Vehicle Parts Manufacturing
+2920,Manufacture of bodies (coachwork) for motor vehicles; manufacture of trailers and semi-trailers,2312,Motor Vehicle Body and Trailer Manufacturing
+2930,Manufacture of parts and accessories for motor vehicles,1919p,Other Polymer Product Manufacturing
+2930,Manufacture of parts and accessories for motor vehicles,2313p,Automotive Electrical Component Manufacturing
+2930,Manufacture of parts and accessories for motor vehicles,2319p,Other Motor Vehicle Parts Manufacturing
+2930,Manufacture of parts and accessories for motor vehicles,2511p,Wooden Furniture and Upholstered Seat Manufacturing
+2930,Manufacture of parts and accessories for motor vehicles,2512p,Metal Furniture Manufacturing
+3011,Building of ships and floating structures,1919p,Other Polymer Product Manufacturing
+3011,Building of ships and floating structures,2391p,Shipbuilding and Repair Services
+3011,Building of ships and floating structures,2392p,Boatbuilding and Repair Services
+3011,Building of ships and floating structures,2399p,Other Transport Equipment Manufacturing n.e.c.
+3011,Building of ships and floating structures,2511p,Wooden Furniture and Upholstered Seat Manufacturing
+3011,Building of ships and floating structures,2512p,Metal Furniture Manufacturing
+3012,Building of pleasure and sporting boats,2391p,Shipbuilding and Repair Services
+3012,Building of pleasure and sporting boats,2392p,Boatbuilding and Repair Services
+3012,Building of pleasure and sporting boats,2399p,Other Transport Equipment Manufacturing n.e.c.
+3020,Manufacture of railway locomotives and rolling stock,2393p,Railway Rolling Stock Manufacturing and Repair Services
+3020,Manufacture of railway locomotives and rolling stock,2419p,Other Professional and Scientific Equipment Manufacturing
+3020,Manufacture of railway locomotives and rolling stock,2511p,Wooden Furniture and Upholstered Seat Manufacturing
+3020,Manufacture of railway locomotives and rolling stock,2512p,Metal Furniture Manufacturing
+3030,Manufacture of air and spacecraft and related machinery,2394p,Aircraft Manufacturing and Repair Services
+3030,Manufacture of air and spacecraft and related machinery,2511p,Wooden Furniture and Upholstered Seat Manufacturing
+3030,Manufacture of air and spacecraft and related machinery,2512p,Metal Furniture Manufacturing
+3040,Manufacture of military fighting vehicles,2399p,Other Transport Equipment Manufacturing n.e.c.
+3091,Manufacture of motorcycles,2399p,Other Transport Equipment Manufacturing n.e.c.
+3092,Manufacture of bicycles and invalid carriages,1320p,"Leather Tanning, Fur Dressing and Leather Product Manufacturing"
+3092,Manufacture of bicycles and invalid carriages,2399p,Other Transport Equipment Manufacturing n.e.c.
+3099,Manufacture of other transport equipment n.e.c.,2291p,Spring and Wire Product Manufacturing
+3099,Manufacture of other transport equipment n.e.c.,2399p,Other Transport Equipment Manufacturing n.e.c.
+3100,Manufacture of furniture,1912p,Rigid and Semi-Rigid Polymer Product Manufacturing
+3100,Manufacture of furniture,2399p,Other Transport Equipment Manufacturing n.e.c.
+3100,Manufacture of furniture,2511p,Wooden Furniture and Upholstered Seat Manufacturing
+3100,Manufacture of furniture,2512p,Metal Furniture Manufacturing
+3100,Manufacture of furniture,2513p,Mattress Manufacturing
+3100,Manufacture of furniture,2519p,Other Furniture Manufacturing
+3211,Manufacture of jewellery and related articles,2591p,Jewellery and Silverware Manufacturing
+3211,Manufacture of jewellery and related articles,7712p,Investigation and Security Services
+3212,Manufacture of imitation jewellery and related articles,2591p,Jewellery and Silverware Manufacturing
+3220,Manufacture of musical instruments,2599p,Other Manufacturing n.e.c.
+3230,Manufacture of sports goods,1351p,Clothing Manufacturing
+3230,Manufacture of sports goods,1352p,Footwear Manufacturing
+3230,Manufacture of sports goods,2592p,"Toy, Sporting and Recreational Product Manufacturing"
+3240,Manufacture of games and toys,1523p,Paper Stationery Manufacturing
+3240,Manufacture of games and toys,2399p,Other Transport Equipment Manufacturing n.e.c.
+3240,Manufacture of games and toys,2592p,"Toy, Sporting and Recreational Product Manufacturing"
+3240,Manufacture of games and toys,2599p,Other Manufacturing n.e.c.
+3250,Manufacture of medical and dental instruments and supplies,1524p,Sanitary Paper Product Manufacturing
+3250,Manufacture of medical and dental instruments and supplies,2411p,"Photographic, Optical and Ophthalmic Equipment Manufacturing"
+3250,Manufacture of medical and dental instruments and supplies,2412p,Medical and Surgical Equipment Manufacturing
+3250,Manufacture of medical and dental instruments and supplies,2499p,Other Machinery and Equipment Manufacturing n.e.c.
+3290,Other manufacturing n.e.c.,1320p,"Leather Tanning, Fur Dressing and Leather Product Manufacturing"
+3290,Other manufacturing n.e.c.,1351p,Clothing Manufacturing
+3290,Other manufacturing n.e.c.,1499p,Other Wood Product Manufacturing n.e.c.
+3290,Other manufacturing n.e.c.,1912p,Rigid and Semi-Rigid Polymer Product Manufacturing
+3290,Other manufacturing n.e.c.,1913p,Polymer Foam Product Manufacturing
+3290,Other manufacturing n.e.c.,1919p,Other Polymer Product Manufacturing
+3290,Other manufacturing n.e.c.,2090p,Other Non-Metallic Mineral Product Manufacturing
+3290,Other manufacturing n.e.c.,2299p,Other Fabricated Metal Product Manufacturing n.e.c.
+3290,Other manufacturing n.e.c.,2412p,Medical and Surgical Equipment Manufacturing
+3290,Other manufacturing n.e.c.,2599p,Other Manufacturing n.e.c.
+3311,Repair of fabricated metal products,9429p,Other Machinery and Equipment Repair and Maintenance
+3311,Repair of fabricated metal products,9499p,Other Repair and Maintenance n.e.c.
+3312,Repair of machinery,2391p,Shipbuilding and Repair Services
+3312,Repair of machinery,2392p,Boatbuilding and Repair Services
+3312,Repair of machinery,2393p,Railway Rolling Stock Manufacturing and Repair Services
+3312,Repair of machinery,2399p,Other Transport Equipment Manufacturing n.e.c.
+3312,Repair of machinery,9422p,Electronic (except Domestic Appliance) and Precision Equipment Repair and Maintenance
+3312,Repair of machinery,9429p,Other Machinery and Equipment Repair and Maintenance
+3312,Repair of machinery,9499p,Other Repair and Maintenance n.e.c.
+3313,Repair of electronic and optical equipment,2394p,Aircraft Manufacturing and Repair Services
+3313,Repair of electronic and optical equipment,9422p,Electronic (except Domestic Appliance) and Precision Equipment Repair and Maintenance
+3313,Repair of electronic and optical equipment,9499p,Other Repair and Maintenance n.e.c.
+3314,Repair of electrical equipment,9422p,Electronic (except Domestic Appliance) and Precision Equipment Repair and Maintenance
+3314,Repair of electrical equipment,9429p,Other Machinery and Equipment Repair and Maintenance
+3315,"Repair of transport equipment, except motor vehicles",2391p,Shipbuilding and Repair Services
+3315,"Repair of transport equipment, except motor vehicles",2392p,Boatbuilding and Repair Services
+3315,"Repair of transport equipment, except motor vehicles",2393p,Railway Rolling Stock Manufacturing and Repair Services
+3315,"Repair of transport equipment, except motor vehicles",2394p,Aircraft Manufacturing and Repair Services
+3315,"Repair of transport equipment, except motor vehicles",2399p,Other Transport Equipment Manufacturing n.e.c.
+3315,"Repair of transport equipment, except motor vehicles",9429p,Other Machinery and Equipment Repair and Maintenance
+3319,Repair of other equipment,9429p,Other Machinery and Equipment Repair and Maintenance
+3319,Repair of other equipment,9499p,Other Repair and Maintenance n.e.c.
+3320,Installation of industrial machinery and equipment,3109p,Other Heavy and Civil Engineering Construction
+3320,Installation of industrial machinery and equipment,3232p,Electrical Services
+3320,Installation of industrial machinery and equipment,3239p,Other Building Installation Services
+3320,Installation of industrial machinery and equipment,3299p,Other Construction Services n.e.c.
+3320,Installation of industrial machinery and equipment,7000p,Computer System Design and Related Services
+3510,"Electric power generation, transmission and distribution",2611,Fossil Fuel Electricity Generation
+3510,"Electric power generation, transmission and distribution",2612,Hydro-Electricity Generation
+3510,"Electric power generation, transmission and distribution",2619p,Other Electricity Generation
+3510,"Electric power generation, transmission and distribution",2620,Electricity Transmission
+3510,"Electric power generation, transmission and distribution",2630,Electricity Distribution
+3510,"Electric power generation, transmission and distribution",2640,On Selling Electricity and Electricity Market Operation
+3520,Manufacture of gas; distribution of gaseous fuels through mains,2700,Gas Supply
+3530,Steam and air conditioning supply,2811p,Water Supply 
+3600,"Water collection, treatment and supply",2811p,Water Supply 
+3700,Sewerage,2812,Sewerage and Drainage Services
+3700,Sewerage,2919p,Other Waste Collection Services
+3700,Sewerage,2921p,Waste Treatment and Disposal Services
+3811,Collection of non-hazardous waste,2911p,Solid Waste Collection Services
+3811,Collection of non-hazardous waste,2919p,Other Waste Collection Services
+3811,Collection of non-hazardous waste,2921p,Waste Treatment and Disposal Services
+3811,Collection of non-hazardous waste,2922p,Waste Remediation and Materials Recovery Services
+3812,Collection of hazardous waste,2911p,Solid Waste Collection Services
+3812,Collection of hazardous waste,2919p,Other Waste Collection Services
+3812,Collection of hazardous waste,2921p,Waste Treatment and Disposal Services
+3812,Collection of hazardous waste,2922p,Waste Remediation and Materials Recovery Services
+3821,Treatment and disposal of non-hazardous waste,1831p,Fertiliser Manufacturing
+3821,Treatment and disposal of non-hazardous waste,2619p,Other Electricity Generation
+3821,Treatment and disposal of non-hazardous waste,2921p,Waste Treatment and Disposal Services
+3821,Treatment and disposal of non-hazardous waste,2922p,Waste Remediation and Materials Recovery Services
+3822,Treatment and disposal of hazardous waste,2921p,Waste Treatment and Disposal Services
+3822,Treatment and disposal of hazardous waste,2922p,Waste Remediation and Materials Recovery Services
+3830,Materials recovery,2391p,Shipbuilding and Repair Services
+3830,Materials recovery,2922p,Waste Remediation and Materials Recovery Services
+3900,Remediation activities and other waste management services,2922p,Waste Remediation and Materials Recovery Services
+4100,Construction of buildings,3011,House Construction
+4100,Construction of buildings,3019,Other Residential Building Construction
+4100,Construction of buildings,3020,Non-Residential Building Construction
+4210,Construction of roads and railways,3101p,Road and Bridge Construction
+4210,Construction of roads and railways,3109p,Other Heavy and Civil Engineering Construction
+4210,Construction of roads and railways,3299p,Other Construction Services n.e.c.
+4220,Construction of utility projects,3109p,Other Heavy and Civil Engineering Construction
+4290,Construction of other civil engineering projects,3101p,Road and Bridge Construction
+4290,Construction of other civil engineering projects,3109p,Other Heavy and Civil Engineering Construction
+4290,Construction of other civil engineering projects,3211p,Land Development and Subdivision
+4311,Demolition,3212p,Site Preparation Services
+4312,Site preparation,3212p,Site Preparation Services
+4312,Site preparation,3292p,Hire of Construction Machinery with Operator
+4321,Electrical installation,3232p,Electrical Services
+4321,Electrical installation,3234p,Fire and Security Alarm Installation Services
+4322,"Plumbing, heat and air-conditioning installation",3231,Plumbing Services
+4322,"Plumbing, heat and air-conditioning installation",3233,Air Conditioning and Heating Services
+4322,"Plumbing, heat and air-conditioning installation",3234p,Fire and Security Alarm Installation Services
+4322,"Plumbing, heat and air-conditioning installation",3291p,Landscape Construction Services
+4329,Other construction installation,3232p,Electrical Services
+4329,Other construction installation,3239p,Other Building Installation Services
+4329,Other construction installation,3299p,Other Construction Services n.e.c.
+4329,Other construction installation,9429p,Other Machinery and Equipment Repair and Maintenance
+4330,Building completion and finishing,1492p,Wooden Structural Fitting and Component Manufacturing
+4330,Building completion and finishing,1913p,Polymer Foam Product Manufacturing
+4330,Building completion and finishing,3239p,Other Building Installation Services
+4330,Building completion and finishing,3241,Plastering and Ceiling Services
+4330,Building completion and finishing,3242,Carpentry Services
+4330,Building completion and finishing,3243,Tiling and Carpeting Services
+4330,Building completion and finishing,3244,Painting and Decorating Services
+4330,Building completion and finishing,3245,Glazing Services
+4330,Building completion and finishing,3291p,Landscape Construction Services
+4330,Building completion and finishing,3299p,Other Construction Services n.e.c.
+4330,Building completion and finishing,7311p,Building and Other Industrial Cleaning Services
+4390,Other specialized construction activities,3109p,Other Heavy and Civil Engineering Construction
+4390,Other specialized construction activities,3221,Concreting Services
+4390,Other specialized construction activities,3222,Bricklaying Services
+4390,Other specialized construction activities,3223,Roofing Services
+4390,Other specialized construction activities,3224,Structural Steel Erection Services
+4390,Other specialized construction activities,3239p,Other Building Installation Services
+4390,Other specialized construction activities,3291p,Landscape Construction Services
+4390,Other specialized construction activities,3292p,Hire of Construction Machinery with Operator
+4390,Other specialized construction activities,3299p,Other Construction Services n.e.c.
+4510,Sale of motor vehicles,3501,Car Wholesaling
+4510,Sale of motor vehicles,3502,Commercial Vehicle Wholesaling
+4510,Sale of motor vehicles,3503p,Trailer and Other Motor Vehicle Wholesaling
+4510,Sale of motor vehicles,3800p,Commission-Based Wholesaling
+4510,Sale of motor vehicles,3911,Car Retailing
+4510,Sale of motor vehicles,3913,Trailer and Other Motor Vehicle Retailing
+4510,Sale of motor vehicles,4245p,Marine Equipment Retailing
+4510,Sale of motor vehicles,4320p,Retail Commission-Based Buying and/or Selling
+4520,Maintenance and repair of motor vehicles,9411p,Automotive Electrical Services
+4520,Maintenance and repair of motor vehicles,9412p,"Automotive Body, Paint and Interior Repair"
+4520,Maintenance and repair of motor vehicles,9419p,Other Automotive Repair and Maintenance
+4520,Maintenance and repair of motor vehicles,9429p,Other Machinery and Equipment Repair and Maintenance
+4530,Sale of motor vehicle parts and accessories,3504p,Motor Vehicle New Parts Wholesaling
+4530,Sale of motor vehicle parts and accessories,3505p,Motor Vehicle Dismantling and Used Parts Wholesaling
+4530,Sale of motor vehicle parts and accessories,3921p,Motor Vehicle Parts Retailing
+4530,Sale of motor vehicle parts and accessories,3922p,Tyre Retailing
+4530,Sale of motor vehicle parts and accessories,4320p,Retail Commission-Based Buying and/or Selling
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",3503p,Trailer and Other Motor Vehicle Wholesaling
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",3504p,Motor Vehicle New Parts Wholesaling
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",3505p,Motor Vehicle Dismantling and Used Parts Wholesaling
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",3912,Motor Cycle Retailing
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",3921p,Motor Vehicle Parts Retailing
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",3922p,Tyre Retailing
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",4320p,Retail Commission-Based Buying and/or Selling
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",9411p,Automotive Electrical Services
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",9412p,"Automotive Body, Paint and Interior Repair"
+4540,"Sale, maintenance and repair of motorcycles and related parts and accessories",9419p,Other Automotive Repair and Maintenance
+4610,Wholesale on a fee or contract basis,3800p,Commission-Based Wholesaling
+4620,Wholesale of agricultural raw materials and live animals,3311,Wool Wholesaling
+4620,Wholesale of agricultural raw materials and live animals,3312,Cereal Grain Wholesaling
+4620,Wholesale of agricultural raw materials and live animals,3319p,Other Agricultural Product Wholesaling
+4620,Wholesale of agricultural raw materials and live animals,3606p,Liquor and Tobacco Product Wholesaling
+4620,Wholesale of agricultural raw materials and live animals,3739p,Other Goods Wholesaling n.e.c.
+4630,"Wholesale of food, beverages and tobacco",3319p,Other Agricultural Product Wholesaling
+4630,"Wholesale of food, beverages and tobacco",3601,General Line Grocery Wholesaling
+4630,"Wholesale of food, beverages and tobacco",3602,"Meat, Poultry and Smallgoods Wholesaling"
+4630,"Wholesale of food, beverages and tobacco",3603,Dairy Produce Wholesaling
+4630,"Wholesale of food, beverages and tobacco",3604,Fish and Seafood Wholesaling
+4630,"Wholesale of food, beverages and tobacco",3605,Fruit and Vegetable Wholesaling
+4630,"Wholesale of food, beverages and tobacco",3606p,Liquor and Tobacco Product Wholesaling
+4630,"Wholesale of food, beverages and tobacco",3609,Other Grocery Wholesaling
+4630,"Wholesale of food, beverages and tobacco",3739p,Other Goods Wholesaling n.e.c.
+4641,"Wholesale of textiles, clothing and footwear",3711p,Textile Product Wholesaling
+4641,"Wholesale of textiles, clothing and footwear",3712,Clothing and Footwear Wholesaling
+4641,"Wholesale of textiles, clothing and footwear",3739p,Other Goods Wholesaling n.e.c.
+4649,Wholesale of other household goods,3492p,Computer and Computer Peripheral Wholesaling
+4649,Wholesale of other household goods,3494p,Other Electrical and Electronic Goods Wholesaling
+4649,Wholesale of other household goods,3499p,Other Machinery and Equipment Wholesaling n.e.c.
+4649,Wholesale of other household goods,3720,Pharmaceutical and Toiletry Goods Wholesaling
+4649,Wholesale of other household goods,3731p,Furniture and Floor Covering Wholesaling
+4649,Wholesale of other household goods,3732p,Jewellery and Watch Wholesaling
+4649,Wholesale of other household goods,3733,Kitchen and Diningware Wholesaling
+4649,Wholesale of other household goods,3734,Toy and Sporting Goods Wholesaling
+4649,Wholesale of other household goods,3735,Book and Magazine Wholesaling
+4649,Wholesale of other household goods,3736p,Paper Product Wholesaling
+4649,Wholesale of other household goods,3739p,Other Goods Wholesaling n.e.c.
+4651,"Wholesale of computers, computer peripheral equipment and software",3492p,Computer and Computer Peripheral Wholesaling
+4652,Wholesale of electronic and telecommunications equipment and parts,3492p,Computer and Computer Peripheral Wholesaling
+4652,Wholesale of electronic and telecommunications equipment and parts,3493,Telecommunication Goods Wholesaling
+4652,Wholesale of electronic and telecommunications equipment and parts,3494p,Other Electrical and Electronic Goods Wholesaling
+4653,"Wholesale of agricultural machinery, equipment and supplies",3411p,Agricultural and Construction Machinery Wholesaling
+4659,Wholesale of other machinery and equipment,3411p,Agricultural and Construction Machinery Wholesaling
+4659,Wholesale of other machinery and equipment,3419,Other Specialised Industrial Machinery and Equipment Wholesaling
+4659,Wholesale of other machinery and equipment,3491,Professional and Scientific Goods Wholesaling
+4659,Wholesale of other machinery and equipment,3494p,Other Electrical and Electronic Goods Wholesaling
+4659,Wholesale of other machinery and equipment,3499p,Other Machinery and Equipment Wholesaling n.e.c.
+4659,Wholesale of other machinery and equipment,3731p,Furniture and Floor Covering Wholesaling
+4659,Wholesale of other machinery and equipment,3739p,Other Goods Wholesaling n.e.c.
+4661,"Wholesale of solid, liquid and gaseous fuels and related products",3321,Petroleum Product Wholesaling
+4661,"Wholesale of solid, liquid and gaseous fuels and related products",3322p,Metal and Mineral Wholesaling
+4661,"Wholesale of solid, liquid and gaseous fuels and related products",3339p,Other Hardware Goods Wholesaling
+4661,"Wholesale of solid, liquid and gaseous fuels and related products",3739p,Other Goods Wholesaling n.e.c.
+4662,Wholesale of metals and metal ores,3322p,Metal and Mineral Wholesaling
+4662,Wholesale of metals and metal ores,3339p,Other Hardware Goods Wholesaling
+4663,"Wholesale of construction materials, hardware, plumbing and heating equipment and supplies",3331p,Timber Wholesaling
+4663,"Wholesale of construction materials, hardware, plumbing and heating equipment and supplies",3332,Plumbing Goods Wholesaling
+4663,"Wholesale of construction materials, hardware, plumbing and heating equipment and supplies",3339p,Other Hardware Goods Wholesaling
+4663,"Wholesale of construction materials, hardware, plumbing and heating equipment and supplies",3731p,Furniture and Floor Covering Wholesaling
+4663,"Wholesale of construction materials, hardware, plumbing and heating equipment and supplies",3739p,Other Goods Wholesaling n.e.c.
+4669,Wholesale of waste and scrap and other products n.e.c.,3322p,Metal and Mineral Wholesaling
+4669,Wholesale of waste and scrap and other products n.e.c.,3323,Industrial and Agricultural Chemical Product Wholesaling
+4669,Wholesale of waste and scrap and other products n.e.c.,3331p,Timber Wholesaling
+4669,Wholesale of waste and scrap and other products n.e.c.,3339p,Other Hardware Goods Wholesaling
+4669,Wholesale of waste and scrap and other products n.e.c.,3505p,Motor Vehicle Dismantling and Used Parts Wholesaling
+4669,Wholesale of waste and scrap and other products n.e.c.,3711p,Textile Product Wholesaling
+4669,Wholesale of waste and scrap and other products n.e.c.,3732p,Jewellery and Watch Wholesaling
+4669,Wholesale of waste and scrap and other products n.e.c.,3736p,Paper Product Wholesaling
+4669,Wholesale of waste and scrap and other products n.e.c.,3739p,Other Goods Wholesaling n.e.c.
+4690,Non-specialized wholesale trade,3739p,Other Goods Wholesaling n.e.c.
+4711,"Retail sale in non-specialized stores with food, beverages or tobacco predominating",4110,Supermarket and Grocery Stores
+4711,"Retail sale in non-specialized stores with food, beverages or tobacco predominating",4279p,Other Store-Based Retailing n.e.c.
+4719,Other retail sale in non-specialized stores,4260,Department Stores
+4719,Other retail sale in non-specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4721,Retail sale of food in specialized stores,4121p,"Fresh Meat, Fish and Poultry Retailing"
+4721,Retail sale of food in specialized stores,4122p,Fruit and Vegetable Retailing
+4721,Retail sale of food in specialized stores,4129p,Other Specialised Food Retailing
+4721,Retail sale of food in specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4721,Retail sale of food in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4722,Retail sale of beverages in specialized stores,4123p,Liquor Retailing
+4722,Retail sale of beverages in specialized stores,4129p,Other Specialised Food Retailing
+4722,Retail sale of beverages in specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4722,Retail sale of beverages in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4723,Retail sale of tobacco products in specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4723,Retail sale of tobacco products in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4730,Retail sale of automotive fuel in specialized stores,4000p,Fuel Retailing
+4730,Retail sale of automotive fuel in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4741,"Retail sale of computers, peripheral units, software and telecommunications equipment in specialized stores",4221p,"Electrical, Electronic and Gas Appliance Retailing"
+4741,"Retail sale of computers, peripheral units, software and telecommunications equipment in specialized stores",4222p,Computer and Computer Peripheral Retailing
+4741,"Retail sale of computers, peripheral units, software and telecommunications equipment in specialized stores",4242p,Entertainment Media Retailing
+4741,"Retail sale of computers, peripheral units, software and telecommunications equipment in specialized stores",4245p,Marine Equipment Retailing
+4741,"Retail sale of computers, peripheral units, software and telecommunications equipment in specialized stores",4279p,Other Store-Based Retailing n.e.c.
+4741,"Retail sale of computers, peripheral units, software and telecommunications equipment in specialized stores",4320p,Retail Commission-Based Buying and/or Selling
+4742,Retail sale of audio and video equipment in specialized stores,4221p,"Electrical, Electronic and Gas Appliance Retailing"
+4742,Retail sale of audio and video equipment in specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4742,Retail sale of audio and video equipment in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4751,Retail sale of textiles in specialized stores,4214p,Manchester and Other Textile Goods Retailing
+4751,Retail sale of textiles in specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4751,Retail sale of textiles in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4752,"Retail sale of hardware, paints and glass in specialized stores",4212p,Floor Coverings Retailing
+4752,"Retail sale of hardware, paints and glass in specialized stores",4231p,Hardware and Building Supplies Retailing
+4752,"Retail sale of hardware, paints and glass in specialized stores",4232p,Garden Supplies Retailing
+4752,"Retail sale of hardware, paints and glass in specialized stores",4279p,Other Store-Based Retailing n.e.c.
+4752,"Retail sale of hardware, paints and glass in specialized stores",4320p,Retail Commission-Based Buying and/or Selling
+4753,"Retail sale of carpets, rugs, wall and floor coverings in specialized stores",4212p,Floor Coverings Retailing
+4753,"Retail sale of carpets, rugs, wall and floor coverings in specialized stores",4214p,Manchester and Other Textile Goods Retailing
+4753,"Retail sale of carpets, rugs, wall and floor coverings in specialized stores",4231p,Hardware and Building Supplies Retailing
+4753,"Retail sale of carpets, rugs, wall and floor coverings in specialized stores",4279p,Other Store-Based Retailing n.e.c.
+4753,"Retail sale of carpets, rugs, wall and floor coverings in specialized stores",4320p,Retail Commission-Based Buying and/or Selling
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4211,Furniture Retailing
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4213p,Houseware Retailing
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4214p,Manchester and Other Textile Goods Retailing
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4221p,"Electrical, Electronic and Gas Appliance Retailing"
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4229p,Other Electrical and Electronic Goods Retailing
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4231p,Hardware and Building Supplies Retailing
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4232p,Garden Supplies Retailing
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4242p,Entertainment Media Retailing
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4279p,Other Store-Based Retailing n.e.c.
+4759,"Retail sale of electrical household appliances, furniture, lighting equipment and other household articles in specialized stores",4320p,Retail Commission-Based Buying and/or Selling
+4761,"Retail sale of books, newspapers and stationary in specialized stores",4244p,Newspaper and Book Retailing
+4761,"Retail sale of books, newspapers and stationary in specialized stores",4272p,Stationery Goods Retailing
+4761,"Retail sale of books, newspapers and stationary in specialized stores",4279p,Other Store-Based Retailing n.e.c.
+4761,"Retail sale of books, newspapers and stationary in specialized stores",4320p,Retail Commission-Based Buying and/or Selling
+4762,Retail sale of music and video recordings in specialized stores,4242p,Entertainment Media Retailing
+4762,Retail sale of music and video recordings in specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4762,Retail sale of music and video recordings in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4763,Retail sale of sporting equipment in specialized stores,4241p,Sport and Camping Equipment Retailing
+4763,Retail sale of sporting equipment in specialized stores,4245p,Marine Equipment Retailing
+4763,Retail sale of sporting equipment in specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4763,Retail sale of sporting equipment in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4764,Retail sale of games and toys in specialized stores,4243p,Toy and Game Retailing
+4764,Retail sale of games and toys in specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4764,Retail sale of games and toys in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4771,"Retail sale of clothing, footwear and leather articles in specialized stores",4241p,Sport and Camping Equipment Retailing
+4771,"Retail sale of clothing, footwear and leather articles in specialized stores",4251p,Clothing Retailing
+4771,"Retail sale of clothing, footwear and leather articles in specialized stores",4252p,Footwear Retailing
+4771,"Retail sale of clothing, footwear and leather articles in specialized stores",4259p,Other Personal Accessory Retailing
+4771,"Retail sale of clothing, footwear and leather articles in specialized stores",4279p,Other Store-Based Retailing n.e.c.
+4771,"Retail sale of clothing, footwear and leather articles in specialized stores",4320p,Retail Commission-Based Buying and/or Selling
+4772,"Retail sale of pharmaceutical and medical goods, cosmetic and toilet articles in specialized stores",4271p,"Pharmaceutical, Cosmetic and Toiletry Goods Retailing"
+4772,"Retail sale of pharmaceutical and medical goods, cosmetic and toilet articles in specialized stores",4320p,Retail Commission-Based Buying and/or Selling
+4773,Other retail sale of new goods in specialized stores,4000p,Fuel Retailing
+4773,Other retail sale of new goods in specialized stores,4212p,Floor Coverings Retailing
+4773,Other retail sale of new goods in specialized stores,4213p,Houseware Retailing
+4773,Other retail sale of new goods in specialized stores,4214p,Manchester and Other Textile Goods Retailing
+4773,Other retail sale of new goods in specialized stores,4221p,"Electrical, Electronic and Gas Appliance Retailing"
+4773,Other retail sale of new goods in specialized stores,4229p,Other Electrical and Electronic Goods Retailing
+4773,Other retail sale of new goods in specialized stores,4231p,Hardware and Building Supplies Retailing
+4773,Other retail sale of new goods in specialized stores,4232p,Garden Supplies Retailing
+4773,Other retail sale of new goods in specialized stores,4241p,Sport and Camping Equipment Retailing
+4773,Other retail sale of new goods in specialized stores,4242p,Entertainment Media Retailing
+4773,Other retail sale of new goods in specialized stores,4243p,Toy and Game Retailing
+4773,Other retail sale of new goods in specialized stores,4245p,Marine Equipment Retailing
+4773,Other retail sale of new goods in specialized stores,4253p,Watch and Jewellery Retailing
+4773,Other retail sale of new goods in specialized stores,4259p,Other Personal Accessory Retailing
+4773,Other retail sale of new goods in specialized stores,4272p,Stationery Goods Retailing
+4773,Other retail sale of new goods in specialized stores,4274p,Flower Retailing
+4773,Other retail sale of new goods in specialized stores,4279p,Other Store-Based Retailing n.e.c.
+4773,Other retail sale of new goods in specialized stores,4320p,Retail Commission-Based Buying and/or Selling
+4774,Retail sale of second-hand goods,3800p,Commission-Based Wholesaling
+4774,Retail sale of second-hand goods,4273p,Antique and Used Goods Retailing
+4774,Retail sale of second-hand goods,4320p,Retail Commission-Based Buying and/or Selling
+4781,"Retail sale via stalls and markets of food, beverages and tobacco products",4121p,"Fresh Meat, Fish and Poultry Retailing"
+4781,"Retail sale via stalls and markets of food, beverages and tobacco products",4122p,Fruit and Vegetable Retailing
+4781,"Retail sale via stalls and markets of food, beverages and tobacco products",4123p,Liquor Retailing
+4781,"Retail sale via stalls and markets of food, beverages and tobacco products",4129p,Other Specialised Food Retailing
+4781,"Retail sale via stalls and markets of food, beverages and tobacco products",4279p,Other Store-Based Retailing n.e.c.
+4781,"Retail sale via stalls and markets of food, beverages and tobacco products",4320p,Retail Commission-Based Buying and/or Selling
+4782,"Retail sale via stalls and markets of textiles, clothing and footwear",4214p,Manchester and Other Textile Goods Retailing
+4782,"Retail sale via stalls and markets of textiles, clothing and footwear",4241p,Sport and Camping Equipment Retailing
+4782,"Retail sale via stalls and markets of textiles, clothing and footwear",4251p,Clothing Retailing
+4782,"Retail sale via stalls and markets of textiles, clothing and footwear",4252p,Footwear Retailing
+4782,"Retail sale via stalls and markets of textiles, clothing and footwear",4259p,Other Personal Accessory Retailing
+4782,"Retail sale via stalls and markets of textiles, clothing and footwear",4273p,Antique and Used Goods Retailing
+4782,"Retail sale via stalls and markets of textiles, clothing and footwear",4279p,Other Store-Based Retailing n.e.c.
+4782,"Retail sale via stalls and markets of textiles, clothing and footwear",4320p,Retail Commission-Based Buying and/or Selling
+4789,Retail sale via stalls and markets of other goods,4212p,Floor Coverings Retailing
+4789,Retail sale via stalls and markets of other goods,4213p,Houseware Retailing
+4789,Retail sale via stalls and markets of other goods,4214p,Manchester and Other Textile Goods Retailing
+4789,Retail sale via stalls and markets of other goods,4221p,"Electrical, Electronic and Gas Appliance Retailing"
+4789,Retail sale via stalls and markets of other goods,4222p,Computer and Computer Peripheral Retailing
+4789,Retail sale via stalls and markets of other goods,4229p,Other Electrical and Electronic Goods Retailing
+4789,Retail sale via stalls and markets of other goods,4231p,Hardware and Building Supplies Retailing
+4789,Retail sale via stalls and markets of other goods,4232p,Garden Supplies Retailing
+4789,Retail sale via stalls and markets of other goods,4241p,Sport and Camping Equipment Retailing
+4789,Retail sale via stalls and markets of other goods,4242p,Entertainment Media Retailing
+4789,Retail sale via stalls and markets of other goods,4243p,Toy and Game Retailing
+4789,Retail sale via stalls and markets of other goods,4244p,Newspaper and Book Retailing
+4789,Retail sale via stalls and markets of other goods,4245p,Marine Equipment Retailing
+4789,Retail sale via stalls and markets of other goods,4253p,Watch and Jewellery Retailing
+4789,Retail sale via stalls and markets of other goods,4259p,Other Personal Accessory Retailing
+4789,Retail sale via stalls and markets of other goods,4271p,"Pharmaceutical, Cosmetic and Toiletry Goods Retailing"
+4789,Retail sale via stalls and markets of other goods,4272p,Stationery Goods Retailing
+4789,Retail sale via stalls and markets of other goods,4273p,Antique and Used Goods Retailing
+4789,Retail sale via stalls and markets of other goods,4274p,Flower Retailing
+4789,Retail sale via stalls and markets of other goods,4279p,Other Store-Based Retailing n.e.c.
+4789,Retail sale via stalls and markets of other goods,4320p,Retail Commission-Based Buying and/or Selling
+4791,Retail sale via mail order houses or via Internet,4310p,Non-Store Retailing
+4791,Retail sale via mail order houses or via Internet,4320p,Retail Commission-Based Buying and/or Selling
+4799,"Other retail sale not in stores, stalls or markets",4310p,Non-Store Retailing
+4799,"Other retail sale not in stores, stalls or markets",4320p,Retail Commission-Based Buying and/or Selling
+4911,"Passenger rail transport, interurban",4720p,Rail Passenger Transport
+4911,"Passenger rail transport, interurban",5299p,Other Transport Support Services n.e.c.
+4912,Freight rail transport,4710,Rail Freight Transport
+4912,Freight rail transport,5299p,Other Transport Support Services n.e.c.
+4921,Urban and suburban passenger land transport,4622p,Urban Bus Transport (Including Tramway)
+4921,Urban and suburban passenger land transport,4720p,Rail Passenger Transport
+4921,Urban and suburban passenger land transport,5010p,Scenic and Sightseeing Transport
+4921,Urban and suburban passenger land transport,5029p,Other Transport n.e.c.
+4921,Urban and suburban passenger land transport,5299p,Other Transport Support Services n.e.c.
+4922,Other passenger land transport,4621,Interurban and Rural Bus Transport
+4922,Other passenger land transport,4622p,Urban Bus Transport (Including Tramway)
+4922,Other passenger land transport,4623,Taxi and Other Road Transport
+4922,Other passenger land transport,5010p,Scenic and Sightseeing Transport
+4922,Other passenger land transport,5029p,Other Transport n.e.c.
+4922,Other passenger land transport,5299p,Other Transport Support Services n.e.c.
+4923,Freight transport by road,4610p,Road Freight Transport
+4923,Freight transport by road,5299p,Other Transport Support Services n.e.c.
+4930,Transport via pipeline,2811p,Water Supply 
+4930,Transport via pipeline,5021,Pipeline Transport
+5011,Sea and coastal passenger water transport,4820p,Water Passenger Transport
+5011,Sea and coastal passenger water transport,5010p,Scenic and Sightseeing Transport
+5011,Sea and coastal passenger water transport,5299p,Other Transport Support Services n.e.c.
+5012,Sea and coastal freight water transport,4810p,Water Freight Transport
+5012,Sea and coastal freight water transport,5299p,Other Transport Support Services n.e.c.
+5021,Inland passenger water transport,4820p,Water Passenger Transport
+5021,Inland passenger water transport,5010p,Scenic and Sightseeing Transport
+5021,Inland passenger water transport,5299p,Other Transport Support Services n.e.c.
+5022,Inland freight water transport,4810p,Water Freight Transport
+5022,Inland freight water transport,5299p,Other Transport Support Services n.e.c.
+5110,Passenger air transport,4900p,Air and Space Transport
+5110,Passenger air transport,5010p,Scenic and Sightseeing Transport
+5110,Passenger air transport,5299p,Other Transport Support Services n.e.c.
+5120,Freight air transport,4900p,Air and Space Transport
+5120,Freight air transport,5299p,Other Transport Support Services n.e.c.
+5210,Warehousing and storage,5301,Grain Storage Services
+5210,Warehousing and storage,5309,Other Warehousing and Storage Services
+5221,Service activities incidental to land transportation,4610p,Road Freight Transport
+5221,Service activities incidental to land transportation,5299p,Other Transport Support Services n.e.c.
+5221,Service activities incidental to land transportation,9419p,Other Automotive Repair and Maintenance
+5221,Service activities incidental to land transportation,9533p,Parking Services
+5222,Service activities incidental to water transportation,5212,Port and Water Transport Terminal Operations
+5222,Service activities incidental to water transportation,5219p,Other Water Transport Support Services
+5223,Service activities incidental to air transportation,5220p,Airport Operations and Other Air Transport Support Services
+5223,Service activities incidental to air transportation,5299p,Other Transport Support Services n.e.c.
+5223,Service activities incidental to air transportation,7713p,Fire Protection and Other Emergency Services
+5224,Cargo handling,5211,Stevedoring Services
+5224,Cargo handling,5219p,Other Water Transport Support Services
+5224,Cargo handling,5220p,Airport Operations and Other Air Transport Support Services
+5229,Other transportation support activities,5291,Customs Agency Services
+5229,Other transportation support activities,5292p,Freight Forwarding Services
+5229,Other transportation support activities,5299p,Other Transport Support Services n.e.c.
+5310,Postal activities,5101p,Postal Services
+5320,Courier activities,5102,Courier Pick-up and Delivery Services
+5510,Short term accommodation activities,4400p,Accommodation
+5520,"Camping grounds, recreational vehicle parks and trailer parks",4400p,Accommodation
+5590,Other accommodation,4400p,Accommodation
+5610,Restaurants and mobile food service activities,4511p,Cafes and Restaurants
+5610,Restaurants and mobile food service activities,4512p,Takeaway Food Services
+5610,Restaurants and mobile food service activities,4513p,Catering Services
+5610,Restaurants and mobile food service activities,4530p,Clubs (Hospitality)
+5610,Restaurants and mobile food service activities,8790p,Other Social Assistance Services
+5621,Event catering,4513p,Catering Services
+5629,Other food service activities,4511p,Cafes and Restaurants
+5629,Other food service activities,4512p,Takeaway Food Services
+5629,Other food service activities,4513p,Catering Services
+5630,Beverage serving activities,4511p,Cafes and Restaurants
+5630,Beverage serving activities,4512p,Takeaway Food Services
+5630,Beverage serving activities,4520,"Pubs, Taverns and Bars"
+5630,Beverage serving activities,4530p,Clubs (Hospitality)
+5811,Book publishing,5413,Book Publishing
+5811,Book publishing,5700p,Internet Publishing and Broadcasting
+5812,Publishing of directories and mailing lists,5414,Directory and Mailing List Publishing
+5812,Publishing of directories and mailing lists,5700p,Internet Publishing and Broadcasting
+5813,"Publishing of newspapers, journals and periodicals",5411,Newspaper Publishing
+5813,"Publishing of newspapers, journals and periodicals",5412p,Magazine and Other Periodical Publishing
+5813,"Publishing of newspapers, journals and periodicals",5700p,Internet Publishing and Broadcasting
+5819,Other publishing activities,5412p,Magazine and Other Periodical Publishing
+5819,Other publishing activities,5419,"Other Publishing (except Software, Music and Internet)"
+5819,Other publishing activities,5700p,Internet Publishing and Broadcasting
+5820,Software publishing,5420,Software Publishing
+5911,"Motion picture, video and television programme production activities",5511,Motion Picture and Video Production
+5912,"Motion picture, video and television programme post-production activities",5512p,Motion Picture and Video Distribution
+5912,"Motion picture, video and television programme post-production activities",5514,Post-production Services and Other Motion Picture and Video Activities
+5913,"Motion picture, video and television programme distribution activities",5512p,Motion Picture and Video Distribution
+5914,Motion picture projection activities,5513,Motion Picture Exhibition
+5920,Sound recording and music publishing activities,5521,Music Publishing
+5920,Sound recording and music publishing activities,5522,Music and Other Sound Recording Activities
+6010,Radio broadcasting,5610,Radio Broadcasting
+6010,Radio broadcasting,5700p,Internet Publishing and Broadcasting
+6020,Television programming and broadcasting activities,5621,Free-to-Air Television Broadcasting
+6020,Television programming and broadcasting activities,5622,Cable and Other Subscription Broadcasting
+6020,Television programming and broadcasting activities,5700p,Internet Publishing and Broadcasting
+6110,Wired telecommunications activities,5801,Wired Telecommunications Network Operation
+6110,Wired telecommunications activities,5910p,Internet Service Providers and Web Search Portals
+6120,Wireless telecommunications activities,5802p,Other Telecommunications Network Operation
+6120,Wireless telecommunications activities,5910p,Internet Service Providers and Web Search Portals
+6130,Satellite telecommunications activities,5802p,Other Telecommunications Network Operation
+6130,Satellite telecommunications activities,5910p,Internet Service Providers and Web Search Portals
+6190,Other telecommunications activities,5809,Other Telecommunications Services
+6190,Other telecommunications activities,5910p,Internet Service Providers and Web Search Portals
+6201,Computer programming activities,7000p,Computer System Design and Related Services
+6202,Computer consultancy and computer facilities management activities,5921p,Data Processing and Web Hosting Services
+6202,Computer consultancy and computer facilities management activities,5922p,Electronic Information Storage Services
+6202,Computer consultancy and computer facilities management activities,7000p,Computer System Design and Related Services
+6209,Other information technology and computer service activities,7000p,Computer System Design and Related Services
+6311,"Data processing, hosting and related activities",5921p,Data Processing and Web Hosting Services
+6311,"Data processing, hosting and related activities",5922p,Electronic Information Storage Services
+6312,Web portals,5910p,Internet Service Providers and Web Search Portals
+6391,News agency activities,6020p,Other Information Services
+6399,Other information service activities n.e.c.,6020p,Other Information Services
+6399,Other information service activities n.e.c.,6962p,Management Advice and Related Consulting Services
+6411,Central banking,6210,Central Banking
+6419,Other monetary intermediation,6221,Banking
+6419,Other monetary intermediation,6222,Building Society Operation
+6419,Other monetary intermediation,6223,Credit Union Operation
+6419,Other monetary intermediation,6229,Other Depository Financial Intermediation
+6420,Activities of holding companies,6240p,Financial Asset Investing
+6430,"Trusts, funds and similar financial entities",6240p,Financial Asset Investing
+6491,Financial leasing,6230p,Non-Depository Financing
+6492,Other credit granting,4273p,Antique and Used Goods Retailing
+6492,Other credit granting,6230p,Non-Depository Financing
+6499,"Other financial service activities, except insurance and pension funding activities, n.e.c.",6230p,Non-Depository Financing
+6499,"Other financial service activities, except insurance and pension funding activities, n.e.c.",6240p,Financial Asset Investing
+6511,Life insurance,6310p,Life Insurance
+6512,Non-life insurance,6321p,Health Insurance
+6512,Non-life insurance,6322p,General Insurance
+6520,Reinsurance,6310p,Life Insurance
+6520,Reinsurance,6321p,Health Insurance
+6520,Reinsurance,6322p,General Insurance
+6530,Pension funding,6330p,Superannuation Funds
+6611,Administration of financial markets,6419p,Other Auxiliary Finance and Investment Services
+6612,Security and commodity contracts brokerage,6411p,Financial Asset Broking Services
+6612,Security and commodity contracts brokerage,6419p,Other Auxiliary Finance and Investment Services
+6619,Other activities auxiliary to financial service activities,6419p,Other Auxiliary Finance and Investment Services
+6621,Risk and damage evaluation,6420p,Auxiliary Insurance Services
+6622,Activities of insurance agents and brokers,6420p,Auxiliary Insurance Services
+6629,Other activities auxiliary to insurance and pension funding,6419p,Other Auxiliary Finance and Investment Services
+6629,Other activities auxiliary to insurance and pension funding,6420p,Auxiliary Insurance Services
+6630,Fund management activities,6419p,Other Auxiliary Finance and Investment Services
+6810,Real estate activities with own or leased property,3211p,Land Development and Subdivision
+6810,Real estate activities with own or leased property,6711,Residential Property Operators 
+6810,Real estate activities with own or leased property,6712,Non-Residential Property Operators 
+6820,Real estate activities on a fee or contract basis,6720p,Real Estate Services 
+6910,Legal activities,6931,Legal Services
+6920,"Accounting, bookkeeping and auditing activities; tax consultancy",6932,Accounting Services
+7010,Activities of head offices,6961,Corporate Head Office Management Services
+7020,Management consultancy activities,6962p,Management Advice and Related Consulting Services
+7110,Architectural and engineering activities and related technical consultancy,6921,Architectural Services
+7110,Architectural and engineering activities and related technical consultancy,6922,Surveying and Mapping Services
+7110,Architectural and engineering activities and related technical consultancy,6923p,Engineering Design and Engineering Consulting Services
+7110,Architectural and engineering activities and related technical consultancy,6999p,"Other Professional, Scientific and Technical Services n.e.c."
+7120,Technical testing and analysis,6925,Scientific Testing and Analysis Services
+7120,Technical testing and analysis,7720p,Regulatory Services
+7210,Research and experimental development on natural sciences and engineering,6910p,Scientific Research Services
+7220,Research and experimental development on social sciences and humanities,6910p,Scientific Research Services
+7310,Advertising,6924p,Other Specialised Design Services
+7310,Advertising,6940,Advertising Services
+7320,Market research and public opinion polling,6950p,Market Research and Statistical Services
+7410,Specialized design activities,6923p,Engineering Design and Engineering Consulting Services
+7410,Specialized design activities,6924p,Other Specialised Design Services
+7420,Photographic activities,5921p,Data Processing and Web Hosting Services
+7420,Photographic activities,6991p,Professional Photographic Services
+7420,Photographic activities,9002p,"Creative Artists, Musicians, Writers and Performers"
+7420,Photographic activities,9532,Photographic Film Processing
+7490,"Other professional, scientific and technical activities n.e.c.",5292p,Freight Forwarding Services
+7490,"Other professional, scientific and technical activities n.e.c.",6411p,Financial Asset Broking Services
+7490,"Other professional, scientific and technical activities n.e.c.",6923p,Engineering Design and Engineering Consulting Services
+7490,"Other professional, scientific and technical activities n.e.c.",6962p,Management Advice and Related Consulting Services
+7490,"Other professional, scientific and technical activities n.e.c.",6999p,"Other Professional, Scientific and Technical Services n.e.c."
+7490,"Other professional, scientific and technical activities n.e.c.",7211p,Employment Placement and Recruitment Services
+7500,Veterinary activities,6970,Veterinary Services
+7710,Renting and leasing of motor vehicles,6611,Passenger Car Rental and Hiring
+7710,Renting and leasing of motor vehicles,6619p,Other Motor Vehicle and Transport Equipment Rental and Hiring
+7721,Renting and leasing of recreational and sports goods,6619p,Other Motor Vehicle and Transport Equipment Rental and Hiring
+7721,Renting and leasing of recreational and sports goods,6639p,Other Goods and Equipment Rental and Hiring n.e.c.
+7722,Renting of video tapes and disks,6632,Video and Other Electronic Media Rental and Hiring
+7729,Renting and leasing of other personal and household goods,6639p,Other Goods and Equipment Rental and Hiring n.e.c.
+7730,"Renting and leasing of other machinery, equipment and tangible goods",6619p,Other Motor Vehicle and Transport Equipment Rental and Hiring
+7730,"Renting and leasing of other machinery, equipment and tangible goods",6620,Farm Animal and Bloodstock Leasing
+7730,"Renting and leasing of other machinery, equipment and tangible goods",6631,Heavy Machinery and Scaffolding Rental and Hiring
+7730,"Renting and leasing of other machinery, equipment and tangible goods",6639p,Other Goods and Equipment Rental and Hiring n.e.c.
+7740,"Leasing of intellectual property and similar products, except copyrighted works",6640,Non-Financial Intangible Assets (Except Copyrights) Leasing
+7810,Activities of employment placement agencies,7211p,Employment Placement and Recruitment Services
+7820,Temporary employment agency activities,7212,Labour Supply Services
+7830,Other human resources provision,6962p,Management Advice and Related Consulting Services
+7830,Other human resources provision,7291p,Office Administrative Services
+7911,Travel agency activities,7220p,Travel Agency and Tour Arrangement Services
+7911,Travel agency activities,7299p,Other Administrative Services n.e.c.
+7912,Tour operator activities,7220p,Travel Agency and Tour Arrangement Services
+7912,Tour operator activities,7299p,Other Administrative Services n.e.c.
+7990,Other reservation service and related activities,7220p,Travel Agency and Tour Arrangement Services
+7990,Other reservation service and related activities,7299p,Other Administrative Services n.e.c.
+8010,Private security activities,7712p,Investigation and Security Services
+8020,Security systems service activities,7712p,Investigation and Security Services
+8030,Investigation activities,7712p,Investigation and Security Services
+8110,Combined facilities support activities,6720p,Real Estate Services
+8121,General cleaning of buildings,7311p,Building and Other Industrial Cleaning Services
+8129,Other building and industrial cleaning activities,7311p,Building and Other Industrial Cleaning Services
+8129,Other building and industrial cleaning activities,7312,Building Pest Control Services
+8130,Landscape care and maintenance service activities,3291p,Landscape Construction Services
+8130,Landscape care and maintenance service activities,7313,Gardening Services
+8211,Combined office administrative service activities,7291p,Office Administrative Services
+8219,"Photocopying, document preparation and other specialized office support activities",5101p,Postal Services
+8219,"Photocopying, document preparation and other specialized office support activities",7291p,Office Administrative Services
+8219,"Photocopying, document preparation and other specialized office support activities",7292p,Document Preparation Services
+8220,Activities of call centres,7294,Call Centre Operation
+8230,Organization of conventions and trade shows,7299p,Other Administrative Services n.e.c.
+8291,Activities of collection agencies and credit bureaus,7293p,Credit Reporting and Debt Collection Services
+8292,Packaging activities,7320,Packaging Services
+8299,Other business support service activities n.e.c.,3800p,Commission-Based Wholesaling
+8299,Other business support service activities n.e.c.,7291p,Office Administrative Services
+8299,Other business support service activities n.e.c.,7292p,Document Preparation Services
+8299,Other business support service activities n.e.c.,7293p,Credit Reporting and Debt Collection Services
+8299,Other business support service activities n.e.c.,7299p,Other Administrative Services n.e.c.
+8411,General public administration activities,6950p,Market Research and Statistical Services
+8411,General public administration activities,7510p,Central Government Administration
+8411,General public administration activities,7520p,State Government Administration
+8411,General public administration activities,7530p,Local Government Administration
+8412,"Regulation of the activities of providing health care, education, cultural services and other social services, excluding social security",7510p,Central Government Administration
+8412,"Regulation of the activities of providing health care, education, cultural services and other social services, excluding social security",7520p,State Government Administration
+8412,"Regulation of the activities of providing health care, education, cultural services and other social services, excluding social security",7530p,Local Government Administration
+8412,"Regulation of the activities of providing health care, education, cultural services and other social services, excluding social security",7720p,Regulatory Services
+8413,Regulation of and contribution to more efficient operation of businesses,7510p,Central Government Administration
+8413,Regulation of and contribution to more efficient operation of businesses,7520p,State Government Administration
+8413,Regulation of and contribution to more efficient operation of businesses,7530p,Local Government Administration
+8413,Regulation of and contribution to more efficient operation of businesses,7720p,Regulatory Services
+8421,Foreign affairs,7510p,Central Government Administration
+8421,Foreign affairs,7551,Domestic Government Representation
+8421,Foreign affairs,7600p,Defence
+8422,Defence activities,7600p,Defence
+8423,Public order and safety activities,7540,Justice
+8423,Public order and safety activities,7600p,Defence
+8423,Public order and safety activities,7711,Police Services
+8423,Public order and safety activities,7713p,Fire Protection and Other Emergency Services
+8423,Public order and safety activities,7714p,Correctional and Detention Services
+8423,Public order and safety activities,7719,Other Public Order and Safety Services 
+8430,Compulsory social security activities,6330p,Superannuation Funds
+8430,Compulsory social security activities,7510p,Central Government Administration
+8510,Pre-primary and primary education,8010,Preschool Education
+8510,Pre-primary and primary education,8021,Primary Education
+8510,Pre-primary and primary education,8023p,Combined Primary and Secondary Education
+8510,Pre-primary and primary education,8024p,Special School Education
+8521,General secondary education,8022,Secondary Education
+8521,General secondary education,8023p,Combined Primary and Secondary Education
+8521,General secondary education,8024p,Special School Education
+8522,Technical and vocational secondary education,8024p,Special School Education
+8522,Technical and vocational secondary education,8101p,Technical and Vocational Education and Training
+8522,Technical and vocational secondary education,8219p,"Adult, Community and Other Education n.e.c."
+8530,Higher education,8101p,Technical and Vocational Education and Training
+8530,Higher education,8102,Higher Education
+8541,Sports and recreation education,8211p,Sports and Physical Recreation Instruction
+8541,Sports and recreation education,8219p,"Adult, Community and Other Education n.e.c."
+8542,Cultural education,8212p,Arts Education
+8542,Cultural education,8219p,"Adult, Community and Other Education n.e.c."
+8549,Other education n.e.c.,8101p,Technical and Vocational Education and Training
+8549,Other education n.e.c.,8211p,Sports and Physical Recreation Instruction
+8549,Other education n.e.c.,8212p,Arts Education
+8549,Other education n.e.c.,8219p,"Adult, Community and Other Education n.e.c."
+8550,Educational support activities,7211p,Employment Placement and Recruitment Services
+8550,Educational support activities,8220,Educational Support Services
+8610,Hospital activities,8401,Hospitals (Except Psychiatric Hospitals)
+8610,Hospital activities,8402,Psychiatric Hospitals
+8620,Medical and dental practice activities,8511,General Practice Medical Services
+8620,Medical and dental practice activities,8512,Specialist Medical Services
+8620,Medical and dental practice activities,8531,Dental Services
+8690,Other human health activities,8520,Pathology and Diagnostic Imaging Services
+8690,Other human health activities,8532,Optometry and Optical Dispensing
+8690,Other human health activities,8533,Physiotherapy Services
+8690,Other human health activities,8534,Chiropractic and Osteopathic Services
+8690,Other human health activities,8539,Other Allied Health Services
+8690,Other human health activities,8591,Ambulance Services
+8690,Other human health activities,8599,Other Health Care Services n.e.c.
+8710,Residential nursing care facilities,8601p,Aged Care Residential Services
+8710,Residential nursing care facilities,8609p,Other Residential Care Services
+8720,"Residential care activities for mental retardation, mental health and substance abuse",8609p,Other Residential Care Services
+8730,Residential care activities for the elderly and disabled,8601p,Aged Care Residential Services
+8730,Residential care activities for the elderly and disabled,8609p,Other Residential Care Services
+8790,Other residential care activities,7714p,Correctional and Detention Services
+8790,Other residential care activities,8609p,Other Residential Care Services
+8810,Social work activities without accommodation for the elderly and disabled,8790p,Other Social Assistance Services
+8890,Other social work activities without accommodation,8710,Child Care Services
+8890,Other social work activities without accommodation,8790p,Other Social Assistance Services
+9000,"Creative, arts and entertainment activities",7299p,Other Administrative Services n.e.c.
+9000,"Creative, arts and entertainment activities",8910p,Museum Operation
+9000,"Creative, arts and entertainment activities",9001,Performing Arts Operation
+9000,"Creative, arts and entertainment activities",9002p,"Creative Artists, Musicians, Writers and Performers"
+9000,"Creative, arts and entertainment activities",9003,Performing Arts Venue Operation
+9101,Library and archives activities,6010,Libraries and Archives
+9102,Museums activities and operation of historical sites and buildings,8910p,Museum Operation
+9103,Botanical and zoological gardens and nature reserves activities,8921,Zoological and Botanical Gardens Operation
+9103,Botanical and zoological gardens and nature reserves activities,8922,Nature Reserves and Conservation Parks Operation
+9200,Gambling and betting activities,9201,Casino Operation
+9200,Gambling and betting activities,9202,Lottery Operation
+9200,Gambling and betting activities,9209,Other Gambling Activities
+9311,Operation of sports facilities,9111,Health and Fitness Centres and Gymnasia Operation
+9311,Operation of sports facilities,9113,"Sports and Physical Recreation Venues, Grounds and Facilities Operation"
+9311,Operation of sports facilities,9121p,Horse and Dog Racing Administration and Track Operation
+9311,Operation of sports facilities,9139p,Amusement and Other Recreational Activities n.e.c.
+9312,Activities of sports clubs,9112p,Sports and Physical Recreation Clubs and Sports Professionals
+9312,Activities of sports clubs,9139p,Amusement and Other Recreational Activities n.e.c.
+9319,Other sports activities,7299p,Other Administrative Services n.e.c.
+9319,Other sports activities,9112p,Sports and Physical Recreation Clubs and Sports Professionals
+9319,Other sports activities,9114,Sports and Physical Recreation Administrative Service
+9319,Other sports activities,9121p,Horse and Dog Racing Administration and Track Operation
+9319,Other sports activities,9129,Other Horse and Dog Racing Activities
+9319,Other sports activities,9139p,Amusement and Other Recreational Activities n.e.c.
+9321,Activities of amusement parks and theme parks,9131p,Amusement Parks and Centres Operation
+9321,Activities of amusement parks and theme parks,9139p,Amusement and Other Recreational Activities n.e.c.
+9329,Other amusement and recreation activities n.e.c.,7299p,Other Administrative Services n.e.c.
+9329,Other amusement and recreation activities n.e.c.,9131p,Amusement Parks and Centres Operation
+9329,Other amusement and recreation activities n.e.c.,9139p,Amusement and Other Recreational Activities n.e.c.
+9411,Activities of business and employers membership organizations,9551p,Business and Professional Association Services
+9412,Activities of professional membership organizations,9551p,Business and Professional Association Services
+9420,Activities of trade unions,9552,Labour Association Services
+9491,Activities of religious organizations,9540,Religious Services
+9492,Activities of political organizations,9559p,Other Interest Group Services n.e.c.
+9499,Activities of other membership organizations n.e.c.,9559p,Other Interest Group Services n.e.c.
+9511,Repair of computers and peripheral equipment,9422p,Electronic (except Domestic Appliance) and Precision Equipment Repair and Maintenance
+9512,Repair of communication equipment,9422p,Electronic (except Domestic Appliance) and Precision Equipment Repair and Maintenance
+9521,Repair of consumer electronics,9421p,Domestic Appliance Repair and Maintenance
+9522,Repair of household appliances and home and garden equipment,9421p,Domestic Appliance Repair and Maintenance
+9522,Repair of household appliances and home and garden equipment,9499p,Other Repair and Maintenance n.e.c.
+9523,Repair of footwear and leather goods,9491p,Clothing and Footwear Repair
+9523,Repair of footwear and leather goods,9499p,Other Repair and Maintenance n.e.c.
+9524,Repair of furniture and home furnishings,9499p,Other Repair and Maintenance n.e.c.
+9529,Repair of other personal and household goods,7712p,Investigation and Security Services
+9529,Repair of other personal and household goods,9491p,Clothing and Footwear Repair
+9529,Repair of other personal and household goods,9499p,Other Repair and Maintenance n.e.c.
+9601,Washing and (dry-) cleaning of textile and fur products,9531,Laundry and Dry-Cleaning Services
+9602,Hairdressing and other beauty treatment,9511p,Hairdressing and Beauty Services
+9603,Funeral and related activities,9520,"Funeral, Crematorium and Cemetery Services"
+9609,Other personal service activities n.e.c.,6991p,Professional Photographic Services
+9609,Other personal service activities n.e.c.,9511p,Hairdressing and Beauty Services
+9609,Other personal service activities n.e.c.,9512,Diet and Weight Reduction Centre Operation
+9609,Other personal service activities n.e.c.,9533p,Parking Services
+9609,Other personal service activities n.e.c.,9534,Brothel Keeping and Prostitution Services
+9609,Other personal service activities n.e.c.,9539,Other Personal Services n.e.c.
+9700,Activities of households as employers of domestic personnel,9601,Private Households Employing Staff
+9810,Undifferentiated goods-producing activities of private households for own us,9602,Undifferentiated Goods-Producing Activities of Private Households for Own Use
+9820,Undifferentiated service-producing activities of private households for own use,9603,Undifferentiated Service-Producing Activities of Private Households for Own Use
+9900,Activities of extraterritorial organizations and bodies,7552,Foreign Government Representation

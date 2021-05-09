@@ -1,0 +1,3 @@
+*/extract/output/*.csv
+*/transform/output/*.csv
+*__pycache__/

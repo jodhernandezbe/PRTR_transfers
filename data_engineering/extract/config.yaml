@@ -1,0 +1,13 @@
+country:
+  USA:
+    TRI:
+      url: https://www.epa.gov/toxics-release-inventory-tri-program/tri-basic-plus-data-files-calendar-years-1987-2019
+      queries:
+  CAN:
+    NPRI:
+      url:
+      queries:
+  AUS:
+    NPI:
+      url: https://data.gov.au/dataset/ds-dga-043f58e0-a188-4458-b61c-04e5b540aea4/details
+      queries:
