@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+from base import Base
+
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
-from base import Base
 
 
 class NationalToGenericCode(Base):

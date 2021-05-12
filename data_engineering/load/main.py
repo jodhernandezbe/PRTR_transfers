@@ -2,18 +2,18 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+from industry_sector import NationalToGenericCode, IsicToGenericCode
+from base import Base, create_engine_session
+
+import pandas as pd
+import os
 import argparse
 import logging
 logging.basicConfig(level=logging.INFO)
 
-import pandas as pd
-import os
-
-from industry_sector import NationalToGenericCode, IsicToGenericCode
-from base import Base, create_engine_session
-
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 logger = logging.getLogger(__name__)
+
 
 def main(args):
 

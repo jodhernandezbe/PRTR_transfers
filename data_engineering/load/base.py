@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+
 def create_engine_session(password,
                         username='root',
                         host='127.0.0.1',
