@@ -19,6 +19,7 @@ def main(args):
 
     filename = args.filename
     password = args.password
+    rdbms = args.rdbms
     username = args.username
     host = args.host
     port = args.port
@@ -26,6 +27,7 @@ def main(args):
     sql_file = args.sql_file
 
     Engine, Session = create_engine_session(password,
+                            rdbms=rdbms,
                             username=username,
                             host=host,
                             port=port,
@@ -36,6 +38,7 @@ def main(args):
     elif filename == 'national_to_generic':
         Object = NationalToGenericCode
 
+    Object.__table__.drop(Engine, checkfirst=True)
     Object.__table__.create(Engine, checkfirst=True)
     session = Session()
 
@@ -52,7 +55,14 @@ def main(args):
     session.close()
 
     if sql_file == 'True':
-        os.system(f'mysqldump -u {username} -p{password} {db_name} > {dir_path}/output/{db_name}.sql')
+
+        if rdbms == 'mysql':
+            exporting_string = f'mysqldump -u {username} -p{password} {db_name} > {dir_path}/output/{db_name}_v_MySQL.sql'
+        elif rdbms == 'postgresql':
+            exporting_string = f'pg_dump -U {username} -h {host} {db_name} -W > {dir_path}/output/{db_name}_v_PostgreSQL.sql'
+
+        print(exporting_string)
+        os.system(exporting_string)
 
 
 if __name__ == '__main__':
@@ -61,11 +71,15 @@ if __name__ == '__main__':
     parser.add_argument('filename',
                         help='The file you want to load into the db',
                         type=str)
+    parser.add_argument('--rdbms',
+                        help='The Relational Database Management System (RDBMS) you would like to use',
+                        type=str,
+                        default='mysql')
     parser.add_argument('--password',
-                        help='The password for using MySQL RDBMS',
+                        help='The password for using the RDBMS',
                         type=str)
     parser.add_argument('--username',
-                        help='The username for using MySQL RDBMS',
+                        help='The username for using the RDBMS',
                         type=str,
                         default='root')
     parser.add_argument('--host',
@@ -79,7 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('--db_name',
                         help='Database name',
                         type=str,
-                        default='PRTR_transfers_project')
+                        default='PRTR_transfers')
     parser.add_argument('--sql_file',
                         help='Would you like to obtain .SQL file',
                         type=str,

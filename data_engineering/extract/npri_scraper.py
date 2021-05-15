@@ -11,8 +11,8 @@ import re
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 regex = re.compile(r'.*\/(NPRI.*)\.csv')
-files = {'NPRI-INRP_DisposalsEliminations_1993-present': 'NRPI_disposals',
-        'NPRI-INRP_DisposalsEliminations_TransfersTransferts_1993-present': 'NPRI_transfers'}
+files = {'NPRI-INRP_DisposalsEliminations_1993-present': 'NPRI_disposals',
+         'NPRI-INRP_DisposalsEliminations_TransfersTransferts_1993-present': 'NPRI_transfers'}
 
 
 def download_npri():
