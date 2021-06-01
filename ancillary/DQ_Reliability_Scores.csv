@@ -1,0 +1,22 @@
+source,code,description,type,reliability_score
+NPI,1,Mass balance,Non-verified data based on a calculation,3
+NPI,2,Engineering calculations,Documented estimate,4
+NPI,3,Direct measurement,Verified measurement,1
+NPI,4,Transfer factors,Verified calculation,2
+NPI,5,Approved alternative,Documented estimate,4
+TRI,O,Other approaches ,Documented estimate,4
+TRI,C,Mass balance calculations ,Non-verified data based on a calculation,3
+TRI,E,Published emission factors,Verified calculation,2
+TRI,E1,Published emission factors ,Verified calculation,2
+TRI,E2,Site-specific emission factors ,Verified calculation,2
+TRI,M,Monitoring data,Verified measurement,1
+TRI,M1,Continuous monitoring data ,Verified measurement,1
+TRI,M2,Periodic or random data or measurements ,Verified measurement,1
+TRI,X,Invalid data,Undocumented estimate,5
+NPRI,O,Engineering estimates,Documented estimate,4
+NPRI,C,Mass balance,Non-verified data based on a calculation,3
+NPRI,M3,Source testing,Verified measurement,1
+NPRI,M1,Continuous emission monitoring systems,Verified measurement,1
+NPRI,M2,Predictive emission monitoring,Verified measurement,1
+NPRI,E1,Site-specific emission factors ,Verified calculation,2
+NPRI,E2,Published emission factors,Verified calculation,2

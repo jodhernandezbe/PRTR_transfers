@@ -9,19 +9,19 @@ from sqlalchemy import Column, Integer, String, DateTime
 
 
 class NationalToGenericCode(Base):
-    __tablename__ = 'national_to_generic_codes'
+    __tablename__ = 'national_to_generic_sector_codes'
 
-    national_generic_id = Column(Integer(), primary_key=True)
-    national_code = Column(Integer(), nullable=False)
-    national_name = Column(String(200), nullable=False)
+    national_generic_sector_id = Column(Integer(), primary_key=True)
+    national_sector_code = Column(Integer(), nullable=False)
+    national_sector_name = Column(String(200), nullable=False)
     generic_sector_code = Column(Integer(), nullable=False)
     note = Column(String(10), nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
 
     def __init__(self, **kwargs):
-        self.national_generic_id = kwargs['national_generic_id']
-        self.national_code = kwargs['national_code']
-        self.national_name = kwargs['national_name']
+        self.national_generic_sector_id = kwargs['national_generic_sector_id']
+        self.national_sector_code = kwargs['national_sector_code']
+        self.national_sector_name = kwargs['national_sector_name']
         self.generic_sector_code = kwargs['generic_sector_code']
         self.note = kwargs['note']
 

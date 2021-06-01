@@ -125,8 +125,8 @@ def standardizing():
 
         df['note'] = system
         df.rename(columns={'ISIC': 'isic_code',
-                            national_code: 'national_code',
-                            national_name: 'national_name'},
+                            national_code: 'national_sector_code',
+                            national_name: 'national_sector_name'},
                   inplace=True)
         df_converter = pd.concat([df_converter, df],
                                  ignore_index=True,
@@ -156,14 +156,14 @@ def standardizing():
         [df_converter.columns]
 
 
-    df_national_to_generic = df_converter[['national_code',
-                                           'national_name',
+    df_national_to_generic = df_converter[['national_sector_code',
+                                           'national_sector_name',
                                            'generic_sector_code',
                                            'note']]
     df_national_to_generic.drop_duplicates(keep='first',
                                            inplace=True)
     df_national_to_generic.reset_index(inplace=True, drop=True)
-    df_national_to_generic['national_generic_id'] =\
+    df_national_to_generic['national_generic_sector_id'] =\
         pd.Series(df_national_to_generic.index.tolist()) + 1
 
     df_isic_to_generic = df_converter[['isic_code',
