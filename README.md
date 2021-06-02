@@ -84,17 +84,10 @@ If you are working as a Python developer, you should avoid both ```ModuleNotFoun
 If you prefer to save the path to the PRTR_transfers project folder as a permanent environment variable, follow these steps
 
 <ol>
-    <li>Open the .bashrc file with the text editor of your preference
+    <li>
+      Open the .bashrc file with the text editor of your preference (e.g., Visual Studio Code)
         
-        vim ~/.bashrc
-        
-        or
-        
-        atom ~/.bashrc
-        
-        or
-        
-        code ~/.bashrc
+      code ~/.bashrc
     </li>
     
 </ol>
