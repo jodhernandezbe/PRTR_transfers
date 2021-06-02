@@ -95,7 +95,6 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
             export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
         </div>
     </li>
-    
 </ol>
 
 <hr/>
