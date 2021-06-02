@@ -96,8 +96,6 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
         
         code ~/.bashrc
     </li>
-    <li>
-    </li>
     
 </ol>
 
