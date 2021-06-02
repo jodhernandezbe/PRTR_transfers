@@ -7,7 +7,7 @@ data. The TRI is the US Pollutant Release and Transfer Register (PRTR)
 '''
 
 # Importing libraries
-from common import config
+from data_engineering.extract.common import config
 
 import os
 import requests

@@ -7,7 +7,7 @@ Inventory (NPRI) data. The NPRI is the Canadian Pollutant Release and Transfer R
 '''
 
 # Importing libraries
-from common import config
+from data_engineering.extract.common import config
 
 import requests
 import os

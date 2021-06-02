@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from npi_scraper import download_npi
-from npri_scraper import download_npri
-from tri_scraper import TRI_Scrapper
+from data_engineering.extract.npi_scraper import download_npi
+from data_engineering.extract.npri_scraper import download_npri
+from data_engineering.extract.tri_scraper import TRI_Scrapper
 
 import logging
 logging.basicConfig(level=logging.INFO)

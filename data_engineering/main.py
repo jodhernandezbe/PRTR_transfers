@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from extract.main import scraper_pipeline
-from transform.main import tramsform_pipeline
+from data_engineering.extract.main import scraper_pipeline
+from data_engineering.transform.main import tramsform_pipeline
 
 import logging
 logging.basicConfig(level=logging.INFO)

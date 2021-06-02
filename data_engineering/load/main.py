@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from industry_sector import NationalToGenericCode, IsicToGenericCode
-from base import Base, create_engine_session
+from data_engineering.load.industry_sector import NationalToGenericCode, IsicToGenericCode
+from data_engineering.load.base import Base, create_engine_session
 
 import pandas as pd
 import os

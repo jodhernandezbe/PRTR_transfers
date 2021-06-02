@@ -8,7 +8,7 @@ Transfer Register (PRTR)
 '''
 
 # Importing libraries
-from common import config
+from data_engineering.extract.common import config
 
 import requests
 import pandas as pd

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from npi_transformer import transforming_npi
+from data_engineering.transform.npi_transformer import transforming_npi
 
 import logging
 logging.basicConfig(level=logging.INFO)

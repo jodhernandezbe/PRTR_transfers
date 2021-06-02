@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from common import config
+from data_engineering.transform.common import config
 
 import os
 import pandas as pd
