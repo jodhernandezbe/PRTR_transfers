@@ -47,7 +47,7 @@ If you are working as a Python developer, you should avoid both ```ModuleNotFoun
    <li>
      Run the following command to add the PRTR_transfers project to the system paths
      
-     export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
+    export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
    </li>
 </ol>
 
