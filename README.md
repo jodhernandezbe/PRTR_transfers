@@ -1,5 +1,7 @@
 # Overview
-<hr>
+
+<hr/>
+
 # Requirements
 
 ## Developers
@@ -10,7 +12,6 @@ A conda environmente can be created by running either the following commands:
 
 <ul>
   <li>
-    <hr conda create --name PRTR --file requirements.txt />
     conda create --name PRTR --file requirements.txt
   </li>
   <li>
@@ -41,3 +42,5 @@ If you are working as a Python developer, you should avoid both ```ModuleNotFoun
      export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
    </li>
 </ol>
+
+<hr/>
