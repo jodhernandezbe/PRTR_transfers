@@ -2,7 +2,20 @@
 
 # Requirements
 
-## Ovoiding ModuleNotFoundError and ImportError
+## Developers
+
+### Creating conda environment
+
+A conda environmente can be created by running either the following commands
+
+<ul>
+  <li>
+  </li>
+  <li>
+  </li>
+</ul>
+
+### Ovoiding ModuleNotFoundError and ImportError
 
 If you are working as a Python developer, you should avoid both ```ModuleNotFoundError``` and ```ImportError``` (see the following [link](https://towardsdatascience.com/how-to-fix-modulenotfounderror-and-importerror-248ce5b69b1c)). Thus, follow the steps below to solve the above mentioned problems:
 
