@@ -10,16 +10,16 @@
 
 A conda environment can be created by executing any of the following commands:
 
-<ol>
+<ul>
   <li>
     
-     <code>conda create --name PRTR --file requirements.txt</code>
+     conda create --name PRTR --file requirements.txt
   </li>
   <li>
     
-    <code>conda PRTR create -f environment.yml</code>
+    conda PRTR create -f environment.yml
   </li>
-</ol>
+</ul>
 
 The above commands are written assuming that you are in the folder containing the .txt and .yml files, i.e. the root folder PRTR_transfers. 
 
