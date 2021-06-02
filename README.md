@@ -10,6 +10,8 @@
 
 A conda environment can be created by executing any of the following commands:
 
+- ```conda create --name PRTR --file requirements.txt```
+
 <ul>
   <li>
     <div class="snippet-clipboard-content position-relative" data-snippet-clipboard-copy-content=" conda create --name PRTR --file requirements.txt">
@@ -45,7 +47,7 @@ If you are working as a Python developer, you should avoid both ```ModuleNotFoun
     echo "$PACKAGE"
    </li>
    <li>
-     Run the following command to add the PRTR_transfers project to the system paths
+    Run the following command to add the PRTR_transfers project to the system paths
      
     export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
    </li>
