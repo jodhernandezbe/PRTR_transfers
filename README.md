@@ -1,5 +1,7 @@
 # Overview
 
+## Project tree
+
 The following is the project tree considering only its most important files for a developer.
 
 ```bash
