@@ -90,7 +90,7 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
       code ~/.bashrc
     </li>
     <li>
-        <div "background-color"="black">
+        <div style="background-color:black;">
             export PACKAGE=$(locate -br '^PRTR_transfers$')
             export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
         </div>
