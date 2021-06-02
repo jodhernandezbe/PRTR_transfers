@@ -10,18 +10,20 @@
 
 A conda environment can be created by executing any of the following commands:
 
-<div class="snippet-clipboard-content position-relative" data-snippet-clipboard-copy-content=" conda create --name PRTR --file requirements.txt">
-  <pre>
-  <code> conda create --name PRTR --file requirements.txt</code>
-  </pre>
-</div>
-
 <ul>
   <li>
-    <code>conda create --name PRTR --file requirements.txt</code>
+    <div class="snippet-clipboard-content position-relative" data-snippet-clipboard-copy-content=" conda create --name PRTR --file requirements.txt">
+      <pre>
+        <code> conda create --name PRTR --file requirements.txt</code>
+      </pre>
+    </div>
   </li>
   <li>
-    <code>conda PRTR create -f environment.yml</code>
+    <div class="snippet-clipboard-content position-relative" data-snippet-clipboard-copy-content=" conda PRTR create -f environment.yml">
+      <pre>
+        <code>conda PRTR create -f environment.yml</code>
+      </pre>
+    </div>
   </li>
 </ul>
 
