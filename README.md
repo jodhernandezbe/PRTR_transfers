@@ -6,14 +6,17 @@
 
 ### Creating conda environment
 
-A conda environmente can be created by running either the following commands
+A conda environmente can be created by running either the following commands:
 
 <ul>
   <li>
+    conda create --name PRTR --file requirements.txt
   </li>
   <li>
   </li>
 </ul>
+
+The above commands are written assuming that you are in the folder containing the .txt and .yml files, i.e. the root folder PRTR_transfers. 
 
 ### Ovoiding ModuleNotFoundError and ImportError
 
