@@ -6,7 +6,7 @@ The following is the project tree considering only its most important files for 
 
 ```bash
 
-<span style="color:blue;font-weight:bold">PRTR_transfers</span>
+**PRTR_transfers**
 ├── ancillary
 ├── application
 ├── data_driven
@@ -31,7 +31,6 @@ The following is the project tree considering only its most important files for 
         ├── npri_transformer.py
         ├── outputtri_transformer.py
         └── output
-
 
 ```
 
