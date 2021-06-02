@@ -4,7 +4,7 @@
 
 The following is the project tree considering only its most important files for a developer.
 
-```bash
+<code>bash
 
 PRTR_transfers
 ├── ancillary
@@ -32,7 +32,7 @@ PRTR_transfers
         ├── tri_transformer.py
         └── output
 
-```
+<code/>
 
 <hr/>
 
