@@ -29,7 +29,7 @@ PRTR_transfers
         ├── industry_sector_standardizing.py
         ├── npi_transformer.py
         ├── npri_transformer.py
-        ├── outputtri_transformer.py
+        ├── tri_transformer.py
         └── output
 
 ```
