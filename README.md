@@ -31,17 +31,17 @@ If you are working as a Python developer, you should avoid both ```ModuleNotFoun
   <li>
     Run the following command in order to obtain the PRTR_transfers project location and then saving its path into the variable PACKAGE
     
-    <code>PACKAGE=$(locate -br '^PRTR_transfers$')</code>
+    PACKAGE=$(locate -br '^PRTR_transfers$')
   </li>
   <li>
     Check the PACKAGE value by running the following command
     
-    <code>echo "$PACKAGE"</code>
+    echo "$PACKAGE"
    </li>
    <li>
     Run the following command to add the PRTR_transfers project to the system paths
      
-    <code>export PYTHONPATH="${PYTHONPATH}:$PACKAGE"</code>
+    export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
    </li>
 </ol>
 
