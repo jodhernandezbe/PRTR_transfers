@@ -4,47 +4,29 @@
 
 PRTR_transfers
 ├── ancillary
-│   └── NPI_columns_for_using.yaml
 ├── application
 ├── data_driven
 └── data_engineering
+    ├── main.py
     ├── extract
-    │   ├── common.py
     │   ├── config.yaml
     │   ├── main.py
     │   ├── npi_scraper.py
     │   ├── npri_scraper.py
-    │   ├── output
-    │   ├── __pycache__
-    │   │   ├── common.cpython-39.pyc
-    │   │   ├── main.cpython-39.pyc
-    │   │   ├── npi_scraper.cpython-39.pyc
-    │   │   ├── npri_scraper.cpython-39.pyc
-    │   │   └── tri_scraper.cpython-39.pyc
-    │   └── tri_scraper.py
+    │   ├── tri_scraper.py
+    │   └── output
     ├── load
-    │   ├── base.py
-    │   ├── industry_sector.py
     │   ├── main.py
-    │   ├── output
-    │   │   ├── PRTR_transfers_v_MySQL.sql
-    │   │   └── PRTR_transfers_v_PostgreSQL.sql
-    │   └── __pycache__
-    │       ├── base.cpython-39.pyc
-    │       └── industry_sector.cpython-39.pyc
-    ├── main.py
+    │   ├── industry_sector.py
+    │   ├── base.py
+    │   └── output
     └── transform
-        ├── common.py
-        ├── industry_sector_standardizing.py
         ├── main.py
+        ├── industry_sector_standardizing.py
         ├── npi_transformer.py
         ├── npri_transformer.py
-        ├── output
-        ├── __pycache__
-        │   ├── common.cpython-39.pyc
-        │   ├── main.cpython-39.pyc
-        │   └── npi_transformer.cpython-39.pyc
-        └── tri_transformer.py
+        ├── outputtri_transformer.py
+        └── output
 
 
 ```
