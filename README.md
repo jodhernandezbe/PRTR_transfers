@@ -10,22 +10,12 @@
 
 A conda environment can be created by executing any of the following commands:
 
-- ```conda create --name PRTR --file requirements.txt```
-
 <ul>
   <li>
-    <div class="snippet-clipboard-content position-relative" data-snippet-clipboard-copy-content=" conda create --name PRTR --file requirements.txt">
-      <pre> 
-        <code>conda create --name PRTR --file requirements.txt</code>
-       </pre>
-    </div>
+     <code>conda create --name PRTR --file requirements.txt</code>
   </li>
   <li>
-    <div class="snippet-clipboard-content position-relative" data-snippet-clipboard-copy-content=" conda PRTR create -f environment.yml">
-      <pre>
-        <code>conda PRTR create -f environment.yml</code>
-      </pre>
-    </div>
+    <code>conda PRTR create -f environment.yml</code>
   </li>
 </ul>
 
@@ -39,17 +29,17 @@ If you are working as a Python developer, you should avoid both ```ModuleNotFoun
   <li>
     Run the following command in order to obtain the PRTR_transfers project location and then saving its path into the variable PACKAGE
     
-    PACKAGE=$(locate -br '^PRTR_transfers$')
+    <code>PACKAGE=$(locate -br '^PRTR_transfers$')</code>
   </li>
   <li>
     Check the PACKAGE value by running the following command
     
-    echo "$PACKAGE"
+    <code>echo "$PACKAGE"</code>
    </li>
    <li>
     Run the following command to add the PRTR_transfers project to the system paths
      
-    export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
+    <code>export PYTHONPATH="${PYTHONPATH}:$PACKAGE"</code>
    </li>
 </ol>
 
