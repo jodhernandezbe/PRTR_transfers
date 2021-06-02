@@ -72,7 +72,7 @@ If you are working as a Python developer, you should avoid both ```ModuleNotFoun
   <li>
     Check the PACKAGE value by running the following command
     
-    echo "$PACKAGE"
+    echo $PACKAGE
    </li>
    <li>
     Run the following command to add the PRTR_transfers project to the system paths
@@ -94,6 +94,14 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
        
     export PACKAGE=$(locate -br '^PRTR_transfers$')
     export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
+   </li>
+   <li>
+    Save the file with the changes
+   </li>
+   <li>
+    You can open another terminal to verify that the variable has been successfully saved by running the following command
+    
+    echo $PYTHONPATH
    </li>
 </ol>
 
