@@ -12,9 +12,11 @@ A conda environment can be created by executing any of the following commands:
 
 <ol>
   <li>
+    
      <code>conda create --name PRTR --file requirements.txt</code>
   </li>
   <li>
+    
     <code>conda PRTR create -f environment.yml</code>
   </li>
 </ol>
