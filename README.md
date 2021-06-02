@@ -87,13 +87,18 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
     <li>
       Open the .bashrc file with the text editor of your preference (e.g., Visual Studio Code)
         
-      code ~/.bashrc
+      
+      ```bash
+        code ~/.bashrc
+      ```
     </li>
     <li>
-        <div style="background-color:black;">
+        
+        ```
             export PACKAGE=$(locate -br '^PRTR_transfers$')
             export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
-        </div>
+        
+        ```
     </li>
 </ol>
 
