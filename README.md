@@ -81,25 +81,25 @@ If you are working as a Python developer, you should avoid both ```ModuleNotFoun
    </li>
 </ol>
 
-If you prefer to save the path to the PRTR_transfers project folder as a permanent environment variable, follow these steps
+If you prefer to save the path to the PRTR_transfers project folder as a permanent environment variable, follow these steps:
 
 <ol>
-    <li>
+   <li>
       Open the .bashrc file with the text editor of your preference (e.g., Visual Studio Code)
         
       
       ```bash
         code ~/.bashrc
       ```
-    </li>
-    <li>
+   </li>
+   <li>
         
         ```
             export PACKAGE=$(locate -br '^PRTR_transfers$')
             export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
         
         ```
-    </li>
+   </li>
 </ol>
 
 <hr/>
