@@ -15,15 +15,11 @@ If you are working as a Python developer, you should avoid both ```ModuleNotFoun
   <li>
     Check the PACKAGE value by running the following command
     
-    ```
     echo "$PACKAGE"
-    ```
    </li>
    <li>
      Run the following command to add the PRTR_transfers project to the system paths
      
-     ```
      export PYTHONPATH="${PYTHONPATH}:$PACKAGE"
-     ```
    </li>
 </ol>
