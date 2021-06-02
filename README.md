@@ -8,7 +8,7 @@
 
 ### Creating conda environment
 
-A conda environmente can be created by running either the following commands:
+A conda environment can be created by executing any of the following commands:
 
 <ul>
   <li>
