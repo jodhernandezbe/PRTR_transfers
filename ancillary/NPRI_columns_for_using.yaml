@@ -1,0 +1,21 @@
+transfers:
+  0: reporting_year
+  1: national_facility_id
+  4: national_sector_code
+  6: national_substance_id
+  7: national_substance_name
+  11: national_transfer_class_name
+  13: transfer_amount_kg
+  14: Units
+  15: reliability_score
+disposals:
+  0: reporting_year
+  1: national_facility_id
+  4: national_sector_code
+  6: national_substance_id
+  7: national_substance_name
+  9: Group
+  11: national_transfer_class_name
+  13: transfer_amount_kg
+  14: Units
+  15: reliability_score
