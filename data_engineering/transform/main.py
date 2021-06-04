@@ -22,7 +22,6 @@ def tramsform_pipeline():
     transforming_npri()
 
 
-
 if __name__ == '__main__':
 
     tramsform_pipeline()
