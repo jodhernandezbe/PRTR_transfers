@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_engineering.transform.common import config
+from data_engineering.transform.common import config, dq_score
 
 import os
 import pandas as pd
@@ -37,11 +37,7 @@ def transforming_npi():
     columns_for_using = config(columns_path)
 
     # Calling values for reliability score
-    dq_path = f'{dir_path}/../../ancillary/DQ_Reliability_Scores.csv'
-    dq = pd.read_csv(dq_path, usecols=['source', 'code', 'reliability_score'])
-    dq = dq.loc[dq['source'] == 'NPI']
-    dq_matrix = {row['code']:row['reliability_score'] for idx, row in dq.iterrows()}
-    del dq
+    dq_matrix = dq_score('NPI')
 
     # Calling NPI transfers data file
     extracted_npi_path = f'{dir_path}/../extract/output/NPI_transfers.csv'
@@ -70,6 +66,9 @@ def transforming_npi():
     # Merging files
     df_npi = pd.merge(df_npi, df_npi_substances, how='inner', on='national_substance_id')
     del df_npi_substances
+
+    # Adding country column
+    df_npi['country'] = 'AUS'
 
     # Saving the transformed data
     df_npi.to_csv(f'{dir_path}/output/npi.csv',

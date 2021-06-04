@@ -35,14 +35,14 @@ def retrieving_data(link, filenema_output, get_header):
         with urlopen(Request(link, headers=get_header)) as response:
             with open(f'{dir_path}/output/{filenema_output}.csv', mode) as file:
                 while True:
-                    chunk = response.read(1024*16)
+                    chunk = response.read(1024*8)
                     if not chunk:
                         break
+                    file.write(chunk)
                     data += chunk
-                file.write(data)
         mode = 'ab'
         retrieved_length += len(data)
-        get_header.update({'Range': f'bytes={retrieved_length}-'})
+        get_header.update({'Range': f'bytes={retrieved_length + 1}-'})
 
 
 def download_npri():

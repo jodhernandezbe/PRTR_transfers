@@ -15,8 +15,10 @@ TRI,M2,Periodic or random data or measurements ,Verified measurement,1
 TRI,X,Invalid data,Undocumented estimate,5
 NPRI,O,Engineering estimates,Documented estimate,4
 NPRI,C,Mass balance,Non-verified data based on a calculation,3
+NPRI,M,,Verified measurement,1
 NPRI,M3,Source testing,Verified measurement,1
 NPRI,M1,Continuous emission monitoring systems,Verified measurement,1
 NPRI,M2,Predictive emission monitoring,Verified measurement,1
+NPRI,E,,Verified calculation,2
 NPRI,E1,Site-specific emission factors ,Verified calculation,2
 NPRI,E2,Published emission factors,Verified calculation,2

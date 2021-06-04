@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_engineering.transform.common import config
+from data_engineering.transform.common import config, dq_score
 
 import os
 import pandas as pd
@@ -31,6 +31,26 @@ def opening_file(filename):
                      names=columns_for_using[filename].values())
     
     return df
+
+def checking_cas_number(cas):
+    '''
+    Function to check the CAS number consistency
+    '''
+
+    cas_r = cas[::-1]
+    cas_n = ''
+    idx = 1
+    for c in cas_r:
+        if (idx == 2) or (idx == 5):
+            if c == '-':
+                cas_n += c
+                idx += 1
+        else:
+            cas_n += c
+            idx += 1
+    cas_n = cas_n[::-1]
+    
+    return cas_n
     
 
 def transforming_npri():
@@ -47,7 +67,7 @@ def transforming_npri():
 
     # Removing on-site disposals
     df_npri_disposals =\
-        df_npri_disposals.loc[~df_npri_disposals.Group.str.contains('On-site')]
+        df_npri_disposals.loc[~ (df_npri_disposals.Group.str.contains('On-site').astype(bool))]
     df_npri_disposals.drop(columns=['Group'],
                            inplace=True)
 
@@ -57,7 +77,7 @@ def transforming_npri():
     del df_npri_transfers, df_npri_disposals
 
     # Dropping records having g TEQ(ET) units
-    df_npri = df_npri.loc[~df_npri.Units.str.contains('TEQ')]
+    df_npri = df_npri.loc[~ (df_npri.Units.str.contains('TEQ').astype(bool))]
 
     # Converting to kg
     func = lambda quanity, units: quanity*conversion_factor[units]
@@ -65,7 +85,25 @@ def transforming_npri():
         func(row['transfer_amount_kg'],
              row['Units']), axis=1)
     df_npri.drop(columns=['Units'], inplace=True)
-    
+
+    # Calling values for reliability score
+    dq_matrix = dq_score('NPRI')
+
+    # Giving the reliability scores for the off-site transfers reported by facilities
+    df_npri = df_npri.where(pd.notnull(df_npri), None)
+    df_npri['reliability_score'] = df_npri['reliability_score'].apply(lambda s: dq_matrix[s] if s else 5)
+
+    # Adding country column
+    df_npri['country'] = 'CAN'
+
+    # Adding CAS number column
+    df_npri['cas_number'] = df_npri['national_substance_id'].apply(lambda x:
+        checking_cas_number(x.strip().lstrip('0'))
+        if 'NA' not in x else None)
+
+    # Saving the transformed data
+    df_npri.to_csv(f'{dir_path}/output/npri.csv',
+                   index=False, sep=',')
 
 
 if __name__ == '__main__':

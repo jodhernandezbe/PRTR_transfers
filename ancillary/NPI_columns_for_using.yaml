@@ -1,7 +1,6 @@
 transfers: 
   0: transfer_amount_kg
   4: national_sector_code
-  9: national_transfer_class_id
   17: reporting_year
   18: reliability_score
   20: national_facility_id
