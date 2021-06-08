@@ -12,3 +12,7 @@ system:
     resource_id:
       transfers: 4661b864-3109-4210-adfa-30972c11c342
       substances: 202fae5b-aade-4e0e-b5c7-1ffeca54b03b
+  SRS:
+    url: https://cdxnodengn.epa.gov/cdx-srs-rest
+    by_alternative_id: substance/alt_id/{altId}/alt_id_type/{altIdType}?qualifier=exact
+    by_name: substance/name/{substanceName}?excludeSynonyms=true
