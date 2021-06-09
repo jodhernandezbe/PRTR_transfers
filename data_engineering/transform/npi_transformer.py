@@ -71,6 +71,9 @@ def transforming_npi():
     df_npi['country'] = 'AUS'
 
     # Saving the transformed data
+    decimals = pd.Series([2, 0], index=['transfer_amount_kg', 'reliability_score'])
+    df_npi[['transfer_amount_kg', 'reliability_score']] =\
+        df_npi[['transfer_amount_kg', 'reliability_score']].round(decimals)
     df_npi.to_csv(f'{dir_path}/output/npi.csv',
                 index=False, sep=',')
 

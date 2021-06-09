@@ -103,6 +103,9 @@ def transforming_npri():
         if 'NA' not in x else None)
 
     # Saving the transformed data
+    decimals = pd.Series([2, 0], index=['transfer_amount_kg', 'reliability_score'])
+    df_npri[['transfer_amount_kg', 'reliability_score']] =\
+        df_npri[['transfer_amount_kg', 'reliability_score']].round(decimals)
     df_npri.to_csv(f'{dir_path}/output/npri.csv',
                    index=False, sep=',')
 

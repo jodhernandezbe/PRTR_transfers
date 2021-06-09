@@ -4,6 +4,7 @@
 # Importing libraries
 from data_engineering.transform.npi_transformer import transforming_npi
 from data_engineering.transform.npri_transformer import transforming_npri
+from data_engineering.transform.tri_transformer import transforming_tri
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -20,6 +21,9 @@ def tramsform_pipeline():
     
     logger.info(' Running NPRI transformer')
     transforming_npri()
+
+    logger.info(' Running TRI transformer')
+    transforming_tri()
 
 
 if __name__ == '__main__':

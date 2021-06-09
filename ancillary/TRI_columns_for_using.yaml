@@ -87,3 +87,23 @@
   39: national_sector_code
   80: Off-site - total POTW transfer
   81: Off-site - total POTW transfer - basis of estimate
+  82: Off-site - potw discharges to water streams
+  83: Off-site - potw discharges to water streams - basis of estimate
+  84: Off-site - potw discharges to other activities
+  85: Off-site - potw discharges to other activities - basis of estimate
+  86: Off-site - potw release to air
+  87: Off-site - potw release to air - basis of estimate
+  88: Off-site - potw sludge to disposal
+  89: Off-site - potw sludge to disposal - basis of estimate
+  90: Off-site - potw sludge to incineration - metals
+  91: Off-site - potw sludge to incineration - metals - basis of estimate
+  100: Off-site - potw sludge to agricultural applications
+  101: Off-site - potw sludge to agricultural applications - basis of estimate
+  102: Off-site - potw other or unknown disposal
+  103: Off-site - potw other or unknown disposal - basis of estimate
+  107: Off-site - potw other or unknown treatment
+  108: Off-site - potw other or unknown treatment - basis of estimate
+  109: Off-site - potw sludge to incineration - non-metals
+  110: Off-site - potw sludge to incineration - non-metals - basis of estimate
+  111: Off-site - potw experimental and estimated treatment data
+  112: Off-site - potw experimental and estimated treatment data - basis of estimate
