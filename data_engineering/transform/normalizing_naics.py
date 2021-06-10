@@ -22,7 +22,7 @@ def searching_equivalent_naics(row, df_naics):
         code_2017 = None
         for year in range(2012, 1996, -5):
             df_result = df_naics.loc[df_naics[f'{year} NAICS Code'] == code]
-            df_result.reset_index(drop=True)
+            df_result.reset_index(drop=True, inplace=True)
             if df_result.empty:
                 continue
             else:
@@ -33,17 +33,18 @@ def searching_equivalent_naics(row, df_naics):
             return code
 
 
-def normalizing_naics(df_tri):
+def normalizing_naics(df_system, system='USA'):
     '''
     Function to normalize NAICS codes
     '''
 
-    func = lambda name_file: int(re.search(r'\d{4}_to_(\d{4})_NAICS.csv', name_file).group(1))
+    regex = re.compile(f'{system}_\d{{4}}_to_(\d{{4}})_NAICS.csv')
+    func = lambda name_file: int(re.search(regex, name_file).group(1))
 
     # Calling NAICS changes
     path_naics = f'{dir_path}/../../ancillary'
     naics_files = [file for file in os.listdir(path_naics)
-                   if re.search(r'\d{4}_to_\d{4}_NAICS.csv', file)]
+                   if re.search(regex, file)]
     naics_files.sort(key=func, reverse=True)
 
     # Concatenating NAICS years
@@ -62,8 +63,12 @@ def normalizing_naics(df_tri):
             df_naics.drop_duplicates(keep='first', inplace=True)
 
     # crosswalking NAICS codes
-    df_tri['national_sector_code'] = df_tri.apply(lambda row: searching_equivalent_naics(row, df_naics),
+    df_naics = df_naics.fillna(0)
+    for col in df_naics.columns:
+        df_naics[col] = df_naics[col].astype(int)
+
+    df_system['national_sector_code'] = df_system.apply(lambda row: searching_equivalent_naics(row, df_naics),
                                                     axis=1)
-    df_tri['national_sector_code'] = df_tri['national_sector_code'].astype(pd.Int32Dtype())
+    df_system['national_sector_code'] = df_system['national_sector_code'].astype(pd.Int32Dtype())
     
-    return df_tri
+    return df_system

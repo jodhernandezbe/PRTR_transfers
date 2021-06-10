@@ -3,6 +3,7 @@
 
 # Importing libraries
 from data_engineering.extract.srs_scraper import get_generic_name_by_cas
+from data_engineering.transform.common import opening_files_for_sectors
 
 import os
 import pandas as pd
@@ -20,33 +21,13 @@ def normalizing_chemicals():
     df_cross.drop(columns=['national_substance_id'], inplace=True)
 
     # Searching for PRTR files
-    output_path = f'{dir_path}/output'
-    list_of_files = [file for file in os.listdir(output_path) if (file.startswith('tri') or file.startswith('npi') or file.startswith('npri'))]
-
-    # Concatenating substances information from PRTR files
-    df_chem = pd.DataFrame()
-    for file in list_of_files:
-        df_chem_aux = pd.read_csv(f'{output_path}/{file}', usecols=['national_substance_name',
-                            'national_substance_id', 'cas_number'],
-                            dtype={'national_substance_id': object})
-        df_chem_aux.drop_duplicates(keep='first', inplace=True)
-        if 'tri' in file:
-            system = 'TRI'
-        elif 'npi' in file:
-            system = 'NPI'
-        else:
-            system = 'NPRI'
-        df_chem_aux['note'] = system
-        df_chem = pd.concat([df_chem, df_chem_aux],
-                            axis=0, ignore_index=True)
-        del df_chem_aux
-    df_chem.drop_duplicates(keep='first', inplace=True)
+    df_chem = opening_files_for_sectors()
 
     # Merging information to substances not having CAS or otherwise
     df_chem = pd.merge(df_chem, df_cross, on=['national_substance_name', 'note'], how='left')
     df_chem = df_chem.where(pd.notnull(df_chem), None)
     df_chem.drop_duplicates(keep='first', inplace=True)
-    df_chem.reset_index(drop=True)
+    df_chem.reset_index(drop=True, inplace=True)
 
     # Replacing CAS numbers
     idx = df_chem[pd.notnull(df_chem.generic_substance_name)].index.tolist()

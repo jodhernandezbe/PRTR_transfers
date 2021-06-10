@@ -3,6 +3,7 @@
 
 # Importing libraries
 from data_engineering.transform.common import config, dq_score
+from data_engineering.transform.normalizing_naics import normalizing_naics
 
 import os
 import pandas as pd
@@ -52,6 +53,34 @@ def checking_cas_number(cas):
     cas_n = cas_n[::-1]
     
     return cas_n
+
+
+def checking_naics_codes_across_years(df):
+    '''
+    Function to check zero naics for facilities
+    '''
+
+    naics_codes = df[['national_facility_id', 'national_sector_code', 'reporting_year']].copy()
+    naics_codes.drop_duplicates(keep='first', inplace=True)
+    df.drop(columns='national_sector_code', inplace=True)
+
+    def across_years(x):
+        result = naics_codes[(naics_codes.national_facility_id == x) & (naics_codes.national_sector_code != 0)]
+        if not result.empty:
+            return result.loc[result.reporting_year == result.reporting_year.max(), 'national_sector_code']
+        else:
+            return 0 
+
+    naics_codes.national_sector_code = naics_codes.apply(lambda row: row['national_sector_code']
+                    if row['national_sector_code'] != 0
+                    else across_years(row['national_facility_id']), axis=1)
+
+    df = pd.merge(df, naics_codes, on=['national_facility_id', 'reporting_year'], how='left')
+    df.national_sector_code = df.national_sector_code.astype(int)
+
+    return df
+                    
+    
     
 
 def transforming_npri():
@@ -105,6 +134,13 @@ def transforming_npri():
     df_npri['cas_number'] = df_npri['national_substance_id'].apply(lambda x:
         checking_cas_number(x.strip().lstrip('0'))
         if 'NA' not in x else None)
+
+    # Checking NAICS codes by facility
+    df_npri = checking_naics_codes_across_years(df_npri)
+    df_npri = df_npri[df_npri.national_sector_code != 0]
+
+    # Crosswalking NAICS codes
+    df_npri = normalizing_naics(df_npri, system='CAN')
 
     # Saving the transformed data
     decimals = pd.Series([2, 0], index=['transfer_amount_kg', 'reliability_score'])

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+from data_engineering.transform.common import opening_files_for_sectors
+
 import pandas as pd
 pd.set_option('mode.chained_assignment', None)
 import numpy as np
@@ -14,8 +16,17 @@ ancillary_path = f'{dir_path}/../../ancillary' # ancillary folder path
 
 # Dictionary for cross-walking to ISIC
 sic = {
-        'NAICS': {
-                    'file': '2017_NAICS_to_ISIC_4',
+        'USA_NAICS': {
+                    'file': 'USA_2017_NAICS_to_ISIC_4',
+                    'cols': [
+                                '2017 NAICS',
+                                '2017 NAICS TITLE',
+                                'ISIC',
+                                'ISIC TITLE'
+                            ]
+                  },
+        'CAN_NAICS': {
+                    'file': 'CAN_2017_NAICS_to_ISIC_4',
                     'cols': [
                                 '2017 NAICS',
                                 '2017 NAICS TITLE',
@@ -86,15 +97,19 @@ def overlapping_groups(df):
     return df_isic_to_generic
 
 
-
-def standardizing():
+def normalizing_sectors():
     '''
     Function for standardizing the national industry classification systems
     '''
 
+    # Searching for PRTR files
+    df_sectors = opening_files_for_sectors(usecols=['national_sector_code'],
+                                        dtype={'national_sector_code': int},
+                                        systems_class=['USA_NAICS', 'ANZSIC', 'CAN_NAICS'])
+
+    # Calling files for cross-walking industry sectors
     df_converter = pd.DataFrame()
     df_isic = pd.DataFrame()
-
     for system, att in sic.items():
 
         file_name = att['file']
@@ -137,6 +152,12 @@ def standardizing():
                              sort=False,
                              axis=0)
         del df, df_isic_aux
+
+    # Keeping only those national sectors reporting to the PRTR systems
+    df_converter = pd.merge(df_converter, df_sectors,
+                        on=['national_sector_code', 'note'], how='right')
+    print(df_converter.info())
+    del df_sectors
 
     df_isic.drop_duplicates(subset=['isic_code'], inplace=True, keep='first')
     df_isic_to_generic = overlapping_groups(df_converter)
@@ -186,4 +207,4 @@ def standardizing():
 
 if __name__ == '__main__':
 
-    standardizing()
+    normalizing_sectors()
