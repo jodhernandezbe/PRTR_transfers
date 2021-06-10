@@ -47,6 +47,9 @@ def opening_file(key, year):
                      usecols=columns_for_using[key].keys(),
                      names=columns_for_using[key].values())
     
+    # Dropping records for mixtures and trade secrets
+    df = df[~(df.national_substance_id.isin(['TRD SECRT', 'MIXTURE']))]
+    
     return df
 
 
@@ -95,7 +98,7 @@ def transforming_tri():
     # Concatenating files
     df_cas_searched = pd.DataFrame(columns=['national_substance_id',
                                             'cas_number'])
-    for year in range(2019, 2020):
+    for year in range(1987, 2020):
         df_tri = pd.DataFrame()
         for key in ['3a', '3b', '3c']:
             if (key == '3a') or ((key == '3b') and (int(year) <= 2010)) or ((key == '3c') and (int(year) >= 2011)):
@@ -103,7 +106,7 @@ def transforming_tri():
                 df = organizing_columns(df, key, year)
                 df_tri = pd.concat([df_tri, df], ignore_index=True, axis=0)
 
-        # Drop 0 for transfer_amount_kg
+        # Dropping 0 for transfer_amount_kg
         def checking_basis_estimate(bs):
             try:
                 if bs:

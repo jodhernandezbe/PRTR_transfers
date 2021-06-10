@@ -77,6 +77,10 @@ def transforming_npri():
                         ignore_index=True, axis=0)
     del df_npri_transfers, df_npri_disposals
 
+    # Excluding some substances
+    id_for_excluding = ['NA - 22', 'NA - M14']
+    df_npri = df_npri[~(df_npri['national_substance_id'].isin(id_for_excluding))]
+
     # Dropping records having g TEQ(ET) units
     df_npri = df_npri.loc[~ (df_npri.Units.str.contains('TEQ').astype(bool))]
 

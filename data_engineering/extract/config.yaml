@@ -16,3 +16,4 @@ system:
     url: https://cdxnodengn.epa.gov/cdx-srs-rest
     by_alternative_id: substance/alt_id/{altId}/alt_id_type/{altIdType}?qualifier=exact
     by_name: substance/name/{substanceName}?excludeSynonyms=true
+    by_cas: substance/cas/{casNum}?qualifier=exact

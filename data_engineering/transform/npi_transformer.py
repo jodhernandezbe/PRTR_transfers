@@ -45,6 +45,10 @@ def transforming_npi():
                         skiprows=[0],
                         usecols=columns_for_using['transfers'].keys(),
                         names=columns_for_using['transfers'].values())
+    
+    # Excluding some substances
+    id_for_excluding = [68, 83, 84]
+    df_npi = df_npi[~(df_npi['national_substance_id'].isin(id_for_excluding))]
 
     # Keeping only the off-site transfers
     df_npi = df_npi.loc[df_npi['national_transfer_class_name'].str.contains(r'^Off-site.*')]

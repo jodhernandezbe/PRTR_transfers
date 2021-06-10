@@ -69,3 +69,28 @@ def get_cas_by_name(**kwargs):
     except ValueError as ve:
         print(ve)
 
+
+def get_generic_name_by_cas(casNum='1336-36-3'):
+    '''
+    Function to get name by cas number
+    '''
+    
+    # Calling configuration
+    _config = config()['system']['SRS']
+    url = _config['url']
+    cas_query_string = _config['by_cas'].format(casNum=casNum)
+
+    # HTTP request
+    try:
+        response = requests.get(f'{url}/{cas_query_string}')
+        if response.status_code == 200:
+            json = response.json()
+            if not json:
+                result = None
+            else:
+                result = json[0]['systematicName']
+            return result
+        else:
+            raise ValueError(f'Error: {response.status_code}')
+    except ValueError as ve:
+        print(ve)
