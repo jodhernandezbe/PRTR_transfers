@@ -6,7 +6,6 @@ from data_engineering.transform.common import opening_files_for_sectors
 
 import pandas as pd
 pd.set_option('mode.chained_assignment', None)
-import numpy as np
 import os
 import re
 
@@ -45,61 +44,31 @@ sic = {
                    }
       }
 
-
-def overlapping_groups(df):
+def sections_to_potential_divisions(codes):
     '''
-    Function for creating generic industry sector groups based on
-    ISIC codes overlapping
+    Function for looking for the potential ISIC division
     '''
 
-    isic_codes = df['isic_code'].unique().tolist()
+    codes = [str(code) for code in codes]
+    divisions = [code[0:2] if len(code) == 4 else code[0] for code in codes]
+    df_divisions = pd.DataFrame({'divisions': divisions})
+    df_divisions = df_divisions.divisions.value_counts().rename_axis('divisions').reset_index(name='counts')
+    df_divisions['divisions'] = df_divisions['divisions'].astype(int)
+    df_divisions.sort_values(by='divisions', ascending=True, inplace=True)
+    df_divisions.reset_index(drop=True, inplace=True)
+    max_count = df_divisions['counts'].max()
+    if df_divisions[df_divisions.counts != max_count].empty:
+        result_code = df_divisions.divisions.iloc[0]
+    else:
+        result_code = df_divisions.loc[df_divisions.counts.idxmax(), 'divisions']
 
-    isic_to_generic = {}
-    in_isic_to_generic = {}
-    group_c = 0
-
-    for idx_1, isic_code_1 in enumerate(isic_codes):
-
-        if isic_code_1 in isic_to_generic.keys():
-            continue
-        else:
-
-            overlapping_1 = list(set(in_isic_to_generic.keys()) & set(isic_code_1.split(';')))
-            if overlapping_1:
-                group_1 = in_isic_to_generic[overlapping_1[0]]
-            else:
-                group_c += 1
-                group_1 = group_c
-
-            isic_codes_not = np.setdiff1d(isic_codes[idx_1 + 1:],
-                                          list(isic_to_generic.keys()))
-
-            for isic_code_2 in isic_codes_not:
-                overlapping_2 = list(set(in_isic_to_generic.keys()) & set(isic_code_2.split(';')))
-                if overlapping_2:
-                    group_2 = in_isic_to_generic[overlapping_2[0]]
-                    isic_to_generic.update({isic_code_2: str(group_2)})
-                    in_isic_to_generic.update({code: str(group_2) for code in isic_code_2.split(';') if code not in in_isic_to_generic.keys()})
-                else:
-                    overlapping_3 = list(set(isic_code_1.split(';')) & set(isic_code_2.split(';')))
-                    if overlapping_3:
-                        isic_to_generic.update({isic_code_2: str(group_1)})
-                        in_isic_to_generic.update({code: str(group_1) for code in isic_code_2.split(';') if code not in in_isic_to_generic.keys()})
-
-            isic_to_generic.update({isic_code_1: str(group_1)})
-            in_isic_to_generic.update({code: str(group_1) for code in isic_code_1.split(';') if code not in in_isic_to_generic.keys()})
-
-    df_isic_to_generic = pd.DataFrame(
-        {'isic_code': list(isic_to_generic.keys()),
-         'generic_sector_code': list(isic_to_generic.values())}
-         )
-
-    return df_isic_to_generic
+    return result_code
 
 
 def normalizing_sectors():
     '''
     Function for standardizing the national industry classification systems
+    based on ISIC divisions
     '''
 
     # Searching for PRTR files
@@ -109,7 +78,6 @@ def normalizing_sectors():
 
     # Calling files for cross-walking industry sectors
     df_converter = pd.DataFrame()
-    df_isic = pd.DataFrame()
     for system, att in sic.items():
 
         file_name = att['file']
@@ -124,20 +92,12 @@ def normalizing_sectors():
         df[national_code] = pd.to_numeric(df[national_code])
         df = df.loc[pd.notnull(df[national_code])]
         df[national_code] = df[national_code].astype('int')
+        df['ISIC'] = df['ISIC'].astype('int')
         df[national_name] = df[national_name].str.strip().str.capitalize()
         df['ISIC TITLE'] = df['ISIC TITLE'].str.strip().str.capitalize()
-        df_isic_aux = df[['ISIC', 'ISIC TITLE']]
         df.drop(['ISIC TITLE'], inplace=True, axis=1)
-        df_isic_aux.rename(columns={'ISIC': 'isic_code',
-                                    'ISIC TITLE': 'isic_name'},
-                           inplace=True)
-
         df.sort_values(by=[national_code, 'ISIC'],
                        inplace=True)
-        func = {'ISIC': lambda x: ';'.join(x.tolist())}
-        df = df.groupby([national_code, national_name],
-                        as_index=False)['ISIC'].agg(func)
-
         df['note'] = system
         df.rename(columns={'ISIC': 'isic_code',
                             national_code: 'national_sector_code',
@@ -147,61 +107,45 @@ def normalizing_sectors():
                                  ignore_index=True,
                                  sort=False,
                                  axis=0)
-        df_isic = pd.concat([df_isic, df_isic_aux],
-                             ignore_index=True,
-                             sort=False,
-                             axis=0)
-        del df, df_isic_aux
+    
+        del df
 
     # Keeping only those national sectors reporting to the PRTR systems
     df_converter = pd.merge(df_converter, df_sectors,
                         on=['national_sector_code', 'note'], how='right')
-    print(df_converter.info())
     del df_sectors
 
-    df_isic.drop_duplicates(subset=['isic_code'], inplace=True, keep='first')
-    df_isic_to_generic = overlapping_groups(df_converter)
-    df_converter = pd.merge(df_converter,
-                            df_isic_to_generic,
-                            on='isic_code',
-                            how='inner')
-    del df_isic_to_generic
-
-    df_converter['isic_code'] = df_converter['isic_code'].str.split(';')
-    df_converter = pd.DataFrame({
-                                 col:np.repeat(df_converter[col].values,
-                                               df_converter['isic_code'].str.len())
-                                 for col in df_converter.columns.drop('isic_code')}
-                                )\
-        .assign(**{'isic_code': np.concatenate(df_converter['isic_code'].values)})\
-        [df_converter.columns]
+    # Looking for ISIC divisions
+    grouping = ['national_sector_code', 'national_sector_name', 'note']
+    df_converter['generic_sector_code'] = df_converter.groupby(grouping, as_index=False)['isic_code']\
+        .transform(lambda g: sections_to_potential_divisions(g))
 
 
+    # National to generic industry codes
     df_national_to_generic = df_converter[['national_sector_code',
                                            'national_sector_name',
                                            'generic_sector_code',
                                            'note']]
+    del df_converter
     df_national_to_generic.drop_duplicates(keep='first',
                                            inplace=True)
     df_national_to_generic.reset_index(inplace=True, drop=True)
     df_national_to_generic['national_generic_sector_id'] =\
         pd.Series(df_national_to_generic.index.tolist()) + 1
 
-    df_isic_to_generic = df_converter[['isic_code',
-                                       'generic_sector_code']]
-    del df_converter
-    df_isic_to_generic.drop_duplicates(keep='first',
-                                       inplace=True)
-    df_isic_to_generic = pd.merge(df_isic_to_generic, df_isic,
-                                  on='isic_code', how='left')
-    df_isic_to_generic.reset_index(inplace=True, drop=True)
-    df_isic_to_generic['isic_generic_id'] =\
-        pd.Series(df_isic_to_generic.index.tolist()) + 1
+    # Calling ISIC division codes
+    print(df_national_to_generic.info())
+    df_isic_divisions = pd.read_csv(f'{ancillary_path}/ISIC_4.csv',
+                                    dtype = {'Code': int})
+    df_isic_divisions.rename(columns={'Code': 'generic_sector_code',
+                                      'Description': 'generic_sector_name'},
+                                      inplace=True)
+    df_national_to_generic = pd.merge(df_national_to_generic, df_isic_divisions,
+                                  on='generic_sector_code', how='left')
+    print(df_national_to_generic.info())
 
-
-    df_isic_to_generic.to_csv(f'{dir_path}/output/isic_to_generic.csv',
-                              index=False, sep=',')
-    df_national_to_generic.to_csv(f'{dir_path}/output/national_to_generic.csv',
+    # Saving the information
+    df_national_to_generic.to_csv(f'{dir_path}/output/generic_sector.csv',
                                   index=False, sep=',')
 
 

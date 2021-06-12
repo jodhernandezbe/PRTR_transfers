@@ -45,6 +45,12 @@ def normalizing_chemicals():
                                     else get_generic_name_by_cas(casNum=row['cas_number']),
                                     axis=1)
 
+    # Assigning cross tables ids
+    df_chem.reset_index(inplace=True, drop=True)
+    df_chem['national_generic_substance_id'] =\
+        pd.Series(df_chem.index.tolist()) + 1
+    print(df_chem.info())
+
     # Saving the transformed data
     df_chem.to_csv(f'{dir_path}/output/generic_substance.csv', sep=',', index=False)
 
