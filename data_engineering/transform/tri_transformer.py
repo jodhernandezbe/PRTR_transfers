@@ -121,12 +121,7 @@ def organizing_landfill_surface_impoundment(group, df):
             break
 
     # Selecting the method
-    method_to_method = {'Off-site - RCRA subtitle c surface impoundment': 'Off-site - surface impoundment',
-                        'Off-site - other surface impoundment': 'Off-site - surface impoundment'}
-    df_f_chem.national_transfer_class_name = df_f_chem.national_transfer_class_name.apply(lambda x: x if x in method_to_method.keys() else x)
-    min_year = df_f_chem.reporting_year.min()
-    df_f_chem = df_f_chem.loc[df_f_chem.reporting_year == min_year, ['national_transfer_class_name', 'transfer_amount_kg']]
-    df_f_chem['times'] = 1
+    df_f_chem = df_f_chem[['national_transfer_class_name', 'transfer_amount_kg', 'times']]
     df_f_chem = df_f_chem.groupby('national_transfer_class_name', as_index=False).sum()
     df_f_chem['probability'] = df_f_chem['times']*df_f_chem['transfer_amount_kg']
     df_f_chem.sort_values(by=['probability'], ascending=False, inplace=True)
@@ -255,18 +250,29 @@ def transforming_tri():
     df_landfill_surface.reset_index(drop=True, inplace=True)
     df_tri = df_tri[df_tri.national_transfer_class_name != 'Off-site - landfills/disposal surface impoundment']
 
-    # Saving the tri records without Off-site - landfills/disposal surface impoundment
+    # Saving the tri records
     df_tri.to_csv(f'{dir_path}/output/tri.csv',
                     index=False, sep=',')
 
-    # Keeping only records with transfers of interest
+
     df_tri = df_tri[df_tri.national_transfer_class_name.isin(['Off-site - surface impoundment',
                                                             'Off-site - RCRA subtitle c surface impoundment',
                                                             'Off-site - other surface impoundment',
                                                             'Off-site - other landfills',
                                                             'Off-site - RCRA subtitle c landfills'
                                                             ])]
-    grouping = ['national_facility_id', 'national_sector_code', 'national_substance_id']
+    method_to_method = {'Off-site - RCRA subtitle c surface impoundment': 'Off-site - surface impoundment',
+                            'Off-site - other surface impoundment': 'Off-site - surface impoundment'}
+    df_tri.national_transfer_class_name = df_tri.national_transfer_class_name.apply(lambda x: x if x in method_to_method.keys() else x)
+    df_tri = df_tri[['national_transfer_class_name',
+                    'transfer_amount_kg', 'national_substance_id',
+                    'national_facility_id', 'national_sector_code',
+                    'reporting_year']]
+    grouping = ['national_transfer_class_name', 'national_facility_id',
+                'national_sector_code', 'national_substance_id'] 
+    df_tri = df_tri.loc[df_tri.groupby(grouping).reporting_year.idxmin()].reset_index(drop=True)
+    df_tri['times'] = 1
+    grouping.pop(0)
     df_landfill_surface\
         .groupby(grouping, as_index=False)\
             .apply(lambda g: organizing_landfill_surface_impoundment(g, df_tri.copy()))
