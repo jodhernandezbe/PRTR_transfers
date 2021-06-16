@@ -1,0 +1,22 @@
+system:
+  USA_NAICS:
+    file: USA_2017_NAICS_to_ISIC_4
+    cols:
+      - 2017 NAICS
+      - 2017 NAICS TITLE
+      - ISIC
+      - ISIC TITLE
+  CAN_NAICS:
+    file: CAN_2017_NAICS_to_ISIC_4
+    cols:
+      - 2017 NAICS
+      - 2017 NAICS TITLE
+      - ISIC
+      - ISIC TITLE
+  ANZSIC:
+    file: 2006_ANZSIC_to_ISIC_4
+    cols:
+      - 2006 ANZSIC
+      - 2006 ANZSIC TITLE
+      - ISIC
+      - ISIC TITLE

@@ -11,8 +11,6 @@ import pandas as pd
 import numpy as np
 import re
 
-import time
-
 dir_path = os.path.dirname(os.path.realpath(__file__))
 conversion_factor = {'Pounds': 0.453592,
                      'Grams': 10**-3}
@@ -39,7 +37,7 @@ def opening_file(key, year):
     columns_for_using = config(columns_path)
 
 
-    # Calling NPI data file
+    # Calling TRI data file
     extracted_npi_path = f'{dir_path}/../extract/output/US_{key}_{year}.csv'
     df = pd.read_csv(extracted_npi_path, header=None,
                      skiprows=[0], engine='python',
@@ -89,16 +87,72 @@ def organizing_columns(df_raw, key, year):
     return df_off
 
 
+def organizing_landfill_surface_impoundment(group, df):
+    '''
+    Function to impute the transfers class for Off-site - landfills/disposal surface impoundment.
+    Options:
+    (1) Off-site - surface impoundment
+    (2) Off-site - other landfills
+    (3) Off-site - RCRA subtitle c landfills
+    '''
+
+    df.national_sector_code = df.national_sector_code.astype(object)
+
+    substance_id = group['national_substance_id'].values[0]
+    facility_id = group['national_facility_id'].values[0]
+    sector = str(group['national_sector_code'].values[0])
+    # Searching for the information using the NAICS hierarchy structure
+    for i in range(7,-2,-1):
+        if i == 7:
+            df_f_chem = df[(df.national_substance_id == substance_id) &
+                (df.national_facility_id == facility_id)]
+        elif i == 1:
+            df_f_chem = df[(df.national_substance_id == substance_id)]
+        elif i == 0:
+            df_f_chem = df[df.national_facility_id == facility_id]
+        elif i == -1:
+            df_f_chem = df.copy()
+        else:
+            df_f_chem = df[(df.national_substance_id == substance_id) &
+                        (df.national_sector_code == sector[0: i])]
+        if df_f_chem.empty:
+            continue
+        else:
+            break
+
+    # Selecting the method
+    method_to_method = {'Off-site - RCRA subtitle c surface impoundment': 'Off-site - surface impoundment',
+                        'Off-site - other surface impoundment': 'Off-site - surface impoundment'}
+    df_f_chem.national_transfer_class_name = df_f_chem.national_transfer_class_name.apply(lambda x: x if x in method_to_method.keys() else x)
+    min_year = df_f_chem.reporting_year.min()
+    df_f_chem = df_f_chem.loc[df_f_chem.reporting_year == min_year, ['national_transfer_class_name', 'transfer_amount_kg']]
+    df_f_chem['times'] = 1
+    df_f_chem = df_f_chem.groupby('national_transfer_class_name', as_index=False).sum()
+    df_f_chem['probability'] = df_f_chem['times']*df_f_chem['transfer_amount_kg']
+    df_f_chem.sort_values(by=['probability'], ascending=False, inplace=True)
+    df_f_chem.reset_index(drop=True, inplace=True)
+    group['national_transfer_class_name'] = df_f_chem['national_transfer_class_name'].iloc[0]
+
+    group.to_csv(f'{dir_path}/output/tri.csv',
+                index=False, sep=',',
+                mode='a', header=False)
+
+
 def transforming_tri():
     '''
     Function to transform TRI raw data into the structure for the
     generic database
     '''
 
+    # Looking for TRI years extracted from internet
+    regex = re.compile(r'US_3a_([0-9]{4}).csv')
+    years = [int(re.search(regex, file).group(1)) for file in os.listdir(f'{dir_path}/../extract/output/') if file.startswith('US_3a')]
+    years.sort()
+
     # Concatenating files
     df_cas_searched = pd.DataFrame(columns=['national_substance_id',
                                             'cas_number'])
-    for year in range(1987, 2020):
+    for year in years:
         df_tri = pd.DataFrame()
         for key in ['3a', '3b', '3c']:
             if (key == '3a') or ((key == '3b') and (int(year) <= 2010)) or ((key == '3c') and (int(year) >= 2011)):
@@ -181,6 +235,41 @@ def transforming_tri():
                     index=False, sep=',')
 
         del df_tri, tri_ids
+
+
+    # Cross-year search for Off-site - landfills/disposal surface impoundment
+    df_tri = pd.DataFrame()
+    for year in years:
+        df_year = pd.read_csv(f'{dir_path}/output/tri_{year}.csv')
+        df_tri = pd.concat([df_tri, df_year],
+                            ignore_index=True,
+                            sort=False,
+                            axis=0)
+        del df_year
+        os.remove(f'{dir_path}/output/tri_{year}.csv')
+    
+    decimals = pd.Series([2, 0], index=['transfer_amount_kg', 'reliability_score'])
+    df_tri[['transfer_amount_kg', 'reliability_score']] =\
+        df_tri[['transfer_amount_kg', 'reliability_score']].round(decimals)
+    df_landfill_surface = df_tri[df_tri.national_transfer_class_name == 'Off-site - landfills/disposal surface impoundment']
+    df_landfill_surface.reset_index(drop=True, inplace=True)
+    df_tri = df_tri[df_tri.national_transfer_class_name != 'Off-site - landfills/disposal surface impoundment']
+
+    # Saving the tri records without Off-site - landfills/disposal surface impoundment
+    df_tri.to_csv(f'{dir_path}/output/tri.csv',
+                    index=False, sep=',')
+
+    # Keeping only records with transfers of interest
+    df_tri = df_tri[df_tri.national_transfer_class_name.isin(['Off-site - surface impoundment',
+                                                            'Off-site - RCRA subtitle c surface impoundment',
+                                                            'Off-site - other surface impoundment',
+                                                            'Off-site - other landfills',
+                                                            'Off-site - RCRA subtitle c landfills'
+                                                            ])]
+    grouping = ['national_facility_id', 'national_sector_code', 'national_substance_id']
+    df_landfill_surface\
+        .groupby(grouping, as_index=False)\
+            .apply(lambda g: organizing_landfill_surface_impoundment(g, df_tri.copy()))
 
 
 if __name__ == '__main__':

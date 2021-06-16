@@ -48,9 +48,8 @@ def opening_files_for_sectors(usecols=['national_substance_name',
 
     # Searching for PRTR files
     output_path = f'{dir_path}/output'
-    list_of_files = [file for file in os.listdir(output_path) if (file.startswith('tri') or file.startswith('npi') or file.startswith('npri'))]
-    #list_of_files = [file for file in os.listdir(output_path) if (file.startswith('tri') or file.startswith('npi'))]
-
+    list_of_files = ['tri.csv', 'npi.csv', 'npri.csv']
+        
     # Concatenating information from PRTR files
     df = pd.DataFrame()
     for file in list_of_files:

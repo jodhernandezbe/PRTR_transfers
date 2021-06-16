@@ -1,3 +1,5 @@
 */extract/output/*.csv
+!*/extract/output/.keep
 */transform/output/*.csv
+!*/transform/output/.keep
 *__pycache__/
