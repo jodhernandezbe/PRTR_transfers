@@ -6,6 +6,7 @@ from data_engineering.transform.npi_transformer import transforming_npi
 from data_engineering.transform.npri_transformer import transforming_npri
 from data_engineering.transform.tri_transformer import transforming_tri
 from data_engineering.transform.chemical_standardizing import normalizing_chemicals
+from data_engineering.transform.industry_sector_standardizing import normalizing_sectors
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -28,6 +29,9 @@ def tramsform_pipeline():
 
     logger.info(' Running chemical standardizing')
     normalizing_chemicals()
+
+    logger.info(' Running industry sector standardizing')
+    normalizing_sectors()
 
 
 if __name__ == '__main__':
