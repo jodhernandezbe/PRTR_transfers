@@ -96,7 +96,7 @@ def organizing_landfill_surface_impoundment(group, df):
     (3) Off-site - RCRA subtitle c landfills
     '''
 
-    df.national_sector_code = df.national_sector_code.astype(object)
+    df.national_sector_code = df.national_sector_code.astype(str)
 
     substance_id = group['national_substance_id'].values[0]
     facility_id = group['national_facility_id'].values[0]
@@ -114,7 +114,7 @@ def organizing_landfill_surface_impoundment(group, df):
             df_f_chem = df.copy()
         else:
             df_f_chem = df[(df.national_substance_id == substance_id) &
-                        (df.national_sector_code == sector[0: i])]
+                        (df.national_sector_code.str[0: i] == sector[0: i])]
         if df_f_chem.empty:
             continue
         else:
