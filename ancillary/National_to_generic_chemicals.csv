@@ -1,4 +1,4 @@
-national_substance_name,national_substance_id,note,generic_substance_name,cas_number,generic_substance_id
+national_substance_name,national_substance_id,prtr_system,generic_substance_name,cas_number,generic_substance_id
 Antimony & compounds,10,NPI,Antimony & compounds,,NA-01
 Arsenic & compounds,11,NPI,Arsenic & compounds,,NA-02
 Beryllium & compounds,14,NPI,Beryllium & compounds,,NA-04

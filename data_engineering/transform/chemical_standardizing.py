@@ -3,7 +3,7 @@
 
 # Importing libraries
 from data_engineering.extract.srs_scraper import get_generic_name_by_cas
-from data_engineering.transform.common import opening_files_for_sectors
+from data_engineering.transform.common import opening_files
 
 import os
 import pandas as pd
@@ -21,10 +21,10 @@ def normalizing_chemicals():
     df_cross.drop(columns=['national_substance_id'], inplace=True)
 
     # Searching for PRTR files
-    df_chem = opening_files_for_sectors()
+    df_chem = opening_files()
 
     # Merging information to substances not having CAS or otherwise
-    df_chem = pd.merge(df_chem, df_cross, on=['national_substance_name', 'note'], how='left')
+    df_chem = pd.merge(df_chem, df_cross, on=['national_substance_name', 'prtr_system'], how='left')
     df_chem = df_chem.where(pd.notnull(df_chem), None)
     df_chem.drop_duplicates(keep='first', inplace=True)
     df_chem.reset_index(drop=True, inplace=True)
@@ -45,13 +45,8 @@ def normalizing_chemicals():
                                     else get_generic_name_by_cas(casNum=row['cas_number']),
                                     axis=1)
 
-    # Assigning cross tables ids
-    df_chem.reset_index(inplace=True, drop=True)
-    df_chem['national_generic_substance_id'] =\
-        pd.Series(df_chem.index.tolist()) + 1
-
     # Saving the transformed data
-    df_chem.to_csv(f'{dir_path}/output/generic_substance.csv', sep=',', index=False)
+    df_chem.to_csv(f'{dir_path}/output/national_to_generic_substance.csv', sep=',', index=False)
 
 
 if __name__ == '__main__':

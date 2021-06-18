@@ -1,0 +1,53 @@
+table:
+  transfer:
+    cols:
+      - reporting_year
+      - generic_substance_id
+      - national_facility_and_sector_id
+      - generic_transfer_class_id
+      - transfer_amount_kg
+      - reliability_score
+  generic_transfer_class:
+    cols:
+      - generic_transfer_class_id
+      - generic_transfer_class_name
+      - transfer_class_wm_hierarchy_name
+      - generic_system_comment
+  national_transfer_class:
+    cols:
+      - prtr_system
+      - national_transfer_class_name
+      - prtr_system_comment
+      - generic_transfer_class_id
+  facility:
+    cols:
+      - national_facility_and_sector_id
+      - national_facility_id
+      - national_sector_and_classification_system_id
+  prtr_system:
+    cols:
+      - prtr_system
+      - country
+      - industry_classification_system
+  generic_sector:
+    cols:
+      - generic_sector_code
+      - generic_sector_name
+  national_sector:
+    cols:
+      - national_sector_and_classification_system_id
+      - national_sector_code
+      - national_sector_name
+      - industry_classification_system
+      - generic_sector_code
+  generic_substance:
+    cols:
+      - generic_substance_id
+      - generic_substance_name
+      - cas_number
+  national_substance:
+    cols:
+      - national_substance_id
+      - national_substance_name
+      - prtr_system
+      - generic_substance_id

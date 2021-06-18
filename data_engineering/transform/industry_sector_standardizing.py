@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_engineering.transform.common import opening_files_for_sectors
+from data_engineering.transform.common import opening_files
 from data_engineering.transform.common import config
 
 import pandas as pd
@@ -45,9 +45,10 @@ def normalizing_sectors():
     sic = config(f'{ancillary_path}/Dictionary_to_crosswalk_to_isic.yaml')['system']
 
     # Searching for PRTR files
-    df_sectors = opening_files_for_sectors(usecols=['national_sector_code'],
-                                        dtype={'national_sector_code': int},
-                                        systems_class=['USA_NAICS', 'ANZSIC', 'CAN_NAICS'])
+    df_sectors = opening_files(usecols=['national_sector_code'],
+                                dtype={'national_sector_code': int},
+                                systems_class=['USA_NAICS', 'ANZSIC', 'CAN_NAICS'],
+                                column_name='industry_classification_system')
 
     # Calling files for cross-walking industry sectors
     df_converter = pd.DataFrame()
@@ -71,7 +72,7 @@ def normalizing_sectors():
         df.drop(['ISIC TITLE'], inplace=True, axis=1)
         df.sort_values(by=[national_code, 'ISIC'],
                        inplace=True)
-        df['note'] = system
+        df['industry_classification_system'] = system
         df.rename(columns={'ISIC': 'isic_code',
                             national_code: 'national_sector_code',
                             national_name: 'national_sector_name'},
@@ -85,11 +86,11 @@ def normalizing_sectors():
 
     # Keeping only those national sectors reporting to the PRTR systems
     df_converter = pd.merge(df_converter, df_sectors,
-                        on=['national_sector_code', 'note'], how='right')
+                        on=['national_sector_code', 'industry_classification_system'], how='right')
     del df_sectors
 
     # Looking for ISIC divisions
-    grouping = ['national_sector_code', 'national_sector_name', 'note']
+    grouping = ['national_sector_code', 'national_sector_name', 'industry_classification_system']
     df_converter['generic_sector_code'] = df_converter.groupby(grouping, as_index=False)['isic_code']\
         .transform(lambda g: sections_to_potential_divisions(g))
 
@@ -98,13 +99,10 @@ def normalizing_sectors():
     df_national_to_generic = df_converter[['national_sector_code',
                                            'national_sector_name',
                                            'generic_sector_code',
-                                           'note']]
+                                           'industry_classification_system']]
     del df_converter
     df_national_to_generic.drop_duplicates(keep='first',
                                            inplace=True)
-    df_national_to_generic.reset_index(inplace=True, drop=True)
-    df_national_to_generic['national_generic_sector_id'] =\
-        pd.Series(df_national_to_generic.index.tolist()) + 1
 
     # Calling ISIC division codes
     df_isic_divisions = pd.read_csv(f'{ancillary_path}/ISIC_4.csv',
@@ -116,7 +114,7 @@ def normalizing_sectors():
                                   on='generic_sector_code', how='left')
 
     # Saving the information
-    df_national_to_generic.to_csv(f'{dir_path}/output/generic_sector.csv',
+    df_national_to_generic.to_csv(f'{dir_path}/output/national_to_generic_sector.csv',
                                   index=False, sep=',')
 
 

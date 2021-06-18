@@ -38,10 +38,11 @@ def dq_score(system):
     return dq_matrix
 
 
-def opening_files_for_sectors(usecols=['national_substance_name',
-                            'national_substance_id', 'cas_number'],
-                            dtype={'national_substance_id': object},
-                            systems_class=['TRI', 'NPI', 'NPRI']):
+def opening_files(usecols=['national_substance_name',
+                'national_substance_id', 'cas_number'],
+                dtype={'national_substance_id': object},
+                systems_class=['TRI', 'NPI', 'NPRI'],
+                column_name='prtr_system'):
     '''
     Function to open the transformed PRTR files for getting information
     '''
@@ -62,7 +63,7 @@ def opening_files_for_sectors(usecols=['national_substance_name',
             system = systems_class[1]
         else:
             system = systems_class[2]
-        df_aux['note'] = system
+        df_aux[column_name] = system
         df = pd.concat([df, df_aux],
                         axis=0, ignore_index=True)
         del df_aux
