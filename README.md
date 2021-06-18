@@ -23,22 +23,22 @@ PRTR_transfers
     │   ├── tri_scraper.py
     │   ├── srs_scraper.py
     │   └── output
-    ├── load
+    ├── transform
     │   ├── main.py
-    │   ├── industry_sector.py
-    │   ├── base.py
+    │   ├── common.py
+    │   ├── industry_sector_standardizing.py
+    │   ├── chemical_standardizing.py
+    │   ├── naics_normalization.py
+    │   ├── npi_transformer.py
+    │   ├── npri_transformer.py
+    │   ├── tri_transformer.py
+    │   ├── database_normalization.py
     │   └── output
-    └── transform
-        ├── main.py
-        ├── common.py
-        ├── industry_sector_standardizing.py
-        ├── chemical_standardizing.py
-        ├── naics_normalization.py
-        ├── npi_transformer.py
-        ├── npri_transformer.py
-        ├── tri_transformer.py
-        ├── database_normalization.py
-        └── output
+    └── load
+        ├── main.py
+        ├── industry_sector.py
+        ├── base.py
+        └── output
 
 ```
 
