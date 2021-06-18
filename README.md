@@ -17,9 +17,11 @@ PRTR_transfers
     ├── extract
     │   ├── config.yaml
     │   ├── main.py
+    |   ├── common.py
     │   ├── npi_scraper.py
     │   ├── npri_scraper.py
     │   ├── tri_scraper.py
+    │   ├── srs_scraper.py
     │   └── output
     ├── load
     │   ├── main.py
@@ -28,10 +30,14 @@ PRTR_transfers
     │   └── output
     └── transform
         ├── main.py
+        ├── common.py
         ├── industry_sector_standardizing.py
+        ├── chemical_standardizing.py
+        ├── normalizing_naics.py
         ├── npi_transformer.py
         ├── npri_transformer.py
         ├── tri_transformer.py
+        ├── database_normalization.py
         └── output
 
 ```
