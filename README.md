@@ -33,7 +33,7 @@ PRTR_transfers
         ├── common.py
         ├── industry_sector_standardizing.py
         ├── chemical_standardizing.py
-        ├── normalizing_naics.py
+        ├── naics_normalization.py
         ├── npi_transformer.py
         ├── npri_transformer.py
         ├── tri_transformer.py
