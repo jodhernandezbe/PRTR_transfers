@@ -13,10 +13,10 @@ class NationalGenericTransferClass(Base):
 
     national_generic_transfer_class_id = Column(Integer(), primary_key=True)
     generic_transfer_class_id = Column(String(3), 
-                                       ForeignKey('generic_transfer_class.generic_transfer_class_id'),
+                                       ForeignKey('generic_transfer_class.generic_transfer_class_id', ondelete='CASCADE'),
                                        nullable=False)
     national_transfer_class_prtr_system_id = Column(Integer(), 
-                                                ForeignKey('national_transfer_class.national_transfer_class_prtr_system_id'),
+                                                ForeignKey('national_transfer_class.national_transfer_class_prtr_system_id', ondelete='CASCADE'),
                                                 nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
 

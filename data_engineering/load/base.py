@@ -20,13 +20,18 @@ def create_engine_session(password,
     Function to create an engine and session in the RDBMS by SQLAlchemy
     '''
 
-    url = f'{rdbms}://{username}:{password}@{host}:{port}/{db_name}?charset=utf8mb4'
+    if rdbms == 'mysql':
+        url = f'{rdbms}://{username}:{password}@{host}:{port}/{db_name}?charset=utf8mb4'
+    else:
+        url = f'{rdbms}://{username}:{password}@{host}:{port}/{db_name}'
 
-    if database_exists(url):
+    if not database_exists(url):
+        create_database(url)
+
+    if rdbms == 'mysql':
         Engine = create_engine(url)
     else:
-        create_database(url)
-        Engine = create_engine(url)
+        Engine = create_engine(url, client_encoding='utf8')
 
     Session = sessionmaker(bind=Engine)
 

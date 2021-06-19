@@ -53,9 +53,13 @@ def load_pipeline(args):
                             port=port,
                             db_name=db_name)
 
+    # Droping in case they are created
+    for filename in reversed(list(Dic_tables.keys())):
+        Object = Dic_tables[filename]
+        Object.__table__.drop(Engine, checkfirst=True)
+
     # Saving each table
     for filename, Object in Dic_tables.items():
-        Object.__table__.drop(Engine, checkfirst=True)
         Object.__table__.create(Engine, checkfirst=True)
         session = Session()
         path = f'{dir_path}/../transform/output/{filename}.csv'
@@ -66,7 +70,7 @@ def load_pipeline(args):
         n_rows_saved = 0
         for idx, row in df.iterrows():
             n_rows_saved += 1
-            if n_rows_saved % 50 == 0:
+            if n_rows_saved % 1000 == 0:
                 logger.info(f' {n_rows_saved} records loaded into the table {filename}')
             context = row.to_dict()
             instance = Object(**context)

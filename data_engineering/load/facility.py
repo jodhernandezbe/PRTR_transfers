@@ -14,7 +14,7 @@ class Facility(Base):
     national_facility_and_generic_sector_id = Column(Integer(), primary_key=True)
     national_facility_id = Column(String(20), nullable=False)
     national_generic_sector_id = Column(Integer(),
-                                        ForeignKey('national_generic_sector.national_generic_sector_id'),
+                                        ForeignKey('national_generic_sector.national_generic_sector_id', ondelete='CASCADE'),
                                         nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
 

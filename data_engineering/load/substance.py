@@ -13,10 +13,10 @@ class NationalGenericSubstance(Base):
 
     national_generic_substance_id = Column(Integer(), primary_key=True)
     national_substance_prtr_system_id = Column(Integer(),
-                                               ForeignKey('national_substance.national_substance_prtr_system_id'),
+                                               ForeignKey('national_substance.national_substance_prtr_system_id', ondelete='CASCADE'),
                                                nullable=False)
     generic_substance_id = Column(String(20),
-                                ForeignKey('generic_substance.generic_substance_id'),
+                                ForeignKey('generic_substance.generic_substance_id', ondelete='CASCADE'),
                                 nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
 

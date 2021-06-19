@@ -7,16 +7,15 @@ from data_engineering.load.base import Base
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
-
 class NationalGenericSector(Base):
     __tablename__ = 'national_generic_sector'
 
     national_generic_sector_id = Column(Integer(), primary_key=True)
     national_sector_id = Column(Integer(),
-                                ForeignKey('national_sector.national_sector_id'),
+                                ForeignKey('national_sector.national_sector_id', ondelete='CASCADE'),
                                 nullable=False)
     generic_sector_code = Column(Integer(),
-                                ForeignKey('generic_sector.generic_sector_code'),
+                                ForeignKey('generic_sector.generic_sector_code', ondelete='CASCADE'),
                                 nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
 
