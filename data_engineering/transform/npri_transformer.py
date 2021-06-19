@@ -3,15 +3,17 @@
 
 # Importing libraries
 from data_engineering.transform.common import config, dq_score
-from data_engineering.transform.normalizing_naics import normalizing_naics
+from data_engineering.transform.naics_normalization import normalizing_naics
 
 import os
 import pandas as pd
+
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 conversion_factor = {'tonnes': 10**3,
                      'kg': 1,
                      'grams': 10**-3}
+
 
 def opening_file(filename):
     '''
@@ -21,7 +23,6 @@ def opening_file(filename):
     # Calling columns for using and their names
     columns_path = f'{dir_path}/../../ancillary/NPRI_columns_for_using.yaml'
     columns_for_using = config(columns_path)
-
 
     # Calling NPI data file
     extracted_npi_path = f'{dir_path}/../extract/output/NPRI_{filename}.csv'

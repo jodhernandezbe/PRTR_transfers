@@ -2,7 +2,12 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_engineering.load.industry_sector import NationalToGenericCode, IsicToGenericCode
+from data_engineering.load.industry_sector import NationalGenericSector, NationalSector, GenericSector
+from data_engineering.load.facility import Facility
+from data_engineering.load.prtr_system import PRTRSystem
+from data_engineering.load.record import TransferRecord
+from data_engineering.load.substance import NationalGenericSubstance, NationalSubstance, GenericSubstance
+from data_engineering.load.transfer import NationalGenericTransferClass, NationalTransferClass, GenericTransferClass
 from data_engineering.load.base import Base, create_engine_session
 
 import pandas as pd
@@ -14,10 +19,25 @@ logging.basicConfig(level=logging.INFO)
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 logger = logging.getLogger(__name__)
 
+# Dictionary to associate each table file with each table in the SQL database
+Dic_tables = {'generic_sector': GenericSector,
+              'generic_substance': GenericSubstance,
+              'generic_transfer_class': GenericTransferClass,
+              'national_sector': NationalSector,
+              'national_substance': NationalSubstance,
+              'national_transfer_class': NationalTransferClass,
+              'national_generic_sector': NationalGenericSector,
+              'national_generic_substance': NationalGenericSubstance,
+              'national_generic_transfer_class': NationalGenericTransferClass,
+              'facility': Facility,
+              'prtr_system': PRTRSystem,
+              'transfer_record': TransferRecord}
 
-def main(args):
 
-    filename = args.filename
+def load_pipeline(args):
+
+    logger = logging.getLogger(' Data engineering --> Load')
+
     password = args.password
     rdbms = args.rdbms
     username = args.username
@@ -33,26 +53,26 @@ def main(args):
                             port=port,
                             db_name=db_name)
 
-    if filename == 'isic_to_generic':
-        Object = IsicToGenericCode
-    elif filename == 'national_to_generic':
-        Object = NationalToGenericCode
-
-    Object.__table__.drop(Engine, checkfirst=True)
-    Object.__table__.create(Engine, checkfirst=True)
-    session = Session()
-
-    path = f'{dir_path}/../transform/output/{filename}.csv'
-    df = pd.read_csv(path)
-
-    for idx, row in df.iterrows():
-        context = row.to_dict()
-        logger.info(f'Loading record {idx} from {filename} into DB')
-        instance = Object(**context)
-        session.add(instance)
-
-    session.commit()
-    session.close()
+    # Saving each table
+    for filename, Object in Dic_tables.items():
+        Object.__table__.drop(Engine, checkfirst=True)
+        Object.__table__.create(Engine, checkfirst=True)
+        session = Session()
+        path = f'{dir_path}/../transform/output/{filename}.csv'
+        df = pd.read_csv(path, encoding='utf-8')
+        df = df.where((pd.notnull(df)), None)
+        logger.info(f' Loading table {filename} into the {db_name} database')
+        # Saving each record by table
+        n_rows_saved = 0
+        for idx, row in df.iterrows():
+            n_rows_saved += 1
+            if n_rows_saved % 50 == 0:
+                logger.info(f' {n_rows_saved} records loaded into the table {filename}')
+            context = row.to_dict()
+            instance = Object(**context)
+            session.add(instance)
+        session.commit()
+        session.close()
 
     if sql_file == 'True':
 
@@ -68,9 +88,6 @@ def main(args):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('filename',
-                        help='The file you want to load into the db',
-                        type=str)
     parser.add_argument('--rdbms',
                         help='The Relational Database Management System (RDBMS) you would like to use',
                         type=str,
@@ -101,4 +118,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args)
+    load_pipeline(args)

@@ -20,7 +20,7 @@ def create_engine_session(password,
     Function to create an engine and session in the RDBMS by SQLAlchemy
     '''
 
-    url = f'{rdbms}://{username}:{password}@{host}:{port}/{db_name}'
+    url = f'{rdbms}://{username}:{password}@{host}:{port}/{db_name}?charset=utf8mb4'
 
     if database_exists(url):
         Engine = create_engine(url)

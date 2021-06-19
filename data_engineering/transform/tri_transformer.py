@@ -3,7 +3,7 @@
 
 # Importing libraries
 from data_engineering.transform.common import config, dq_score
-from data_engineering.transform.normalizing_naics import normalizing_naics
+from data_engineering.transform.naics_normalization import normalizing_naics
 from data_engineering.extract.srs_scraper import get_cas_by_alternative_id
 
 import os
@@ -11,9 +11,11 @@ import pandas as pd
 import numpy as np
 import re
 
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 conversion_factor = {'Pounds': 0.453592,
                      'Grams': 10**-3}
+
 
 def weight_mean(v, w):
     '''
