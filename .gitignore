@@ -3,5 +3,4 @@
 */transform/output/*.csv
 !*/transform/output/.keep
 *__pycache__/
-*/load/output/PRTR_transfers_v_PostgreSQL.sql
-*/load/output/PRTR_transfers_v_MySQL.sql
+*/load/output/*.sql

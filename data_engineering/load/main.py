@@ -12,6 +12,7 @@ from data_engineering.load.base import Base, create_engine_session
 
 import pandas as pd
 import os
+import zipfile
 import argparse
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -32,6 +33,18 @@ Dic_tables = {'generic_sector': GenericSector,
               'facility': Facility,
               'prtr_system': PRTRSystem,
               'transfer_record': TransferRecord}
+
+
+def function_to_create_zip(filename):
+    '''
+    Function to create a zip file for .sql files
+    '''
+
+    with zipfile.ZipFile(f'{dir_path}/output/{filename}.zip', 'w') as zipObj2:
+    
+        zipObj2.write(f'{dir_path}/output/{filename}.sql',
+                    os.path.basename(f'{dir_path}/output/{filename}.sql'),
+                    compress_type=zipfile.ZIP_DEFLATED)
 
 
 def load_pipeline(args):
@@ -82,10 +95,11 @@ def load_pipeline(args):
 
         if rdbms == 'mysql':
             exporting_string = f'mysqldump -u {username} -p{password} {db_name} > {dir_path}/output/{db_name}_v_MySQL.sql'
+            function_to_create_zip(f'{db_name}_v_MySQL')
         elif rdbms == 'postgresql':
             exporting_string = f'pg_dump -U {username} -h {host} {db_name} -W > {dir_path}/output/{db_name}_v_PostgreSQL.sql'
+            function_to_create_zip(f'{db_name}_v_PostgreSQL')
 
-        print(exporting_string)
         os.system(exporting_string)
 
 
