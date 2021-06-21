@@ -1,4 +1,5 @@
 */extract/output/*.csv
+*/extract/output/*.txt
 !*/extract/output/.keep
 */transform/output/*.csv
 !*/transform/output/.keep

@@ -71,7 +71,6 @@ def load_pipeline(args):
 
     # Saving each table
     for filename, Object in Dic_tables.items():
-
         Object.__table__.create(Engine, checkfirst=True)
         session = Session()
         path = f'{dir_path}/../transform/output/{filename}.csv'

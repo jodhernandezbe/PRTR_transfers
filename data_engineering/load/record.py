@@ -7,7 +7,6 @@ from data_engineering.load.base import Base
 from datetime import datetime
 from sqlalchemy import Column, Integer, DateTime, ForeignKey, Float
 
-
 class TransferRecord(Base):
     __tablename__ = 'transfer_record'
 
@@ -21,7 +20,6 @@ class TransferRecord(Base):
                                                     nullable=False)
     national_generic_transfer_class_id = Column(Integer(),
                                                 ForeignKey('national_generic_transfer_class.national_generic_transfer_class_id', ondelete='CASCADE'),
-
                                                 nullable=False)
     transfer_amount_kg = Column(Float(precision=2), nullable=False)
     reliability_score = Column(Integer(), nullable=False)

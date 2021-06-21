@@ -33,6 +33,7 @@ def create_engine_session(password,
     else:
         Engine = create_engine(url, client_encoding='utf8')
 
+
     Session = sessionmaker(bind=Engine)
 
     return Engine, Session
