@@ -123,3 +123,7 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
 </ol>
 
 <hr/>
+
+### Installation of Relational Database Management System (RDMS)
+
+The Extract, Transform, Load (ETL) procedure uses an Object–Relational Mapping (ORT) for data persistence by a RDMS. PostgreSQL and MySQL are the RDMS currently supported by the ETL. Thus, you must have installed any of these RDMSs to run the data engineering pipeline.
