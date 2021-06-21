@@ -17,6 +17,7 @@ class NationalGenericTransferClass(Base):
                                        nullable=False)
     national_transfer_class_prtr_system_id = Column(Integer(), 
                                                 ForeignKey('national_transfer_class.national_transfer_class_prtr_system_id', ondelete='CASCADE'),
+
                                                 nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
 

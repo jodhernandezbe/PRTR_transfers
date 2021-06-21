@@ -17,6 +17,7 @@ class NationalGenericSubstance(Base):
                                                nullable=False)
     generic_substance_id = Column(String(20),
                                 ForeignKey('generic_substance.generic_substance_id', ondelete='CASCADE'),
+
                                 nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
 

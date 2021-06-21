@@ -41,7 +41,6 @@ def function_to_create_zip(filename):
     '''
 
     with zipfile.ZipFile(f'{dir_path}/output/{filename}.zip', 'w') as zipObj2:
-    
         zipObj2.write(f'{dir_path}/output/{filename}.sql',
                     os.path.basename(f'{dir_path}/output/{filename}.sql'),
                     compress_type=zipfile.ZIP_DEFLATED)
@@ -66,13 +65,13 @@ def load_pipeline(args):
                             port=port,
                             db_name=db_name)
 
-    # Droping in case they are created
     for filename in reversed(list(Dic_tables.keys())):
         Object = Dic_tables[filename]
         Object.__table__.drop(Engine, checkfirst=True)
 
     # Saving each table
     for filename, Object in Dic_tables.items():
+
         Object.__table__.create(Engine, checkfirst=True)
         session = Session()
         path = f'{dir_path}/../transform/output/{filename}.csv'
@@ -92,7 +91,6 @@ def load_pipeline(args):
         session.close()
 
     if sql_file == 'True':
-
         if rdbms == 'mysql':
             exporting_string = f'mysqldump -u {username} -p{password} {db_name} > {dir_path}/output/{db_name}_v_MySQL.sql'
             function_to_create_zip(f'{db_name}_v_MySQL')

@@ -7,6 +7,7 @@ from data_engineering.load.base import Base
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
+
 class NationalGenericSector(Base):
     __tablename__ = 'national_generic_sector'
 
