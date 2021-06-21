@@ -50,7 +50,7 @@ PRTR_transfers
 ## Enhanced entity-relationship (EER) diagram for the PRTR_transfers database 
 
 <p align="center">
-  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/master/data_engineering/PRTR_transfers_EER_Diagram.svg width="100%">
+  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/master/data_engineering/load/PRTR_transfers_EER_Diagram.svg width="100%">
 </p>
 
 <hr/>
