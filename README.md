@@ -135,21 +135,21 @@ The Extract, Transform, Load (ETL) procedure uses an Object–Relational Mapping
 You can use each .py file in the data engineering module separate. However, the developed modules enables to run the ETL pipeline using the main.py inside the [datan_engineering](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/data_engineering) folder. Thus, follow the above steps:
 
 <ol>
-    <li>
-     In your terminal or command line, navigate until the data_engineering folder
-    </li>
-    <li>
-     Run the following command
+   <li>
+    In your terminal or command line, navigate until the data_engineering folder
+   </li>
+   <li>
+    Run the following command
 
-     python main.py --help
-    </li>
-    <li>
-     You will see the following help menu
+    python main.py --help
+   </li>
+   <li>
+    You will see the following help menu
 
-     usage: main.py [-h] [--rdbms RDBMS] [--password PASSWORD] [--username USERNAME] [--host HOST] [--port PORT] [--db_name DB_NAME]
+    usage: main.py [-h] [--rdbms RDBMS] [--password PASSWORD] [--username USERNAME] [--host HOST] [--port PORT] [--db_name DB_NAME]
                    [--sql_file SQL_FILE]
 
-     optional arguments:
+    optional arguments:
           -h, --help           show this help message and exit
           --rdbms RDBMS        The Relational Database Management System (RDBMS) you would like to use
           --password PASSWORD  The password for using the RDBMS
@@ -158,7 +158,7 @@ You can use each .py file in the data engineering module separate. However, the 
           --port PORT          Port used by the database engine
           --db_name DB_NAME    Database name
           --sql_file SQL_FILE  Would you like to obtain .SQL file
-    </li>
+   </li>
 </ol>
 
 <hr/>
