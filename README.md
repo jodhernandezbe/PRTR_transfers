@@ -139,12 +139,12 @@ You can use each .py file in the data engineering module separate. However, the 
      In your terminal or command line, navigate until the data_engineering folder
     </li>
     <li>
-     Run the following command:
+     Run the following command
 
      python main.py --help
     </li>
     <li>
-     You will see the following help menu:
+     You will see the following help menu
 
      usage: main.py [-h] [--rdbms RDBMS] [--password PASSWORD] [--username USERNAME] [--host HOST] [--port PORT] [--db_name DB_NAME]
                    [--sql_file SQL_FILE]
