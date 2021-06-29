@@ -160,7 +160,7 @@ You can use each .py file in the data engineering module separate. However, the 
           --sql_file SQL_FILE  Would you like to obtain .SQL file
    </li>
    <li>
-    You must indicate the value for each parameter, e.g., if you would like to name your database as PRTR, you write <code>--dn_name PRTR</code>. All arguments       all arguments except <code>--password</code> have a default value (see the table below)
+    You must indicate the value for each parameter, e.g., if you would like to name your database as PRTR, you write <code>--dn_name PRTR</code>. Each argument       except <code>--password</code> has a default value (see the table below)
     
    |Argument|Default|
    |---|---|
