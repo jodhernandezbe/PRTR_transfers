@@ -162,14 +162,14 @@ You can use each .py file in the data engineering module separate. However, the 
    <li>
     You must indicate the value for each parameter, e.g., if you would like to name your database as PRTR, you write <code>--dn_name PRTR</code>. Each argument       except <code>--password</code> has a default value (see the table below)
     
-   |Argument|Default|
-   |---|---|
-   | rdbms | mysql |
-   | username | root |
-   | host | 127.0.0.1 |
-   | port | 3306 |
-   | db_name | PRTR_transfers |
-   | sql_file | False |
+   |Argument|Default| Comment |
+   |---|---|---|
+   | rdbms | mysql | |
+   | username | root | root is the default username for MySQL. For PostgreSQL is postgres |
+   | host | 127.0.0.1 | 127.0.0.1 (localhost) is the default host for MySQL. The same is for PostgreSQL |
+   | port | 3306 | 3306 is the default port for MySQL. For PostgreSQL is 5432 |
+   | db_name | PRTR_transfers | |
+   | sql_file | False | |
    </li>
 </ol>
 
