@@ -136,7 +136,7 @@ You can use each .py file in the data engineering module separate. However, the 
 
 <ol>
    <li>
-    In your terminal or command line, navigate until the data_engineering folder
+    In your terminal or command line, navigate to the data_engineering folder
    </li>
    <li>
     Run the following command
@@ -158,6 +158,18 @@ You can use each .py file in the data engineering module separate. However, the 
           --port PORT          Port used by the database engine
           --db_name DB_NAME    Database name
           --sql_file SQL_FILE  Would you like to obtain .SQL file
+   </li>
+   <li>
+    You must indicate the value for each parameter, e.g., if you would like to name your database as PRTR, you write ```--dn_name PRTR```. All arguments all           arguments except ```--password``` have a default value (see the table below)
+    
+   |Argument|Default|
+   |---|---|
+   | rdbms | mysql |
+   | username | root |
+   | host | 127.0.0.1 |
+   | port | 3306 |
+   | db_name | PRTR_transfers |
+   | sql_file | False |
    </li>
 </ol>
 
