@@ -22,6 +22,7 @@ PRTR_transfers
     │   ├── npri_scraper.py
     │   ├── tri_scraper.py
     │   ├── srs_scraper.py
+    │   ├── nlm_scraper.py
     │   └── output
     ├── transform
     │   ├── main.py
@@ -42,6 +43,7 @@ PRTR_transfers
         ├── record.py
         ├── substance.py
         ├── transfer.py
+        ├── chemical.py
         ├── base.py
         └── output
 
