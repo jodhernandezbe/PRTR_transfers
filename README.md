@@ -143,6 +143,7 @@ You can use each .py file in the data engineering module separate. However, the 
 
       python main.py --help
     </li>
+    <li>
      You will see the following help menu:
 
         usage: main.py [-h] [--rdbms RDBMS] [--password PASSWORD] [--username USERNAME] [--host HOST] [--port PORT] [--db_name DB_NAME]
@@ -157,7 +158,7 @@ You can use each .py file in the data engineering module separate. However, the 
           --port PORT          Port used by the database engine
           --db_name DB_NAME    Database name
           --sql_file SQL_FILE  Would you like to obtain .SQL file
-
+    </li>
 </ol>
 
 <hr/>
