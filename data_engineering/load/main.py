@@ -8,6 +8,7 @@ from data_engineering.load.prtr_system import PRTRSystem
 from data_engineering.load.record import TransferRecord
 from data_engineering.load.substance import NationalGenericSubstance, NationalSubstance, GenericSubstance
 from data_engineering.load.transfer import NationalGenericTransferClass, NationalTransferClass, GenericTransferClass
+from data_engineering.load.chemical import GenericSubstanceChemicalInCategory, ChemicalInCategory
 from data_engineering.load.base import Base, create_engine_session
 
 import pandas as pd
@@ -27,9 +28,11 @@ Dic_tables = {'generic_sector': GenericSector,
               'national_sector': NationalSector,
               'national_substance': NationalSubstance,
               'national_transfer_class': NationalTransferClass,
+              'chemical_in_category': ChemicalInCategory, 
               'national_generic_sector': NationalGenericSector,
               'national_generic_substance': NationalGenericSubstance,
               'national_generic_transfer_class': NationalGenericTransferClass,
+              'generic_substance_chemical_in_category': GenericSubstanceChemicalInCategory,
               'facility': Facility,
               'prtr_system': PRTRSystem,
               'transfer_record': TransferRecord}

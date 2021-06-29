@@ -79,3 +79,15 @@ table:
       - national_substance_prtr_system_id
       - generic_substance_id
     key: national_generic_substance_id
+  chemical_in_category:
+    cols:
+      - chemical_in_category_cas
+      - chemical_in_category_name
+    key: chemical_in_category_cas
+  generic_substance_chemical_in_category:
+    cols:
+      - generic_substance_chemical_in_category_id
+      - chemical_in_category_cas
+      - generic_substance_id
+    key: generic_substance_chemical_in_category_id
+

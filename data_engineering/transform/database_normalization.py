@@ -66,10 +66,17 @@ def database_normalization():
                 .transform(lambda g: g.fillna(method='bfill'))
     t_class.national_generic_transfer_class_id = t_class.national_generic_transfer_class_id.astype(int)
 
+    # Calling chemicals in categories
+    chem_in_category = calling_transformed_files(f'{dir_path}/../../ancillary',
+                                    csv_from_path=['Chemicals_in_categories'])
+    chem_in_category.drop(columns='generic_substance_name', inplace=True)
+
     # Merging dataframes
-    mergings = [[sector, ['national_sector_code', 'industry_classification_system']],
+    mergings = [
+                [sector, ['national_sector_code', 'industry_classification_system']],
                 [t_class, ['national_transfer_class_name', 'prtr_system']],
-                [substance, ['national_substance_id', 'prtr_system']]]
+                [substance, ['national_substance_id', 'prtr_system']]
+                ]
     del sector, substance, t_class
     for merging in mergings:
         prtr = pd.merge(prtr, merging[0], how='left', on=merging[1])
@@ -100,9 +107,18 @@ def database_normalization():
     grouping = ['national_facility_id', 'national_generic_sector_id']
     prtr['national_facility_and_generic_sector_id'] = pd.Series(prtr.groupby(grouping).ngroup() + 1)
 
+    # Creating 'generic_substance_chemical_in_category_id'
+    grouping = ['chemical_in_category_cas', 'generic_substance_id']
+    generic_substance_id = prtr['generic_substance_id'].unique().tolist()
+    chem_in_category = chem_in_category[chem_in_category['generic_substance_id'].isin(generic_substance_id)]
+    chem_in_category['generic_substance_chemical_in_category_id'] = pd.Series(chem_in_category.groupby(grouping).ngroup() + 1)
+
     # Creating individual tables
     for table, params in db_normalization.items():
-        df_table = prtr[params['cols']]
+        if table not in ['generic_substance_chemical_in_category', 'chemical_in_category']:
+            df_table = prtr[params['cols']]
+        else:
+            df_table = chem_in_category[params['cols']]
         df_table = df_table.drop_duplicates(keep='first', subset=params['key']).reset_index(drop=True)
         df_table.to_csv(f'{dir_path}/output/{table}.csv',
                         index=False, sep=',')
