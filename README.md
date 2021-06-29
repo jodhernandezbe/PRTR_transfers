@@ -127,3 +127,21 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
 ### Installation of Relational Database Management System (RDMS)
 
 The Extract, Transform, Load (ETL) procedure uses an Object–Relational Mapping (ORT) for data persistence by a RDMS. PostgreSQL and MySQL are the RDMS currently supported by the ETL. Thus, you must have installed any of these RDMSs to run the data engineering pipeline.
+
+# How to use
+
+## Data engineering module
+
+You can use each .py file in the data engineering module separate. However, the developed modules enables to run the ETL pipeline using the main.py inside the [datan_engineering](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/data_engineering) folder. Thus, follow the above steps:
+
+</ol>
+    <li>
+        In your terminal or command line, navigate until the data_engineering folder
+    </li>
+    <li>
+        Run the following command:
+    
+        python main.py --help
+    </li>
+</ol>
+
