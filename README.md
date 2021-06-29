@@ -136,20 +136,20 @@ You can use each .py file in the data engineering module separate. However, the 
 
 <ol>
     <li>
-      In your terminal or command line, navigate until the data_engineering folder
+     In your terminal or command line, navigate until the data_engineering folder
     </li>
     <li>
-      Run the following command:
+     Run the following command:
 
-      python main.py --help
+     python main.py --help
     </li>
     <li>
      You will see the following help menu:
 
-        usage: main.py [-h] [--rdbms RDBMS] [--password PASSWORD] [--username USERNAME] [--host HOST] [--port PORT] [--db_name DB_NAME]
+     usage: main.py [-h] [--rdbms RDBMS] [--password PASSWORD] [--username USERNAME] [--host HOST] [--port PORT] [--db_name DB_NAME]
                    [--sql_file SQL_FILE]
 
-        optional arguments:
+     optional arguments:
           -h, --help           show this help message and exit
           --rdbms RDBMS        The Relational Database Management System (RDBMS) you would like to use
           --password PASSWORD  The password for using the RDBMS
