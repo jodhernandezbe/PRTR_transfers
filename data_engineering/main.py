@@ -31,8 +31,6 @@ def data_engineering_pipeline(args):
 
 if __name__ == '__main__':
 
-    data_engineering_pipeline()
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--rdbms',
                         help='The Relational Database Management System (RDBMS) you would like to use',

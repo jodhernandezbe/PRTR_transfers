@@ -8,14 +8,9 @@ List of RDKit available descriptors: https://www.rdkit.org/docs/GettingStartedIn
 '''
 
 # Importing libraries
-from data_engineering.extract.nlm_scraper import looking_for_structure_details
-
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 import pandas as pd
-import os
-
-dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 
 def rdkit_descriptors():
     '''
@@ -52,61 +47,45 @@ def descriptors_for_chemical(SMILES):
 
     if molecule is not None:
         # Molecular descriptors
-        descriptors = {descriptor_name: [descriptor_func(molecule)] for
-                       descriptor_name, descriptor_func
-                       in rdkit_descriptors().items()}
+        descriptors = {}
+        for descriptor_name, descriptor_func in rdkit_descriptors().items():
+            try:
+                descriptors.update({descriptor_name: [descriptor_func(molecule)]})
+            except ZeroDivisionError:
+                descriptors.update({descriptor_name: None})
 
     return descriptors
 
 
 def information_for_set_of_chems(
-                                 col_name,
-                                 col_smiles,
                                  col_id,
+                                 df_chems
                                  ):
     '''
     This is a function to look for the descriptors for all molecules
-    '''
-
-    # Looking for chemical structure description notations (SMILE, InChi, InChiKey)
-    
+    '''    
 
     # Iterating over the dataframe rows (chemicals)
     df_descriptors = pd.DataFrame()
-    for idx, row in df_chems.iterrows():
-        descriptors = descriptors_for_chemical(row[col_smiles])
-        if descriptors is None:
-            print('Descriptors for {name}'
-                .format(name=row[col_name]))
+    for _, row in df_chems.iterrows():
+        if row['smiles']:
+            descriptors = descriptors_for_chemical(row['smiles'])
+            if descriptors is None:
+                continue
+            else:
+                descriptors.update({col_id: row[col_id]})
+                df_descriptors = \
+                    pd.concat([df_descriptors,
+                            pd.DataFrame(descriptors)])
+                del descriptors
         else:
-            descriptors.update({'CASN': row[col_id]})
-            df_descriptors = \
-                pd.concat([df_descriptors,
-                           pd.DataFrame(descriptors)])
-            del descriptors
-
-    # Changing the names of the columns in df_chem
-    df_chems.rename(columns={col_name: 'Name',
-                            col_smiles: 'SMILES',
-                            col_id: 'CASN'},
-                    inplace=True)
-
+            continue
 
     # Merging descriptors and input parameters
-    df_descriptors = pd.merge(df_descriptors,
-                              df_chems,
-                              how='inner',
-                              on='CASN')
-    del df_chems
+    df_chems = pd.merge(df_descriptors,
+                        df_chems,
+                        how='right',
+                        on=col_id)
+    del df_descriptors
 
-    # Dropping columns with same value for all records
-    df_descriptors.drop(df_descriptors.std()[(df_descriptors.std() == 0)].index,
-                        axis=1, inplace=True)
-
-
-    # Saving the information
-    df_descriptors.to_csv(output_path, sep=',', index=False)
-
-
-if __name__ == "__main__":
-    pass
+    return df_chems

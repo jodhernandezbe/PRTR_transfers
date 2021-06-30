@@ -19,7 +19,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
-logger = logging.getLogger(__name__)
 
 # Dictionary to associate each table file with each table in the SQL database
 Dic_tables = {'generic_sector': GenericSector,

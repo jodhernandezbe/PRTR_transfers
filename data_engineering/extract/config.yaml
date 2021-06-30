@@ -20,3 +20,7 @@ system:
   NLM:
     url: https://chem.nlm.nih.gov/api/data
     by_register_number: rn/equals/{cas_number}?data=smiles
+  PubChem:
+    url: https://pubchem.ncbi.nlm.nih.gov/rest/pug
+    by_registry_id: compound/xref/RegistryID/{cas_number}/property/CanonicalSMILES/JSON
+    by_rn: compound/xref/RN/{cas_number}/property/CanonicalSMILES/JSON
