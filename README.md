@@ -173,12 +173,12 @@ You can use each .py file in the data engineering module separately. However, th
     
    |Argument|Default| Comment |
    |---|---|---|
-   | rdbms | mysql | |
+   | rdbms | mysql | only two options: MySQL and PostgreSQL |
    | username | root | root is the default username for MySQL. For PostgreSQL is postgres |
    | host | 127.0.0.1 | 127.0.0.1 (localhost) is the default host for MySQL. The same is for PostgreSQL |
    | port | 3306 | 3306 is the default port for MySQL. For PostgreSQL is 5432 |
    | db_name | PRTR_transfers | |
-   | sql_file | False | |
+   | sql_file | False | only two options: True and False |
    </li>
 </ol>
 
