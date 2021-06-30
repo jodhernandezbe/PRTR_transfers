@@ -95,6 +95,7 @@ readline=8.1=h27cfd23_0
 regex=2021.4.4=py39h27cfd23_0
 reportlab=3.5.68=py39he59360d_0
 requests=2.25.1=pyhd3eb1b0_0
+scipy=1.7.0=py39hee8e79c_0
 setuptools=52.0.0=py39h06a4308_0
 six=1.16.0=pyhd3eb1b0_0
 sqlalchemy=1.4.14=py39h3811e60_0
