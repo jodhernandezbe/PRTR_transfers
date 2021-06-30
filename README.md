@@ -12,6 +12,10 @@ PRTR_transfers
 ├── ancillary
 ├── application
 ├── data_driven
+│   ├── main.py
+│   ├── opening_dataset.py
+│   ├── rdkit_descriptors.py
+│   └── output
 └── data_engineering
     ├── main.py
     ├── extract
@@ -23,6 +27,7 @@ PRTR_transfers
     │   ├── tri_scraper.py
     │   ├── srs_scraper.py
     │   ├── nlm_scraper.py
+    │   ├── pubchem_scraper.py
     │   └── output
     ├── transform
     │   ├── main.py
@@ -134,7 +139,7 @@ The Extract, Transform, Load (ETL) procedure uses an Object–Relational Mapping
 
 ## Data engineering module
 
-You can use each .py file in the data engineering module separately. However, the developed modules enables to run the ETL pipeline using the main.py inside the [datan_engineering](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/data_engineering) folder. Thus, follow the above steps:
+You can use each .py file in the data engineering module separately. However, the developed module enables to run the ETL pipeline using the main.py inside the [datan_engineering](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/data_engineering) folder. Thus, follow the above steps:
 
 <ol>
    <li>
