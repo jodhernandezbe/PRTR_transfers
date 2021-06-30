@@ -78,7 +78,7 @@ def initial_data_preprocessing(logger, db_name,
     Function for a preliminary preprocessing of the data
     '''
 
-    logger = logging.getLogger(' Data-driven modeling -> initial preprocessing')
+    logger = logging.getLogger(' Data-driven modeling -> preliminary data preprocessing')
 
     cas_dict = {'chemical': 'chemical_in_category_cas',
                 'substance': 'cas_number'}
