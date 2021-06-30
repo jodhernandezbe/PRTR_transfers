@@ -37,4 +37,5 @@ def looking_for_structure_details(cas_number):
         else:
             raise ValueError(f'Error: {response.status_code}')
     except ValueError as ve:
-        print(ve)
+        print(f'{ve} for chemical {cas_number} (NLM database)')
+        return None

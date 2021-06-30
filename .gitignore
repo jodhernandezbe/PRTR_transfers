@@ -5,3 +5,4 @@
 !*/transform/output/.keep
 *__pycache__/
 */load/output/*.sql
+*/data_driven/output/*.csv
