@@ -12,6 +12,10 @@ PRTR_transfers
 ├── ancillary
 ├── application
 ├── data_driven
+│   ├── main.py
+│   ├── opening_dataset.py
+│   ├── rdkit_descriptors.py
+│   └── output
 └── data_engineering
     ├── main.py
     ├── extract
@@ -23,6 +27,7 @@ PRTR_transfers
     │   ├── tri_scraper.py
     │   ├── srs_scraper.py
     │   ├── nlm_scraper.py
+    │   ├── pubchem_scraper.py
     │   └── output
     ├── transform
     │   ├── main.py
