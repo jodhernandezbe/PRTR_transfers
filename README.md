@@ -158,13 +158,15 @@ You can use each .py file in the data engineering module separately. However, th
 
     optional arguments:
           -h, --help           show this help message and exit
-          --rdbms RDBMS        The Relational Database Management System (RDBMS) you would like to use
+          --rdbms {MySQL,PostgreSQL}
+                               The Relational Database Management System (RDBMS) you would like to use
           --password PASSWORD  The password for using the RDBMS
           --username USERNAME  The username for using the RDBMS
           --host HOST          The computer hosting for the database
           --port PORT          Port used by the database engine
           --db_name DB_NAME    Database name
-          --sql_file SQL_FILE  Would you like to obtain .SQL file
+          --sql_file {True,False}
+                               Would you like to obtain .SQL file
    </li>
    <li>
     You must indicate the value for each parameter, e.g., if you would like to name your database as PRTR, you write <code>--dn_name PRTR</code>. Each argument       except <code>--password</code> has a default value (see the table below)
