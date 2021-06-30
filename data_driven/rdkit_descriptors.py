@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 '''
-This is a python script which uses descriptors from the RDKit, an open-source cheminformatics software (https://www.rdkit.org/)
+This is a python script which uses molecular descriptors from the RDKit, an open-source cheminformatics software (https://www.rdkit.org/)
 
-List of RDKit available descriptors: https://www.rdkit.org/docs/GettingStartedInPython.html#list-of-available-descriptors
+List of RDKit available molecular descriptors: https://www.rdkit.org/docs/GettingStartedInPython.html#list-of-available-descriptors
 '''
 
 # Importing libraries
@@ -14,7 +14,7 @@ import pandas as pd
 
 def rdkit_descriptors():
     '''
-    This is a function for getting the list of all descriptos in RDKit package
+    This is a function for getting the list of all molecular descriptors in RDKit package
     '''
 
     # List of attributes to drop
@@ -68,18 +68,15 @@ def information_for_set_of_chems(
     # Iterating over the dataframe rows (chemicals)
     df_descriptors = pd.DataFrame()
     for _, row in df_chems.iterrows():
-        if row['smiles']:
-            descriptors = descriptors_for_chemical(row['smiles'])
-            if descriptors is None:
-                continue
-            else:
-                descriptors.update({col_id: row[col_id]})
-                df_descriptors = \
-                    pd.concat([df_descriptors,
-                            pd.DataFrame(descriptors)])
-                del descriptors
-        else:
+        descriptors = descriptors_for_chemical(row['smiles'])
+        if descriptors is None:
             continue
+        else:
+            descriptors.update({col_id: row[col_id]})
+            df_descriptors = \
+                pd.concat([df_descriptors,
+                        pd.DataFrame(descriptors)])
+            del descriptors
 
     # Merging descriptors and input parameters
     df_chems = pd.merge(df_descriptors,

@@ -34,6 +34,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--rdbms',
                         help='The Relational Database Management System (RDBMS) you would like to use',
+                        choices=['MySQL', 'PostgreSQL'],
                         type=str,
                         default='mysql')
     parser.add_argument('--password',
@@ -57,6 +58,7 @@ if __name__ == '__main__':
                         default='PRTR_transfers')
     parser.add_argument('--sql_file',
                         help='Would you like to obtain .SQL file',
+                        choices=['True', 'False'],
                         type=str,
                         default='False')
 

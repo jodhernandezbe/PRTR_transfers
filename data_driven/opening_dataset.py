@@ -75,7 +75,7 @@ def create_engine_instance(password,
     return Engine
 
 
-def opening_dataset(args):
+def opening_dataset(args,dataset):
     '''
     Function to open dataset based on sql query
     '''
@@ -143,10 +143,7 @@ def opening_dataset(args):
                       'record': sql_query_record}
 
     # Fetching the PRTR information to build the data-driven models
-    df_dict = {}
-    for table, query in sql_query_dict.items():
-        df = pd.read_sql_query(query, Engine)
-        df_dict.update({table: df})
-        del df
+    query = sql_query_dict[dataset]
+    df = pd.read_sql_query(query, Engine)
 
-    return df_dict
+    return df
