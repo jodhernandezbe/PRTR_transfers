@@ -43,7 +43,7 @@ def data_driven_pipeline(args):
         df_chem = dfs[key]
 
         # Looking for SMILES
-        logger.info(f' Looking for SMILES for compounds belonging to the {key} list')
+        logger.info(f' Looking for SMILES for compounds belonging to the {key}s list')
         if os.path.isfile(f'{dir_path}/output/{key}.csv'):
             df_chem = pd.read_csv(f'{dir_path}/output/{key}.csv')
         else:
@@ -51,7 +51,7 @@ def data_driven_pipeline(args):
             df_chem.to_csv(f'{dir_path}/output/{key}.csv', index=False, sep=',')
 
         # Looking for chemical descriptors
-        logger.info(f' Looking for descriptors for compounds belonging to the {key} list')
+        logger.info(f' Looking for descriptors for compounds belonging to the {key}s list')
         df_chem = information_for_set_of_chems(cas_col, df_chem)
 
         print(df_chem.info())
