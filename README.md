@@ -4,7 +4,7 @@
 
 ## Project tree
 
-The following is the project tree considering only its most important files for a developer.
+The following is the project tree considering only its most important files for a developer. Don't hesitate to fully check the folders, including the ancillary one that contains important information for the data processing.  
 
 ```bash
 
@@ -54,7 +54,9 @@ PRTR_transfers
 
 ```
 
-## Enhanced entity-relationship (EER) diagram for the PRTR_transfers database 
+## Enhanced entity-relationship diagram (EERD) for the PRTR_transfers database 
+
+The EERD model in the below figure represents the PRTR_transfers database schema created after data engineering. 
 
 <p align="center">
   <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/master/data_engineering/load/PRTR_transfers_EER_Diagram.svg width="100%">
