@@ -4,7 +4,7 @@
 
 ## Project tree
 
-The following is the project tree considering only its most important files for a developer.
+The following is the project tree considering only its most important files for a developer. Don't hesitate to fully check the folders, including the ancillary one that contains important information for the data processing.  
 
 ```bash
 
@@ -54,7 +54,9 @@ PRTR_transfers
 
 ```
 
-## Enhanced entity-relationship (EER) diagram for the PRTR_transfers database 
+## Enhanced entity-relationship diagram (EERD) for the PRTR_transfers database 
+
+The EERD model in the following figure represents the PRTR_transfers database schema created after data engineering. The prtr_system table is shown without any explicit relationship between the other tables in the database. The reason is that the columns of the prtr_system table were not set as foreign key; however, its columns could be used to connect to other tables like the national_substance table to know the PRTR system the report comes from. 
 
 <p align="center">
   <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/master/data_engineering/load/PRTR_transfers_EER_Diagram.svg width="100%">
@@ -133,7 +135,7 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
 
 ### Installation of Relational Database Management System (RDMS)
 
-The Extract, Transform, Load (ETL) procedure uses an Object–Relational Mapping (ORT) for data persistence by a RDMS. PostgreSQL and MySQL are the RDMS currently supported by the ETL. Thus, you must have installed any of these RDMSs to run the data engineering pipeline.
+The Extract, Transform, Load (ETL) procedure uses an Object–Relational Mapping (ORT) for data persistence by an RDMS. PostgreSQL and MySQL are the RDMS currently supported by the ETL. Thus, you must have installed any of these RDMSs to run the data engineering pipeline.
 
 # How to use
 
@@ -173,12 +175,12 @@ You can use each .py file in the data engineering module separately. However, th
     
    |Argument|Default| Comment |
    |---|---|---|
-   | rdbms | mysql | |
+   | rdbms | mysql | Only two options: MySQL and PostgreSQL |
    | username | root | root is the default username for MySQL. For PostgreSQL is postgres |
    | host | 127.0.0.1 | 127.0.0.1 (localhost) is the default host for MySQL. The same is for PostgreSQL |
    | port | 3306 | 3306 is the default port for MySQL. For PostgreSQL is 5432 |
-   | db_name | PRTR_transfers | |
-   | sql_file | False | |
+   | db_name | PRTR_transfers | You are free to choose a name for the database |
+   | sql_file | False | Only two options: True and False |
    </li>
 </ol>
 
