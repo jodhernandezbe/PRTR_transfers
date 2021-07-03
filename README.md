@@ -160,7 +160,7 @@ You can use each .py file in the data engineering module separately. However, th
 
     optional arguments:
           -h, --help           show this help message and exit
-          --rdbms {MySQL,PostgreSQL}
+          --rdbms {mysql,postgresql}
                                The Relational Database Management System (RDBMS) you would like to use
           --password PASSWORD  The password for using the RDBMS
           --username USERNAME  The username for using the RDBMS
@@ -175,7 +175,7 @@ You can use each .py file in the data engineering module separately. However, th
     
    |Argument|Default| Comment |
    |---|---|---|
-   | rdbms | MySQL | Only two options: MySQL and PostgreSQL |
+   | rdbms | mysql | Only two options: MySQL and PostgreSQL |
    | username | root | root is the default username for MySQL. For PostgreSQL is postgres |
    | host | 127.0.0.1 | 127.0.0.1 (localhost) is the default host for MySQL. The same is for PostgreSQL |
    | port | 3306 | 3306 is the default port for MySQL. For PostgreSQL is 5432 |
