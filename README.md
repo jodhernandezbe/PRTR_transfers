@@ -160,7 +160,7 @@ You can use each .py file in the data engineering module separately. However, th
 
     optional arguments:
           -h, --help           show this help message and exit
-          --rdbms {MySQL,PostgreSQL}
+          --rdbms {mysql,postgresql}
                                The Relational Database Management System (RDBMS) you would like to use
           --password PASSWORD  The password for using the RDBMS
           --username USERNAME  The username for using the RDBMS

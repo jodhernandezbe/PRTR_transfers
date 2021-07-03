@@ -34,7 +34,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--rdbms',
                         help='The Relational Database Management System (RDBMS) you would like to use',
-                        choices=['MySQL', 'PostgreSQL'],
+                        choices=['mysql', 'postgresql'],
                         type=str,
                         default='mysql')
     parser.add_argument('--password',
