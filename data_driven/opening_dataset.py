@@ -52,9 +52,10 @@ def create_engine_instance(password,
     '''
 
     # URL string
-    url = f'{rdbms}://{username}:{password}@{host}:{port}/{db_name}'
     if rdbms == 'mysql':
-        url = f'{url}?charset=utf8mb4'
+        url = f'{rdbms}+pymysql://{username}:{password}@{host}:{port}/{db_name}?charset=utf8mb4'
+    else:
+        url = f'{rdbms}+psycopg2://{username}:{password}@{host}:{port}/{db_name}'
 
     if not database_exists(url):
         Is_created = True
