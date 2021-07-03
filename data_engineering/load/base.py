@@ -21,9 +21,9 @@ def create_engine_session(password,
     '''
 
     if rdbms == 'mysql':
-        url = f'{rdbms}://{username}:{password}@{host}:{port}/{db_name}?charset=utf8mb4'
+        url = f'{rdbms}+pymysql://{username}:{password}@{host}:{port}/{db_name}?charset=utf8mb4'
     else:
-        url = f'{rdbms}://{username}:{password}@{host}:{port}/{db_name}'
+        url = f'{rdbms}+psycopg2://{username}:{password}@{host}:{port}/{db_name}'
 
     if not database_exists(url):
         create_database(url)
