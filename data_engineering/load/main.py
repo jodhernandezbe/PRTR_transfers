@@ -80,11 +80,7 @@ def load_pipeline(args):
         df = df.where((pd.notnull(df)), None)
         logger.info(f' Loading table {filename} into the {db_name} database')
         # Saving each record by table
-        n_rows_saved = 0
-        for idx, row in df.iterrows():
-            n_rows_saved += 1
-            if n_rows_saved % 1000 == 0:
-                logger.info(f' {n_rows_saved} records loaded into the table {filename}')
+        for _, row in df.iterrows():
             context = row.to_dict()
             instance = Object(**context)
             session.add(instance)
@@ -107,7 +103,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--rdbms',
                         help='The Relational Database Management System (RDBMS) you would like to use',
-                        choices=['MySQL', 'PostgreSQL'],
+                        choices=['mysql', 'postgresql'],
                         type=str,
                         default='mysql')
     parser.add_argument('--password',

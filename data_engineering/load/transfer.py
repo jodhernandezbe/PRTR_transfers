@@ -6,6 +6,7 @@ from data_engineering.load.base import Base
 
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 class NationalGenericTransferClass(Base):
@@ -13,12 +14,23 @@ class NationalGenericTransferClass(Base):
 
     national_generic_transfer_class_id = Column(Integer(), primary_key=True)
     generic_transfer_class_id = Column(String(3), 
-                                       ForeignKey('generic_transfer_class.generic_transfer_class_id', ondelete='CASCADE'),
+                                       ForeignKey('generic_transfer_class.generic_transfer_class_id',
+                                                ondelete='CASCADE',
+                                                onupdate='cascade'),
                                        nullable=False)
     national_transfer_class_prtr_system_id = Column(Integer(), 
-                                                ForeignKey('national_transfer_class.national_transfer_class_prtr_system_id', ondelete='CASCADE'),
+                                                ForeignKey('national_transfer_class.national_transfer_class_prtr_system_id',
+                                                        ondelete='CASCADE',
+                                                        onupdate='cascade'),
                                                 nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
+
+    national_transfer_class = relationship("NationalTransferClass",
+                                            back_populates="national_generic_transfer_class")
+    generic_transfer_class = relationship("GenericTransferClass",
+                                        back_populates="national_generic_transfer_class")
+    transfer_record = relationship("TransferRecord",
+                                    back_populates="national_generic_transfer_class")
 
     def __init__(self, **kwargs):
         self.national_generic_transfer_class_id = kwargs['national_generic_transfer_class_id']
@@ -36,6 +48,10 @@ class NationalTransferClass(Base):
     prtr_system_comment = Column(String(200), nullable=True)
     created_at = Column(DateTime(), default=datetime.now())
 
+    national_generic_transfer_class = relationship("NationalGenericTransferClass",
+                                            back_populates="national_transfer_class",
+                                            uselist=False)
+
     def __init__(self, **kwargs):
         self.national_transfer_class_prtr_system_id = kwargs['national_transfer_class_prtr_system_id']
         self.national_transfer_class_id = kwargs['national_transfer_class_id']
@@ -52,6 +68,9 @@ class GenericTransferClass(Base):
     transfer_class_wm_hierarchy_name = Column(String(20), nullable=False)
     generic_system_comment = Column(String(150), nullable=True)
     created_at = Column(DateTime(), default=datetime.now())
+
+    national_generic_transfer_class = relationship("NationalGenericTransferClass",
+                                            back_populates="generic_transfer_class")
 
     def __init__(self, **kwargs):
         self.generic_transfer_class_id = kwargs['generic_transfer_class_id']
