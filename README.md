@@ -4,7 +4,7 @@
 
 ## Project tree
 
-The following is the project tree considering only its most important files for a developer. Don't hesitate to fully check the folders, including the ancillary one that contains important information for the data processing.  
+The following is the project tree considering only its most important files for a developer. Don't hesitate to fully check the folders, including the [ancillary](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/ancillary) one that contains important information for the data processing.  
 
 ```bash
 
