@@ -79,7 +79,7 @@ A conda environment can be created by executing any of the following commands:
   </li>
   <li>
     
-    conda env create -n PRTR -f environment.yml
+     conda env create -n PRTR -f environment.yml (recommended)
   </li>
 </ul>
 
