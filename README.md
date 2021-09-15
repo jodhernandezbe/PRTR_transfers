@@ -75,7 +75,7 @@ A conda environment can be created by executing any of the following commands:
 <ul>
   <li>
     
-     conda create -n PRTR -f requirements.txt
+     conda create --name PRTR --file requirements.txt
   </li>
   <li>
     Recommended:
