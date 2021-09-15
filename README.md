@@ -4,7 +4,7 @@
 
 ## Project tree
 
-The following is the project tree considering only its most important files for a developer. Don't hesitate to fully check the folders, including the ancillary one that contains important information for the data processing.  
+The following is the project tree considering only its most important files for a developer. Don't hesitate to fully check the folders, including the [ancillary](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/ancillary) one that contains important information for the data processing.  
 
 ```bash
 
@@ -75,11 +75,11 @@ A conda environment can be created by executing any of the following commands:
 <ul>
   <li>
     
-     conda create --name PRTR --file requirements.txt
+     conda create -n PRTR -f requirements.txt
   </li>
   <li>
     
-    conda PRTR create -f environment.yml
+    conda env create -n PRTR -f environment.yml
   </li>
 </ul>
 
