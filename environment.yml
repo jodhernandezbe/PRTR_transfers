@@ -5,8 +5,8 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - _libgcc_mutex=0.1=main
-  - _openmp_mutex=4.5=1_gnu
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=1_llvm
   - anyjson=0.3.3=py39h06a4308_1
   - argon2-cffi=20.1.0=py39h27cfd23_1
   - arrow=1.1.1=py39h06a4308_0
@@ -16,7 +16,7 @@ dependencies:
   - boost-cpp=1.74.0=h312852a_4
   - brotlipy=0.7.0=py39h27cfd23_1003
   - bzip2=1.0.8=h7b6447c_0
-  - ca-certificates=2021.5.30=ha878542_0
+  - ca-certificates=2021.7.5=h06a4308_1
   - cairo=1.16.0=hf32fb01_1
   - certifi=2021.5.30=py39h06a4308_0
   - cffi=1.14.5=py39h261ae71_0
@@ -47,11 +47,10 @@ dependencies:
   - libdeflate=1.7=h27cfd23_5
   - libedit=3.1.20210216=h27cfd23_1
   - libffi=3.3=he6710b0_2
-  - libgcc-ng=9.3.0=h5101ec6_17
+  - libgcc-ng=11.2.0=h1d223b6_8
   - libgfortran-ng=9.3.0=ha5ec8a7_17
   - libgfortran5=9.3.0=ha5ec8a7_17
   - libglib=2.68.3=h3e27bee_0
-  - libgomp=9.3.0=h5101ec6_17
   - libiconv=1.16=h516909a_0
   - liblapack=3.9.0=9_openblas
   - libopenblas=0.3.15=pthreads_h8fe5266_1
@@ -64,6 +63,7 @@ dependencies:
   - libxcb=1.14=h7b6447c_0
   - libxml2=2.9.12=h72842e0_0
   - libxslt=1.1.33=h15afd5d_2
+  - llvm-openmp=12.0.1=h4bd325d_1
   - lxml=4.6.3=py39h107f48f_0
   - lz4-c=1.9.3=h2531618_0
   - matplotlib-base=3.4.2=py39h2fa2bec_0
@@ -72,14 +72,15 @@ dependencies:
   - ncurses=6.2=he6710b0_1
   - numpy=1.21.0=py39hdbf815f_0
   - olefile=0.46=py_0
-  - openssl=1.1.1k=h27cfd23_0
+  - openjpeg=2.4.0=h3ad879b_0
+  - openssl=1.1.1l=h7f8727e_0
   - orderedmultidict=1.0.1=py_0
   - pandas=1.2.4=py39h2531618_0
   - passlib=1.7.4=pyh9f0ad1d_0
   - pcre=8.45=h295c915_0
   - pendulum=2.1.2=pyhd3eb1b0_1
   - phonenumbers=8.12.26=pyhd8ed1ab_0
-  - pillow=8.2.0=py39he98fc37_0
+  - pillow=8.3.2=py39ha612740_0
   - pip=21.1.3=py39h06a4308_0
   - pixman=0.40.0=h7b6447c_0
   - psycopg2=2.8.6=py39h3c74f83_1
@@ -106,7 +107,7 @@ dependencies:
   - sqlalchemy=1.4.14=py39h3811e60_0
   - sqlalchemy-utils=0.37.1=pyhd3eb1b0_0
   - sqlite=3.36.0=hc218d9a_0
-  - tk=8.6.10=hbc83047_0
+  - tk=8.6.11=h27826a3_1
   - tornado=6.1=py39h27cfd23_0
   - tzdata=2021a=h52ac0ba_0
   - urllib3=1.26.6=pyhd3eb1b0_1
