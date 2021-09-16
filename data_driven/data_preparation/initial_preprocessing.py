@@ -1,16 +1,14 @@
 # Importing libraries
-from data_driven.rdkit_descriptors import information_for_set_of_chems
+from data_driven.data_preparation.rdkit_descriptors import information_for_set_of_chems
 from data_engineering.extract.nlm_scraper import looking_for_structure_details as nlm
 from data_engineering.extract.pubchem_scraper import looking_for_structure_details as pubchem
-from data_driven.opening_dataset import opening_dataset
+from data_driven.data_preparation.opening_dataset import opening_dataset
 
 import random
 import pandas as pd
 from scipy.stats import zscore
 import os
-import logging
 
-logging.basicConfig(level=logging.INFO)
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 
 
@@ -70,7 +68,7 @@ def looking_for_smiles(cas_number):
     return smiles
 
 
-def initial_data_preprocessing(args):
+def initial_data_preprocessing(logger, args):
     '''
     Function for a preliminary preprocessing of the data
     '''
@@ -78,7 +76,6 @@ def initial_data_preprocessing(args):
     db_name = args.db_name
     including_groups = args.including_groups
     grouping_type = args.grouping_type
-    logger = logging.getLogger(' Data-driven modeling -> preliminary data preprocessing')
     cas_dict = {'chemical': 'chemical_in_category_cas',
                 'substance': 'cas_number'}
     datasets = ['chemical', 'substance', 'record']

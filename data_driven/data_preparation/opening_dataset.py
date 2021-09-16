@@ -25,12 +25,12 @@ def create_database_from_sql_file(Engine,
         string = 'MySQL'
     else:
         string = 'PostgreSQL'
-    with zipfile.ZipFile(f'{dir_path}/../data_engineering/load/output/{db_name}_v_{string}.zip', 'r') as zip_ref:
-        zip_ref.extractall(f'{dir_path}/../data_engineering/load/output')
+    with zipfile.ZipFile(f'{dir_path}/../../data_engineering/load/output/{db_name}_v_{string}.zip', 'r') as zip_ref:
+        zip_ref.extractall(f'{dir_path}/../../data_engineering/load/output')
     
     # Parsing and creating the database from .sql file
     with Engine.connect() as connection:
-        with open(f'{dir_path}/../data_engineering/load/output/{db_name}_v_{string}.sql', 'r') as sql_file:
+        with open(f'{dir_path}/../../data_engineering/load/output/{db_name}_v_{string}.sql', 'r') as sql_file:
             sql_as_string = sql_file.read()
             sqlcommands = sql_as_string.split(';')
             for command in sqlcommands:
