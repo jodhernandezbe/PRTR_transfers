@@ -12,10 +12,21 @@ PRTR_transfers
 ├── ancillary
 ├── application
 ├── data_driven
-│   ├── main.py
-│   ├── opening_dataset.py
-│   ├── rdkit_descriptors.py
-│   └── output
+│   ├── main.py
+│   ├── data_preparation
+│   │   ├── main.py
+│   │   ├── initial_preprocessing.py
+│   │   ├── opening_dataset.py
+│   │   ├── rdkit_descriptors.py
+│   │   ├── preprocessing.py
+│   │   └── output
+│   ├── modeling
+│   │   ├── main.py
+│   │   ├── evaluation.py
+│   │   ├── models.py
+│   │   └── training.py
+│   └── parameter_tuning
+│       └── main.py
 └── data_engineering
     ├── main.py
     ├── extract
@@ -75,10 +86,11 @@ A conda environment can be created by executing any of the following commands:
 <ul>
   <li>
     
-     conda create -n PRTR -f requirements.txt
+     conda create --name PRTR --file requirements.txt
   </li>
   <li>
-    
+    Recommended:
+      
     conda env create -n PRTR -f environment.yml
   </li>
 </ul>
