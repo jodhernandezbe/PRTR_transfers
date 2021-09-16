@@ -2,25 +2,32 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_driven.data_preparation.main import data_preparation_pipeline
+from data_driven.data_preparation.initial_preprocessing import initial_data_preprocessing
+from data_driven.data_preparation.preprocessing import data_preprocessing
 
 import logging
 import argparse
+
 logging.basicConfig(level=logging.INFO)
 
 
-def machine_learning_pipeline(args):
+def data_preparation_pipeline(args):
     '''
-    Function for creating the machine learning pipeline
+    Function to run the ML pipeline
     '''
 
-    logger = logging.getLogger(' Data-driven modeling')
+    logger = logging.getLogger(' Data-driven modeling --> Data preparation')
 
-    logger.info(' Starting data-driven modeling')
+    # Preliminary data preprocessing
+    logger.info(' Running preliminary data preprocessing')
+    df_ml = initial_data_preprocessing(logger, args)
 
-    # Calling the data preparation pipeline
-    data_preparation_pipeline(args)
+    # Preprocessing
+    logger.info(' Running data preprocessing')
+    df_ml = data_preprocessing(df_ml, args, logger)
 
+    return df_ml 
+    
 
 if __name__ == '__main__':
 
@@ -80,4 +87,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    machine_learning_pipeline(args)
+    data_preparation_pipeline(args)
