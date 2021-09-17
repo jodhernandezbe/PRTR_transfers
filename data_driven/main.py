@@ -3,6 +3,8 @@
 
 # Importing libraries
 from data_driven.data_preparation.main import data_preparation_pipeline
+from data_driven.modeling.main import modeling_pipeline
+
 
 import logging
 import argparse
@@ -19,7 +21,10 @@ def machine_learning_pipeline(args):
     logger.info(' Starting data-driven modeling')
 
     # Calling the data preparation pipeline
-    data_preparation_pipeline(args)
+    df_ml = data_preparation_pipeline(args)
+
+    # Calling the modeling pipeline
+    modeling_pipeline(df_ml)
 
 
 if __name__ == '__main__':
@@ -77,6 +82,12 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='one-hot-encoding')
+    parser.add_argument('--output_column',
+                        help='What column would you like to keep as the classifier output',
+                        choices=['generic', 'wm_hierarchy'],
+                        type=str,
+                        required=False,
+                        default='generic')
 
     args = parser.parse_args()
 
