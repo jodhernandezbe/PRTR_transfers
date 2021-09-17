@@ -5,12 +5,13 @@ from data_engineering.extract.pubchem_scraper import looking_for_structure_detai
 from data_driven.data_preparation.opening_dataset import opening_dataset
 
 import random
+from random import seed
 import pandas as pd
 from scipy.stats import zscore
 import os
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
-
+seed(1) # seed random number generator
 
 def chemical_group_descriptors(group, generic_substance_id, grouping_type=1):
     '''
@@ -87,9 +88,11 @@ def initial_data_preprocessing(logger, args):
         logger.info(f' Fetching the needed information for the {dataset} dataset from the {db_name} database')
 
         if os.path.isfile(f'{dir_path}/output/{dataset}.csv'):
+
             df = pd.read_csv(f'{dir_path}/output/{dataset}.csv',
                             dtype={'generic_substance_id': object})
         else:
+
             df = opening_dataset(args, dataset)
 
             if (dataset in cas_dict.keys()):
@@ -123,7 +126,15 @@ def initial_data_preprocessing(logger, args):
             df.drop(columns=['cas_number'], inplace=True)
             df_chem = pd.concat([df_chem, df], ignore_index=True, axis=0)
         elif (dataset == 'record'):
+            # Keeping the column selected by the user as the model output
+            if args.output_column == 'generic':
+                df.drop(columns=['transfer_class_wm_hierarchy_name'],
+                        inplace=True)
+            else:
+                df.drop(columns=['generic_transfer_class_id'],
+                        inplace=True)
             df_ml = pd.merge(df, df_chem, on='generic_substance_id', how='inner')
+            del df_chem
 
         del df
 

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import numpy as np
 import os
@@ -19,9 +20,9 @@ def obtaining_intervals(df, vals_for_intervals, number_of_intervals, flow_handli
     intervals = pd.DataFrame({'From': vals_for_intervals[0:num_different_elements-1],
                                 'To': vals_for_intervals[1:]})
     intervals['Value'] = pd.Series(intervals.index.tolist()) + 1
-    intervals['Value'] = intervals['Value'].apply(lambda x: f'Interval {x}')
     intervals = intervals.set_index(pd.IntervalIndex.from_arrays(intervals['From'], intervals['To'], closed='left'))['Value'] 
     df['transfer_amount_kg'] = df['transfer_amount_kg'].map(intervals)
+    df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(object)
     # Saving equal-width intervals 
     intervals = intervals.reset_index()
     intervals.rename(columns={'index': 'Flow rate interval [kg]'}, inplace=True)
@@ -67,6 +68,57 @@ def transfer_flow_rates(df, flow_handling=1, number_of_intervals=10):
     return df
 
 
+def calc_smooth_mean(df1, df2, cat_name, target, weight):
+    '''
+    Function to apply target encoding
+
+    Source: https://maxhalford.github.io/blog/target-encoding-done-the-right-way/
+    '''
+    # Compute the global mean
+    mean = df1[target].mean()
+
+    # Compute the number of values and the mean of each group
+    agg = df1.groupby(cat_name)[target].agg(['count', 'mean'])
+    counts = agg['count']
+    means = agg['mean']
+
+    # Compute the "smoothed" means
+    smooth = (counts * means + weight * mean) / (counts + weight)
+
+    # Replace each value by the according smoothed mean
+    if df2 is None:
+        return df1[cat_name].map(smooth)
+    else:
+        return df1[cat_name].map(smooth),df2[cat_name].map(smooth.to_dict())
+
+
+def categorical_data_encoding(df, cat_cols,
+                            encoding='one-hot-encoding',
+                            output_column='generic'):
+    '''
+    Function to encode the categorical features
+    '''
+
+    for col in cat_cols:
+        if col == 'transfer_amount_kg':
+            continue
+        elif col == 'generic_sector_code':
+            if encoding == 'one-hot-encoding':
+                df = pd.concat([df, pd.get_dummies(df.generic_sector_code,
+                                                    prefix='sector')],
+                                axis=1)
+            else:
+                df['sector'] = calc_smooth_mean(df1=df, df2=None,
+                                                cat_name='generic_sector_code',
+                                                target=output_column,
+                                                weight=5)
+        else:
+            labelencoder = LabelEncoder()
+            df[f'{col}_label'] = labelencoder.fit_transform(df[col])
+
+    return df
+
+
 def data_preprocessing(df, args, logger):
     '''
     Function to apply further preprocessing to the dataset
@@ -77,3 +129,25 @@ def data_preprocessing(df, args, logger):
     df = transfer_flow_rates(df,
                 flow_handling=args.flow_handling,
                 number_of_intervals=args.number_of_intervals)
+
+    # Converting generic_sector_code from integer to string
+    df['generic_sector_code'] = df['generic_sector_code'].astype(object)
+
+    # Identifying categorical data
+    cols = df.columns
+    num_cols = df._get_numeric_data().columns
+    cat_cols = list(set(cols) - set(num_cols) - set(['generic_substance_id']))
+    if args.output_column == 'generic':
+        col_to_keep = 'generic_transfer_class_id'
+    else:
+        col_to_keep = 'transfer_class_wm_hierarchy_name'
+    index = cat_cols.index(col_to_keep)
+    first_element = cat_cols[0]
+    cat_cols[0] = col_to_keep
+    cat_cols[index] = first_element
+
+    # Organizing categorical data
+    logger.info(' Encoding cateorical features')
+    df = categorical_data_encoding(df, cat_cols,
+                            encoding=args.encoding,
+                            output_column=args.output_column)
