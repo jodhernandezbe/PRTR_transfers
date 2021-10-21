@@ -105,7 +105,8 @@ def categorical_data_encoding(df, cat_cols,
         elif col == 'generic_sector_code':
             if encoding == 'one-hot-encoding':
                 df = pd.concat([df, pd.get_dummies(df.generic_sector_code,
-                                                    prefix='sector')],
+                                                    prefix='sector',
+                                                    sparse=True)],
                                 axis=1)
             else:
                 df['sector'] = calc_smooth_mean(df1=df, df2=None,
