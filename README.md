@@ -198,4 +198,6 @@ You can use each .py file in the data engineering module separately. However, th
 
 <hr/>
 
+# Notes
+
 <a name="myfootnote1">1</a>: If you have troubles with this step, update ```updatedb```  by running ```sudo updatedb```.
