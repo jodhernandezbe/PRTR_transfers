@@ -97,7 +97,7 @@ A conda environment can be created by executing any of the following commands:
 
 The above commands are written assuming that you are in the folder containing the .txt and .yml files, i.e. the root folder PRTR_transfers. 
 
-### Ovoiding ModuleNotFoundError and ImportError
+### Ovoiding ModuleNotFoundError and ImportError<sup>[1](#myfootnote1)</sup>
 
 If you are working as a Python developer, you should avoid both ```ModuleNotFoundError``` and ```ImportError``` (see the following [link](https://towardsdatascience.com/how-to-fix-modulenotfounderror-and-importerror-248ce5b69b1c)). Thus, follow the steps below to solve the above mentioned problems:
 
@@ -197,3 +197,6 @@ You can use each .py file in the data engineering module separately. However, th
 </ol>
 
 <hr/>
+
+-----------------------------------------------------------------------------------------------------------------------------
+<a name="myfootnote1">1</a>: If you have troubles with this, update ```updatedb```  by running ```sudo updatedb```
