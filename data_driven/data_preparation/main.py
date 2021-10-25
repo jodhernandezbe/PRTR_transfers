@@ -39,6 +39,7 @@ if __name__ == '__main__':
                         default='mysql')
     parser.add_argument('--password',
                         help='The password for using the RDBMS',
+                        required=False,
                         type=str)
     parser.add_argument('--username',
                         help='The username for using the RDBMS',
