@@ -3,6 +3,7 @@
 
 # Importing libraries
 from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import IsolationForest
 import pandas as pd
 import numpy as np
 import os
@@ -72,8 +73,9 @@ def calc_smooth_mean(df1, df2, cat_name, target, weight):
     '''
     Function to apply target encoding
 
-    Source: https://maxhalford.github.io/blog/target-encoding-done-the-right-way/
+    Source: https://maxhalford.github.io/blog/target-encoding/
     '''
+    
     # Compute the global mean
     mean = df1[target].mean()
 
@@ -94,7 +96,7 @@ def calc_smooth_mean(df1, df2, cat_name, target, weight):
 
 def categorical_data_encoding(df, cat_cols,
                             encoding='one-hot-encoding',
-                            output_column='generic'):
+                            output_column='generic_transfer_class_id'):
     '''
     Function to encode the categorical features
     '''
@@ -111,11 +113,20 @@ def categorical_data_encoding(df, cat_cols,
             else:
                 df['sector'] = calc_smooth_mean(df1=df, df2=None,
                                                 cat_name='generic_sector_code',
-                                                target=output_column,
+                                                target=f'{output_column}_label',
                                                 weight=5)
+
+            df[[col for col in df.columns if 'sector' in col]].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/generic_sector_{encoding}.csv',
+                    index=False)
+            df.drop(columns=['generic_sector_code'],
+                    inplace=True)
         else:
             labelencoder = LabelEncoder()
             df[f'{col}_label'] = labelencoder.fit_transform(df[col])
+
+            df[[col, f'{col}_label']].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/{col}_labelencoder.csv',
+                    index=False)
+            df.drop(columns=col, inplace=True)
 
     return df
 
@@ -148,7 +159,38 @@ def data_preprocessing(df, args, logger):
     cat_cols[index] = first_element
 
     # Organizing categorical data
-    logger.info(' Encoding cateorical features')
+    logger.info(' Encoding categorical features')
     df = categorical_data_encoding(df, cat_cols,
                             encoding=args.encoding,
-                            output_column=args.output_column)
+                            output_column=col_to_keep)
+
+    # Grouping
+    df.drop(columns=['transfer_record_id',
+                    'reliability_score',
+                    'generic_substance_id'],
+                    inplace=True)
+    grouping_cols = ['reporting_year',
+                    'national_facility_and_generic_sector_id',
+                    'transfer_amount_kg']
+    [grouping_cols.append(col) for col in df.columns if ('sector' in col) and (col not in grouping_cols) and (col != f'{col_to_keep}_label')]
+    df = df.groupby(grouping_cols, as_index=False).agg(lambda x: list(x))
+    df.reset_index(inplace=True, drop=True)
+
+    
+    # print(df.shape)
+    # print(df.info())
+    # print(df.columns)
+    # # Outliers detection
+    # if args.outliers_removal == 'True':
+    #     iso = IsolationForest(max_samples=100,
+    #                     random_state=0,
+    #                     contamination=0.2) 
+    #     df = df[iso.fit_predict(df[[col for col in df.columns if col not in col_to_keep]].values) == 1]
+    # else:
+    #     pass
+
+    # print(df.shape)
+
+    # # Balancing the dataset
+
+    # # Feature selection
