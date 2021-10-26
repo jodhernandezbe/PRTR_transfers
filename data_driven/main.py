@@ -88,6 +88,12 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='generic')
+    parser.add_argument('--outliers_removal',
+                        help='Would you like to keep the outliers',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='False')
 
     args = parser.parse_args()
 
