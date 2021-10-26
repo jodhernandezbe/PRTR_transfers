@@ -47,8 +47,13 @@ def function_to_create_zip(filename):
                     os.path.basename(f'{dir_path}/output/{filename}.sql'),
                     compress_type=zipfile.ZIP_DEFLATED)
 
+    os.remove(f'{dir_path}/output/{filename}.sql')
+
 
 def load_pipeline(args):
+    '''
+    Function for creating the load pipeline for the PRTR systems
+    '''
 
     logger = logging.getLogger(' Data engineering --> Load')
 
@@ -90,12 +95,13 @@ def load_pipeline(args):
     if sql_file == 'True':
         if rdbms == 'mysql':
             exporting_string = f'mysqldump -u {username} -p{password} {db_name} > {dir_path}/output/{db_name}_v_MySQL.sql'
-            function_to_create_zip(f'{db_name}_v_MySQL')
+            zipping_string = f'{db_name}_v_MySQL'
         elif rdbms == 'postgresql':
             exporting_string = f'pg_dump -U {username} -h {host} {db_name} -W > {dir_path}/output/{db_name}_v_PostgreSQL.sql'
-            function_to_create_zip(f'{db_name}_v_PostgreSQL')
+            zipping_string = f'{db_name}_v_PostgreSQL'
 
         os.system(exporting_string)
+        function_to_create_zip(zipping_string)
 
 
 if __name__ == '__main__':
