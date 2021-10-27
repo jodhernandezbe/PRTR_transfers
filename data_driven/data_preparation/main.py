@@ -85,12 +85,42 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='one-hot-encoding')
+    parser.add_argument('--output_column',
+                        help='What column would you like to keep as the classifier output',
+                        choices=['generic', 'wm_hierarchy'],
+                        type=str,
+                        required=False,
+                        default='generic')
     parser.add_argument('--outliers_removal',
                         help='Would you like to keep the outliers',
                         choices=['True', 'False'],
                         type=str,
                         required=False,
-                        default='False')
+                        default='True')
+    parser.add_argument('--balanced_dataset',
+                        help='Would you like to balance the dataset',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
+    parser.add_argument('--how_balance',
+                        help='What method to balance the dataset you would like to use (see options)',
+                        choices=['random_oversample', 'smote', 'adasyn', 'random_undersample', 'near_miss'],
+                        type=str,
+                        required=False,
+                        default='random_oversample')
+    parser.add_argument('--feature_selection',
+                        help='Would you like to select features',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
+    parser.add_argument('--balanced_splitting',
+                        help='Would you like to split the dataset in a balanced fashion',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
 
 
     args = parser.parse_args()
