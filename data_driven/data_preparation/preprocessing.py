@@ -3,7 +3,11 @@
 
 # Importing libraries
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import IsolationForest
+from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
+from imblearn.under_sampling import RandomUnderSampler, NearMiss
+from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 import os
@@ -130,11 +134,35 @@ def categorical_data_encoding(df, cat_cols,
 
     return df
 
+def balancing_dataset(X, Y, col_to_keep, how_balance):
+    '''
+    Function to balance the dataset based on the output clasess
+    '''
+
+    Y.value_counts().to_csv(f'{dir_path}/output/counts_by_output_class_for_{col_to_keep}.csv')
+
+    if how_balance == 'random_oversample':
+        sampler = RandomOverSampler(random_state=42)
+    elif how_balance == 'smote':
+        sampler = SMOTE(k_neighbors=2)
+    elif how_balance == 'adasyn':
+        sampler = ADASYN(random_state=42)
+    elif how_balance == 'random_undersample':
+        sampler = RandomUnderSampler(random_state=42)
+    elif how_balance == 'near_miss':
+        sampler = NearMiss()
+
+    X_balanced, Y_balanced = sampler.fit_resample(X, Y)
+
+    return X_balanced, Y_balanced
+
 
 def data_preprocessing(df, args, logger):
     '''
     Function to apply further preprocessing to the dataset
     '''
+
+    df = df.sample(50000)
 
     # Organazing transfers flow rates
     logger.info(' Organizing the transfer flow rates')
@@ -164,33 +192,78 @@ def data_preprocessing(df, args, logger):
                             encoding=args.encoding,
                             output_column=col_to_keep)
 
-    # Grouping
-    df.drop(columns=['transfer_record_id',
-                    'reliability_score',
-                    'generic_substance_id'],
-                    inplace=True)
-    grouping_cols = ['reporting_year',
-                    'national_facility_and_generic_sector_id',
-                    'transfer_amount_kg']
-    [grouping_cols.append(col) for col in df.columns if ('sector' in col) and (col not in grouping_cols) and (col != f'{col_to_keep}_label')]
-    df = df.groupby(grouping_cols, as_index=False).agg(lambda x: list(x))
-    df.reset_index(inplace=True, drop=True)
+    # Dropping columns are not needed
+    logger.info(' Dropping not needed columns')
+    to_drop = ['transfer_record_id',
+                'reporting_year',
+                'reliability_score',
+                'generic_substance_id',
+                'national_facility_and_generic_sector_id']
+    df.drop(columns=to_drop, inplace=True)
+    num_cols = list(set(num_cols) - set(to_drop))
 
+    # Dropping columns with a lot missing values
+    logger.info(' Dropping columns with a lot of missing values (> 0.8)')
+    to_drop = df.columns[pd.isnull(df).sum(axis=0)/df.shape[0] > 0.8].tolist()
+    df.drop(columns=to_drop, inplace=True)
     
-    # print(df.shape)
-    # print(df.info())
-    # print(df.columns)
-    # # Outliers detection
-    # if args.outliers_removal == 'True':
-    #     iso = IsolationForest(max_samples=100,
-    #                     random_state=0,
-    #                     contamination=0.2) 
-    #     df = df[iso.fit_predict(df[[col for col in df.columns if col not in col_to_keep]].values) == 1]
-    # else:
-    #     pass
+    # Missing values imputation
+    logger.info(' Imputing missing values')
+    df.fillna(df.median(), inplace=True)
 
-    # print(df.shape)
+    # Dropping duplicates
+    logger.info(' Dropping duplicated examples')
+    df.drop_duplicates(keep='first', inplace=True)
 
-    # # Balancing the dataset
+    # Dropping correlated columns
+    logger.info(' Dropping highly correlated features (> 0.95)')
+    cor_matrix = df[num_cols].corr().abs()
+    upper_tri = cor_matrix.where(np.triu(np.ones(cor_matrix.shape),k=1).astype(np.bool))
+    to_drop = [col for col in upper_tri.columns if any(upper_tri[col] > 0.95)]
+    df.drop(columns=to_drop, inplace=True)
+    
+    # Outliers detection
+    if args.outliers_removal == 'True':
+        logger.info(' Removing outliers')
+        iso = IsolationForest(max_samples=100,
+                            random_state=0,
+                            contamination=0.2) 
+        df = df[iso.fit_predict(df[[col for col in df.columns if col not in col_to_keep]].values) == 1]
+    else:
+        pass
 
-    # # Feature selection
+    # X and Y
+    feature_cols = [col for col in df.columns if col != f'{col_to_keep}_label']
+    X = df[feature_cols].values
+    Y = df[f'{col_to_keep}_label']
+    del df
+
+    # Scaling
+    logger.info(' Performing min-max scaling')
+    scalerMinMax = MinMaxScaler()
+    X = scalerMinMax.fit_transform(X)
+
+    # Balancing the dataset
+    if args.balanced_dataset == 'True':
+        logger.info(' Balancing the dataset')
+        X, Y = balancing_dataset(X, Y, col_to_keep, args.how_balance)
+    else:
+        pass
+
+    # Feature selection
+    if args.feature_selection == 'True':
+        logger.info(' Selecting features')
+    else:
+        pass
+
+    # Splitting the data
+    logger.info(' Splitting the dataset')
+    if args.balanced_splitting == 'True':
+        Target = Y
+    else:
+        Target = None
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y,
+                                                test_size=0.3,
+                                                random_state=0,
+                                                stratify=Target)
+

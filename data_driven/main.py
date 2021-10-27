@@ -93,7 +93,31 @@ if __name__ == '__main__':
                         choices=['True', 'False'],
                         type=str,
                         required=False,
-                        default='False')
+                        default='True')
+    parser.add_argument('--balanced_dataset',
+                        help='Would you like to balance the dataset',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
+    parser.add_argument('--how_balance',
+                        help='What method to balance the dataset you would like to use (see options)',
+                        choices=['random_oversample', 'smote', 'adasyn', 'random_undersample', 'near_miss'],
+                        type=str,
+                        required=False,
+                        default='random_oversample')
+    parser.add_argument('--feature_selection',
+                        help='Would you like to select features',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
+    parser.add_argument('--balanced_splitting',
+                        help='Would you like to split the dataset in a balanced fashion',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
 
     args = parser.parse_args()
 
