@@ -7,6 +7,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import IsolationForest
 from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
 from imblearn.under_sampling import RandomUnderSampler, NearMiss
+from sklearn.decomposition import PCA
+from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
@@ -156,6 +158,36 @@ def balancing_dataset(X, Y, col_to_keep, how_balance):
 
     return X_balanced, Y_balanced
 
+def dimensionality_reduction(X_train, Y_train, dimensionality_reduction, X_test):
+    '''
+    Function to apply dimensionality reduction
+    '''
+
+    if dimensionality_reduction == 'pca':
+        # Select components based on the threshold for the explained variance
+        pca = PCA()
+        pca.fit(X_train)
+        sum_explained_variance = 0
+        threshold = 0.85
+        for components_idx, variance in enumerate(pca.explained_variance_ratio_):
+            sum_explained_variance += variance
+            if sum_explained_variance >= threshold:
+                break
+        X_train_reduced = pca.transform(X_train)[:, 0: components_idx + 1]
+        X_test_reduced = pca.transform(X_test)[:, 0: components_idx + 1]
+    elif dimensionality_reduction == 'ufs':
+        # Select half of the features
+        n_features = X_train.shape[1] // 2
+        skb = SelectKBest(chi2, k=n_features)
+        skb.fit(X_train, Y_train)
+        X_train_reduced = skb.transform(X_train)
+        X_test_reduced = skb.transform(X_test)
+
+    print(X_train_reduced.shape)
+    print(X_test_reduced.shape)
+
+    return X_train_reduced, X_test_reduced
+
 
 def data_preprocessing(df, args, logger):
     '''
@@ -164,11 +196,11 @@ def data_preprocessing(df, args, logger):
 
     df = df.sample(50000)
 
-    # Organazing transfers flow rates
-    logger.info(' Organizing the transfer flow rates')
-    df = transfer_flow_rates(df,
-                flow_handling=args.flow_handling,
-                number_of_intervals=args.number_of_intervals)
+    # Data before 2005 or not (green chemistry and engineering boom!)
+    if args.before_2005 == 'True':
+        pass
+    else:
+        df = df[df.reporting_year >= 2005]
 
     # Converting generic_sector_code from integer to string
     df['generic_sector_code'] = df['generic_sector_code'].astype(object)
@@ -185,6 +217,12 @@ def data_preprocessing(df, args, logger):
     first_element = cat_cols[0]
     cat_cols[0] = col_to_keep
     cat_cols[index] = first_element
+
+    # Organazing transfers flow rates
+    logger.info(' Organizing the transfer flow rates')
+    df = transfer_flow_rates(df,
+                flow_handling=args.flow_handling,
+                number_of_intervals=args.number_of_intervals)
 
     # Organizing categorical data
     logger.info(' Encoding categorical features')
@@ -215,13 +253,6 @@ def data_preprocessing(df, args, logger):
     logger.info(' Dropping duplicated examples')
     df.drop_duplicates(keep='first', inplace=True)
 
-    # Dropping correlated columns
-    logger.info(' Dropping highly correlated features (> 0.95)')
-    cor_matrix = df[num_cols].corr().abs()
-    upper_tri = cor_matrix.where(np.triu(np.ones(cor_matrix.shape),k=1).astype(np.bool))
-    to_drop = [col for col in upper_tri.columns if any(upper_tri[col] > 0.95)]
-    df.drop(columns=to_drop, inplace=True)
-    
     # Outliers detection
     if args.outliers_removal == 'True':
         logger.info(' Removing outliers')
@@ -238,24 +269,6 @@ def data_preprocessing(df, args, logger):
     Y = df[f'{col_to_keep}_label']
     del df
 
-    # Scaling
-    logger.info(' Performing min-max scaling')
-    scalerMinMax = MinMaxScaler()
-    X = scalerMinMax.fit_transform(X)
-
-    # Balancing the dataset
-    if args.balanced_dataset == 'True':
-        logger.info(' Balancing the dataset')
-        X, Y = balancing_dataset(X, Y, col_to_keep, args.how_balance)
-    else:
-        pass
-
-    # Feature selection
-    if args.feature_selection == 'True':
-        logger.info(' Selecting features')
-    else:
-        pass
-
     # Splitting the data
     logger.info(' Splitting the dataset')
     if args.balanced_splitting == 'True':
@@ -266,4 +279,29 @@ def data_preprocessing(df, args, logger):
                                                 test_size=0.3,
                                                 random_state=0,
                                                 stratify=Target)
+
+    # Scaling
+    logger.info(' Performing min-max scaling')
+    scalerMinMax = MinMaxScaler()
+    scalerMinMax.fit(X_train)
+    X_train = scalerMinMax.transform(X_train)
+    X_test = scalerMinMax.transform(X_test)
+
+    # Balancing the dataset
+    if args.balanced_dataset == 'True':
+        logger.info(' Balancing the dataset')
+        X_train, Y_train = balancing_dataset(X_train, Y_train, col_to_keep, args.how_balance)
+    else:
+        pass
+
+    # Dimensionality reduction
+    if args.dimensionality_reduction == 'False':
+        X_train_reduced = X_train
+        X_test_reduced = X_test
+    else:
+        logger.info(f' Reducing dimensionality by {args.dimensionality_reduction}')
+        X_train_reduced, X_test_reduced = dimensionality_reduction(X_train,
+                                                Y_train,
+                                                args.dimensionality_reduction,
+                                                X_test)
 
