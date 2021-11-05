@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 def data_preparation_pipeline(args):
     '''
-    Function to run the ML pipeline
+    Function to run the data preparation pipeline
     '''
 
     logger = logging.getLogger(' Data-driven modeling --> Data preparation')
@@ -24,9 +24,9 @@ def data_preparation_pipeline(args):
 
     # Preprocessing
     logger.info(' Running data preprocessing')
-    df_ml = data_preprocessing(df_ml, args, logger)
+    data = data_preprocessing(df_ml, args, logger)
 
-    return df_ml 
+    return data 
     
 
 if __name__ == '__main__':
@@ -110,11 +110,17 @@ if __name__ == '__main__':
                         required=False,
                         default='random_oversample')
     parser.add_argument('--dimensionality_reduction',
-                        help='Would you like to apply dimensionality reduction. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by Univariate Feature Selection with Chi-Squared metric',
-                        choices=['False',  'pca', 'ufs'],
+                        help='Would you like to apply dimensionality reduction?',
+                        choices=['False',  'True'],
                         type=str,
                         required=False,
                         default='False')
+    parser.add_argument('--dimensionality_reduction_method',
+                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by Univariate Feature Selection with mutual information metric or RFC - Random Forest Classifier',
+                        choices=['pca', 'ufs', 'rfc'],
+                        type=str,
+                        required=False,
+                        default='pca')
     parser.add_argument('--balanced_splitting',
                         help='Would you like to split the dataset in a balanced fashion',
                         choices=['True', 'False'],
@@ -122,11 +128,23 @@ if __name__ == '__main__':
                         required=False,
                         default='True')
     parser.add_argument('--before_2005',
-                        help='Would you like to include data reported before 2005',
+                        help='Would you like to include data reported before 2005?',
                         choices=['True', 'False'],
                         type=str,
                         required=False,
                         default='True')
+    parser.add_argument('--intput_file',
+                        help='Do you have an input file?',
+                        choices=['Yes', 'No'],
+                        type=str,
+                        required=False,
+                        default='No')
+    parser.add_argument('--save_info',
+                        help='Would you like to save information?',
+                        choices=['Yes', 'No'],
+                        type=str,
+                        required=False,
+                        default='No')
 
 
     args = parser.parse_args()

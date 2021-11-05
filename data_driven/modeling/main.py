@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 
-def modeling_pipeline(df_ml):
+def modeling_pipeline(data):
     '''
     Function to run the modeling 
     '''

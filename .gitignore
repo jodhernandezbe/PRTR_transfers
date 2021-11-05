@@ -4,6 +4,4 @@ data_engineering/transform/output/*.csv
 *__pycache__/
 data_engineering/load/output/*.sql
 /data_driven/data_preparation/output/*.csv
-!/data_driven/data_preparation/output/*_intervals_for_flow_rates.csv
-!/data_driven/data_preparation/output/*encod*.csv
-!/data_driven/data_preparation/output/*count*.csv
+!/data_driven/data_preparation/output/*_for_params_id_*.csv
