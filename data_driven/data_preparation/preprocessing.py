@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
+from imblearn.under_sampling import RandomUnderSampler, NearMiss
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import IsolationForest
-from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
-from imblearn.under_sampling import RandomUnderSampler, NearMiss
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_selection import SelectFromModel
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.decomposition import PCA
-from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
@@ -16,7 +19,7 @@ import os
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 
-def obtaining_intervals(df, vals_for_intervals, number_of_intervals, flow_handling):
+def obtaining_intervals(df, vals_for_intervals, number_of_intervals, flow_handling, save_info, id):
     '''
     Function to obtain the intervals for the flows
     '''
@@ -37,13 +40,14 @@ def obtaining_intervals(df, vals_for_intervals, number_of_intervals, flow_handli
         string = 'balanced'
     else:
         string = 'equal-width'
-    intervals.to_csv(f'{dir_path}/output/{number_of_intervals}_{string}_intervals_for_flow_rates.csv',
-                    index=False)
+    if save_info == 'Yes':
+        intervals.to_csv(f'{dir_path}/output/intervals_for_flow_rates_for_params_id_{id}.csv',
+                        index=False)
 
     return df
 
 
-def transfer_flow_rates(df, flow_handling=1, number_of_intervals=10):
+def transfer_flow_rates(df, id, flow_handling=1, number_of_intervals=10, save_info='No'):
     '''
     Function to organize the transfer flow rates
 
@@ -62,7 +66,8 @@ def transfer_flow_rates(df, flow_handling=1, number_of_intervals=10):
         quantiles = np.linspace(start=0, stop=1,
                                 num=number_of_intervals+1)
         quantile_values = df['transfer_amount_kg'].quantile(quantiles).astype(int).unique().tolist()
-        df = obtaining_intervals(df, quantile_values, number_of_intervals, flow_handling)
+        df = obtaining_intervals(df, quantile_values, number_of_intervals,
+                            flow_handling, save_info, id)
     elif flow_handling == 4:
         df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(int)
         max_value = df['transfer_amount_kg'].max()
@@ -70,7 +75,8 @@ def transfer_flow_rates(df, flow_handling=1, number_of_intervals=10):
                             stop=max_value+2,
                             num=number_of_intervals+1,
                             dtype=int).tolist()
-        df = obtaining_intervals(df, linear, number_of_intervals, flow_handling)
+        df = obtaining_intervals(df, linear, number_of_intervals,
+                flow_handling, save_info, id)
         
     return df
 
@@ -100,9 +106,10 @@ def calc_smooth_mean(df1, df2, cat_name, target, weight):
         return df1[cat_name].map(smooth),df2[cat_name].map(smooth.to_dict())
 
 
-def categorical_data_encoding(df, cat_cols,
+def categorical_data_encoding(df, cat_cols, id,
                             encoding='one-hot-encoding',
-                            output_column='generic_transfer_class_id'):
+                            output_column='generic_transfer_class_id',
+                            save_info='No'):
     '''
     Function to encode the categorical features
     '''
@@ -114,24 +121,24 @@ def categorical_data_encoding(df, cat_cols,
             if encoding == 'one-hot-encoding':
                 df = pd.concat([df, pd.get_dummies(df.generic_sector_code,
                                                     prefix='sector',
-                                                    sparse=True)],
+                                                    sparse=False)],
                                 axis=1)
             else:
                 df['sector'] = calc_smooth_mean(df1=df, df2=None,
                                                 cat_name='generic_sector_code',
                                                 target=f'{output_column}_label',
                                                 weight=5)
-
-            df[[col for col in df.columns if 'sector' in col]].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/generic_sector_{encoding}.csv',
-                    index=False)
+            if save_info == 'Yes':
+                df[[col for col in df.columns if 'sector' in col]].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/generic_sector_for_params_id_{id}.csv',
+                        index=False)
             df.drop(columns=['generic_sector_code'],
                     inplace=True)
         else:
             labelencoder = LabelEncoder()
             df[f'{col}_label'] = labelencoder.fit_transform(df[col])
-
-            df[[col, f'{col}_label']].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/{col}_labelencoder.csv',
-                    index=False)
+            if save_info == 'Yes':
+                df[[col, f'{col}_label']].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/{col}_labelencoder_for_params_id_{id}.csv',
+                        index=False)
             df.drop(columns=col, inplace=True)
 
     return df
@@ -140,8 +147,6 @@ def balancing_dataset(X, Y, col_to_keep, how_balance):
     '''
     Function to balance the dataset based on the output clasess
     '''
-
-    Y.value_counts().to_csv(f'{dir_path}/output/counts_by_output_class_for_{col_to_keep}.csv')
 
     if how_balance == 'random_oversample':
         sampler = RandomOverSampler(random_state=42)
@@ -158,12 +163,12 @@ def balancing_dataset(X, Y, col_to_keep, how_balance):
 
     return X_balanced, Y_balanced
 
-def dimensionality_reduction(X_train, Y_train, dimensionality_reduction, X_test):
+def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, X_test, feature_cols):
     '''
     Function to apply dimensionality reduction
     '''
 
-    if dimensionality_reduction == 'pca':
+    if dimensionality_reduction_method == 'pca':
         # Select components based on the threshold for the explained variance
         pca = PCA()
         pca.fit(X_train)
@@ -175,26 +180,31 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction, X_test)
                 break
         X_train_reduced = pca.transform(X_train)[:, 0: components_idx + 1]
         X_test_reduced = pca.transform(X_test)[:, 0: components_idx + 1]
-    elif dimensionality_reduction == 'ufs':
+        feature_names = None
+    elif dimensionality_reduction_method == 'ufs':
         # Select half of the features
         n_features = X_train.shape[1] // 2
-        skb = SelectKBest(chi2, k=n_features)
+        skb = SelectKBest(mutual_info_classif(random_state=0), k=n_features)
         skb.fit(X_train, Y_train)
         X_train_reduced = skb.transform(X_train)
         X_test_reduced = skb.transform(X_test)
+        feature_names = [feature_cols[idx] for idx, val in enumerate(skb.get_support()) if val]
+    elif dimensionality_reduction_method == 'rfc':
+        sel = SelectFromModel(RandomForestClassifier(random_state=0, n_estimators=100, n_jobs=4))
+        sel.fit(X_train, Y_train)
+        X_train_reduced = sel.transform(X_train)
+        X_test_reduced = sel.transform(X_test)
+        feature_names = [feature_cols[idx] for idx, val in enumerate(sel.get_support()) if val]
 
-    print(X_train_reduced.shape)
-    print(X_test_reduced.shape)
+    print(feature_names)
 
     return X_train_reduced, X_test_reduced
 
 
-def data_preprocessing(df, args, logger):
+def data_preprocessing(df, args, logger, id=0):
     '''
     Function to apply further preprocessing to the dataset
     '''
-
-    df = df.sample(50000)
 
     # Data before 2005 or not (green chemistry and engineering boom!)
     if args.before_2005 == 'True':
@@ -220,15 +230,10 @@ def data_preprocessing(df, args, logger):
 
     # Organazing transfers flow rates
     logger.info(' Organizing the transfer flow rates')
-    df = transfer_flow_rates(df,
+    df = transfer_flow_rates(df, id,
                 flow_handling=args.flow_handling,
-                number_of_intervals=args.number_of_intervals)
-
-    # Organizing categorical data
-    logger.info(' Encoding categorical features')
-    df = categorical_data_encoding(df, cat_cols,
-                            encoding=args.encoding,
-                            output_column=col_to_keep)
+                number_of_intervals=args.number_of_intervals,
+                save_info=args.save_info)
 
     # Dropping columns are not needed
     logger.info(' Dropping not needed columns')
@@ -239,32 +244,40 @@ def data_preprocessing(df, args, logger):
                 'national_facility_and_generic_sector_id']
     df.drop(columns=to_drop, inplace=True)
     num_cols = list(set(num_cols) - set(to_drop))
-
-    # Dropping columns with a lot missing values
-    logger.info(' Dropping columns with a lot of missing values (> 0.8)')
-    to_drop = df.columns[pd.isnull(df).sum(axis=0)/df.shape[0] > 0.8].tolist()
-    df.drop(columns=to_drop, inplace=True)
     
-    # Missing values imputation
-    logger.info(' Imputing missing values')
-    df.fillna(df.median(), inplace=True)
+    # Organizing categorical data
+    logger.info(' Encoding categorical features')
+    df = categorical_data_encoding(df, cat_cols, id,
+                            encoding=args.encoding,
+                            output_column=col_to_keep,
+                            save_info=args.save_info)
 
     # Dropping duplicates
     logger.info(' Dropping duplicated examples')
     df.drop_duplicates(keep='first', inplace=True)
+
+    # Reducing the memory consumed by the data
+    logger.info(' Donwcasting the dataset for saving memory')
+    fcols = df.select_dtypes('float').columns
+    icols = df.select_dtypes('integer').columns
+    df[fcols] = df[fcols].apply(pd.to_numeric, downcast='float')
+    df[icols] = df[icols].apply(pd.to_numeric, downcast='integer')
+    del fcols, icols
 
     # Outliers detection
     if args.outliers_removal == 'True':
         logger.info(' Removing outliers')
         iso = IsolationForest(max_samples=100,
                             random_state=0,
-                            contamination=0.2) 
-        df = df[iso.fit_predict(df[[col for col in df.columns if col not in col_to_keep]].values) == 1]
+                            contamination=0.2,
+                            n_jobs=4)
+        filter = iso.fit_predict(df[[col for col in df.columns if col not in col_to_keep]].values)
+        df = df[filter == 1]
     else:
         pass
 
     # X and Y
-    feature_cols = [col for col in df.columns if col != f'{col_to_keep}_label']
+    feature_cols = [col for col in df.columns if (col != f'{col_to_keep}_label')]
     X = df[feature_cols].values
     Y = df[f'{col_to_keep}_label']
     del df
@@ -294,14 +307,47 @@ def data_preprocessing(df, args, logger):
     else:
         pass
 
+    # Separating flows and sectors from chemical descriptors
+    position_i = [i for i, val in enumerate(feature_cols) if ('transfer' not in val) and ('sector' not in val)]
+    descriptors = [val for val in feature_cols if ('transfer' not in val) and ('sector' not in val)]
+    feature_cols = [val for val in feature_cols if ('transfer' in val) or ('sector' in val)]
+    X_train_d = X_train[position_i]
+    X_test_d = X_train[position_i]
+    X_train = np.delete(X_train, position_i, axis=1)
+    X_test = np.delete(X_test, position_i, axis=1)
+
+    # Removing columns that have constant values across the entire dataset
+    logger.info(' Removing constant features using variance threshold')
+    constant_filter = VarianceThreshold(threshold=0)
+    constant_filter.fit(X_train_d)
+    X_train_reduced = constant_filter.transform(X_train_d)
+    X_test_reduced = constant_filter.transform(X_test_d)
+    descriptors = [descriptors[idx] for idx, val in enumerate(constant_filter.get_support()) if val]
+    del X_train_d, X_test_d
+
+    # Removing columns that have quasi-constant values across the entire dataset
+    logger.info(' Removing quasi-constant features using variance threshold')
+    qconstant_filter = VarianceThreshold(threshold=0.01)
+    qconstant_filter.fit(X_train_reduced)
+    X_train_reduced = qconstant_filter.transform(X_train_reduced)
+    X_test_reduced = qconstant_filter.transform(X_test_reduced)
+    print(descriptors)
+    descriptors = [descriptors[idx] for idx, val in enumerate(qconstant_filter.get_support()) if val]
+    print(descriptors)
+
     # Dimensionality reduction
     if args.dimensionality_reduction == 'False':
-        X_train_reduced = X_train
-        X_test_reduced = X_test
+        pass
     else:
-        logger.info(f' Reducing dimensionality by {args.dimensionality_reduction}')
-        X_train_reduced, X_test_reduced = dimensionality_reduction(X_train,
+        logger.info(f' Reducing dimensionality by {args.dimensionality_reduction_method.upper()}')
+        X_train_reduced, X_test_reduced = dimensionality_reduction(X_train_reduced,
                                                 Y_train,
-                                                args.dimensionality_reduction,
-                                                X_test)
+                                                args.dimensionality_reduction_method,
+                                                X_test_reduced,
+                                                feature_cols)
 
+
+    return {'X_train': X_train_reduced,
+            'Y_train': Y_train,
+            'X_test': X_test_reduced,
+            'Y_test': Y_test}
