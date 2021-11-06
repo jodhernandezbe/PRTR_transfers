@@ -13,6 +13,7 @@ from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
+from functools import partial
 import pandas as pd
 import numpy as np
 import os
@@ -181,22 +182,50 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         X_train_reduced = pca.transform(X_train)[:, 0: components_idx + 1]
         X_test_reduced = pca.transform(X_test)[:, 0: components_idx + 1]
         feature_names = None
-    elif dimensionality_reduction_method == 'ufs':
-        # Select half of the features
-        n_features = X_train.shape[1] // 2
-        skb = SelectKBest(mutual_info_classif(random_state=0), k=n_features)
-        skb.fit(X_train, Y_train)
-        X_train_reduced = skb.transform(X_train)
-        X_test_reduced = skb.transform(X_test)
-        feature_names = [feature_cols[idx] for idx, val in enumerate(skb.get_support()) if val]
-    elif dimensionality_reduction_method == 'rfc':
-        sel = SelectFromModel(RandomForestClassifier(random_state=0, n_estimators=100, n_jobs=4))
-        sel.fit(X_train, Y_train)
-        X_train_reduced = sel.transform(X_train)
-        X_test_reduced = sel.transform(X_test)
-        feature_names = [feature_cols[idx] for idx, val in enumerate(sel.get_support()) if val]
+    else:
 
-    print(feature_names)
+        # Separating flows and sectors from chemical descriptors
+        position_i = [i for i, val in enumerate(feature_cols) if ('transfer' not in val) and ('sector' not in val)]
+        descriptors = [val for val in feature_cols if ('transfer' not in val) and ('sector' not in val)]
+        feature_cols = [val for val in feature_cols if ('transfer' in val) or ('sector' in val)]
+        X_train_d = X_train[:, position_i]
+        X_test_d = X_test[:, position_i]
+        X_train = np.delete(X_train, position_i, axis=1)
+        X_test = np.delete(X_test, position_i, axis=1)
+
+        # Removing columns that have constant values across the entire dataset
+        constant_filter = VarianceThreshold(threshold=0)
+        constant_filter.fit(X_train_d)
+        X_train_reduced = constant_filter.transform(X_train_d)
+        X_test_reduced = constant_filter.transform(X_test_d)
+        descriptors = [descriptors[idx] for idx, val in enumerate(constant_filter.get_support()) if val]
+        del X_train_d, X_test_d
+
+        # Removing columns that have quasi-constant values across the entire dataset
+        qconstant_filter = VarianceThreshold(threshold=0.01)
+        qconstant_filter.fit(X_train_reduced)
+        X_train_reduced = qconstant_filter.transform(X_train_reduced)
+        X_test_reduced = qconstant_filter.transform(X_test_reduced)
+        descriptors = [descriptors[idx] for idx, val in enumerate(qconstant_filter.get_support()) if val]
+
+        if dimensionality_reduction_method == 'ufs':
+            # Select half of the features
+            n_features = X_train_reduced.shape[1] // 2
+            skb = SelectKBest(partial(mutual_info_classif, random_state=0), k=n_features)
+            skb.fit(X_train_reduced, Y_train)
+            X_train_reduced = skb.transform(X_train_reduced)
+            X_test_reduced = skb.transform(X_test_reduced)
+            descriptors = [descriptors[idx] for idx, val in enumerate(skb.get_support()) if val]
+        elif dimensionality_reduction_method == 'rfc':
+            sel = SelectFromModel(RandomForestClassifier(random_state=0, n_estimators=100, n_jobs=4))
+            sel.fit(X_train_reduced, Y_train)
+            X_train_reduced = sel.transform(X_train_reduced)
+            X_test_reduced = sel.transform(X_test_reduced)
+            descriptors = [descriptors[idx] for idx, val in enumerate(sel.get_support()) if val]
+
+        # Concatenating
+        X_train_reduced = np.concatenate((X_train, X_train_reduced), axis=1)
+        X_test_reduced = np.concatenate((X_test, X_test_reduced), axis=1)
 
     return X_train_reduced, X_test_reduced
 
@@ -205,6 +234,8 @@ def data_preprocessing(df, args, logger, id=0):
     '''
     Function to apply further preprocessing to the dataset
     '''
+
+    df = df.sample(100000)
 
     # Data before 2005 or not (green chemistry and engineering boom!)
     if args.before_2005 == 'True':
@@ -307,43 +338,15 @@ def data_preprocessing(df, args, logger, id=0):
     else:
         pass
 
-    # Separating flows and sectors from chemical descriptors
-    position_i = [i for i, val in enumerate(feature_cols) if ('transfer' not in val) and ('sector' not in val)]
-    descriptors = [val for val in feature_cols if ('transfer' not in val) and ('sector' not in val)]
-    feature_cols = [val for val in feature_cols if ('transfer' in val) or ('sector' in val)]
-    X_train_d = X_train[position_i]
-    X_test_d = X_train[position_i]
-    X_train = np.delete(X_train, position_i, axis=1)
-    X_test = np.delete(X_test, position_i, axis=1)
-
-    # Removing columns that have constant values across the entire dataset
-    logger.info(' Removing constant features using variance threshold')
-    constant_filter = VarianceThreshold(threshold=0)
-    constant_filter.fit(X_train_d)
-    X_train_reduced = constant_filter.transform(X_train_d)
-    X_test_reduced = constant_filter.transform(X_test_d)
-    descriptors = [descriptors[idx] for idx, val in enumerate(constant_filter.get_support()) if val]
-    del X_train_d, X_test_d
-
-    # Removing columns that have quasi-constant values across the entire dataset
-    logger.info(' Removing quasi-constant features using variance threshold')
-    qconstant_filter = VarianceThreshold(threshold=0.01)
-    qconstant_filter.fit(X_train_reduced)
-    X_train_reduced = qconstant_filter.transform(X_train_reduced)
-    X_test_reduced = qconstant_filter.transform(X_test_reduced)
-    print(descriptors)
-    descriptors = [descriptors[idx] for idx, val in enumerate(qconstant_filter.get_support()) if val]
-    print(descriptors)
-
     # Dimensionality reduction
     if args.dimensionality_reduction == 'False':
         pass
     else:
         logger.info(f' Reducing dimensionality by {args.dimensionality_reduction_method.upper()}')
-        X_train_reduced, X_test_reduced = dimensionality_reduction(X_train_reduced,
+        X_train_reduced, X_test_reduced = dimensionality_reduction(X_train,
                                                 Y_train,
                                                 args.dimensionality_reduction_method,
-                                                X_test_reduced,
+                                                X_test,
                                                 feature_cols)
 
 
