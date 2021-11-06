@@ -235,8 +235,6 @@ def data_preprocessing(df, args, logger, id=0):
     Function to apply further preprocessing to the dataset
     '''
 
-    df = df.sample(100000)
-
     # Data before 2005 or not (green chemistry and engineering boom!)
     if args.before_2005 == 'True':
         pass
