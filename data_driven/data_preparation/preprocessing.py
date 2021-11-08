@@ -169,7 +169,7 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
     Function to apply dimensionality reduction
     '''
 
-    if dimensionality_reduction_method == 'pca':
+    if dimensionality_reduction_method == 'PCA':
         # Select components based on the threshold for the explained variance
         pca = PCA()
         pca.fit(X_train)
@@ -208,7 +208,7 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         X_test_reduced = qconstant_filter.transform(X_test_reduced)
         descriptors = [descriptors[idx] for idx, val in enumerate(qconstant_filter.get_support()) if val]
 
-        if dimensionality_reduction_method == 'ufs':
+        if dimensionality_reduction_method == 'UFS':
             # Select half of the features
             n_features = X_train_reduced.shape[1] // 2
             skb = SelectKBest(partial(mutual_info_classif, random_state=0), k=n_features)
@@ -216,7 +216,7 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
             X_train_reduced = skb.transform(X_train_reduced)
             X_test_reduced = skb.transform(X_test_reduced)
             descriptors = [descriptors[idx] for idx, val in enumerate(skb.get_support()) if val]
-        elif dimensionality_reduction_method == 'rfc':
+        elif dimensionality_reduction_method == 'RFC':
             sel = SelectFromModel(RandomForestClassifier(random_state=0, n_estimators=100, n_jobs=4))
             sel.fit(X_train_reduced, Y_train)
             X_train_reduced = sel.transform(X_train_reduced)
@@ -230,10 +230,12 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
     return X_train_reduced, X_test_reduced
 
 
-def data_preprocessing(df, args, logger, id=0):
+def data_preprocessing(df, args, logger):
     '''
     Function to apply further preprocessing to the dataset
     '''
+
+    df = df.sample(100000)
 
     # Data before 2005 or not (green chemistry and engineering boom!)
     if args.before_2005 == 'True':
@@ -259,7 +261,7 @@ def data_preprocessing(df, args, logger, id=0):
 
     # Organazing transfers flow rates
     logger.info(' Organizing the transfer flow rates')
-    df = transfer_flow_rates(df, id,
+    df = transfer_flow_rates(df, args.id,
                 flow_handling=args.flow_handling,
                 number_of_intervals=args.number_of_intervals,
                 save_info=args.save_info)
@@ -276,7 +278,7 @@ def data_preprocessing(df, args, logger, id=0):
     
     # Organizing categorical data
     logger.info(' Encoding categorical features')
-    df = categorical_data_encoding(df, cat_cols, id,
+    df = categorical_data_encoding(df, cat_cols, args.id,
                             encoding=args.encoding,
                             output_column=col_to_keep,
                             save_info=args.save_info)
@@ -341,7 +343,7 @@ def data_preprocessing(df, args, logger, id=0):
         pass
     else:
         logger.info(f' Reducing dimensionality by {args.dimensionality_reduction_method.upper()}')
-        X_train_reduced, X_test_reduced = dimensionality_reduction(X_train,
+        X_train, X_test = dimensionality_reduction(X_train,
                                                 Y_train,
                                                 args.dimensionality_reduction_method,
                                                 X_test,

@@ -113,7 +113,9 @@ def initial_data_preprocessing(logger, args):
             df.to_csv(f'{dir_path}/output/{dataset}.csv', index=False, sep=',')
 
         # Organizing descriptors for chemicals belonging to the groups
-        if (dataset == 'chemical') and (including_groups == 'Yes'):
+        fcols = None
+        icols = None
+        if (dataset == 'chemical') and (including_groups == 'True'):
             df.drop(columns=['chemical_in_category_cas'], inplace=True)
             descriptors = [col for col in df.columns if col != 'generic_substance_id']
             fcols = df[descriptors].select_dtypes('float').columns
@@ -127,6 +129,10 @@ def initial_data_preprocessing(logger, args):
             df_chem = pd.concat([df_chem, df], ignore_index=True, axis=0)
         elif (dataset == 'substance'):
             df.drop(columns=['cas_number'], inplace=True)
+            if not fcols:
+                descriptors = [col for col in df.columns if col != 'generic_substance_id']
+                fcols = df[descriptors].select_dtypes('float').columns
+                icols = df[descriptors].select_dtypes('integer').columns
             df_chem = pd.concat([df_chem, df], ignore_index=True, axis=0)
             # Dropping columns with a lot missing values
             to_drop = df_chem.columns[pd.isnull(df_chem).sum(axis=0)/df_chem.shape[0] > 0.8].tolist()
