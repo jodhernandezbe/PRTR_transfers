@@ -59,9 +59,9 @@ if __name__ == '__main__':
                         default='PRTR_transfers')
     parser.add_argument('--including_groups',
                         help='Would you like to include the chemical groups',
-                        choices=['Yes', 'No'],
+                        choices=['True', 'False'],
                         type=str,
-                        default='Yes')
+                        default='True')
     parser.add_argument('--grouping_type',
                         help='How you want to calculate descriptors for the chemical groups',
                         choices=[1, 2, 3, 4, 5, 6, 7, 8],
@@ -116,11 +116,11 @@ if __name__ == '__main__':
                         required=False,
                         default='False')
     parser.add_argument('--dimensionality_reduction_method',
-                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by Univariate Feature Selection with mutual information metric or RFC - Random Forest Classifier',
-                        choices=['pca', 'ufs', 'rfc'],
+                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by UFS - Univariate Feature Selection with mutual information metric or RFC - Random Forest Classifier',
+                        choices=['PCA', 'UFS', 'RFC'],
                         type=str,
                         required=False,
-                        default='pca')
+                        default='PCA')
     parser.add_argument('--balanced_splitting',
                         help='Would you like to split the dataset in a balanced fashion',
                         choices=['True', 'False'],
@@ -145,6 +145,11 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='No')
+    parser.add_argument('--id',
+                        help='What id whould your like to use',
+                        type=int,
+                        required=False,
+                        default=0)
 
 
     args = parser.parse_args()
