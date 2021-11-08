@@ -307,6 +307,9 @@ def data_preprocessing(df, args, logger, id=0):
     else:
         pass
 
+    print(X_train.shape)
+    print(X_test.shape)
+
     # Separating flows and sectors from chemical descriptors
     position_i = [i for i, val in enumerate(feature_cols) if ('transfer' not in val) and ('sector' not in val)]
     descriptors = [val for val in feature_cols if ('transfer' not in val) and ('sector' not in val)]
@@ -344,10 +347,16 @@ def data_preprocessing(df, args, logger, id=0):
                                                 Y_train,
                                                 args.dimensionality_reduction_method,
                                                 X_test_reduced,
-                                                feature_cols)
+                                                descriptors)
+
+    # Concatenating
+    X_train = np.array((X_train, X_train_reduced), axis=1)
+    X_test = np.array((X_test, X_test_reduced), axis=1)
+    print(X_train.shape)
+    print(X_test.shape)
 
 
-    return {'X_train': X_train_reduced,
+    return {'X_train': X_train,
             'Y_train': Y_train,
-            'X_test': X_test_reduced,
+            'X_test': X_test,
             'Y_test': Y_test}
