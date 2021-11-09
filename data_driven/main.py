@@ -10,8 +10,9 @@ import logging
 import os
 import pandas as pd
 import argparse
-logging.basicConfig(level=logging.INFO)
+import json
 
+logging.basicConfig(level=logging.INFO)
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 agrs_list = ['including_groups', 'grouping_type', 'flow_handling',
             'number_of_intervals', 'encoding', 'output_column',
@@ -43,7 +44,11 @@ def run(args):
     '''
     Function for running the Machine Learning pipeline
     '''
+
+    model_params = {'random_state': 1}
+
     if args.intput_file == 'No':
+        args.model_params = json.loads(args.model_params)
         score = machine_learning_pipeline(args)
     else:
         input_file_path = f'{dir_path}/modeling/output/evaluation_output.xlsx'
@@ -55,7 +60,8 @@ def run(args):
         for __, vals in input_parms.iterrows():
             if vals[1] == 'No':
                 args = {par: str(vals[idx+3]) if not isnot_string(str(vals[idx+3])) else int(vals[idx+3]) for idx, par in enumerate(agrs_list)}
-                args.update({'save_info': 'No', 'id': vals[0]})
+                args.update({'save_info': 'No', 'id': vals[0],
+                            'model_params': model_params})
                 args = dotdict(args)
                 score = machine_learning_pipeline(args)
             
@@ -74,7 +80,7 @@ def machine_learning_pipeline(args):
     data = data_preparation_pipeline(args)
 
     # Calling the modeling pipeline
-    score = modeling_pipeline(data, args.data_driven_model)
+    score = modeling_pipeline(data, args.data_driven_model, args.model_params)
 
     return score
 
@@ -205,6 +211,11 @@ if __name__ == '__main__':
                         type=int,
                         required=False,
                         default=0)
+    parser.add_argument('--model_params',
+                        help='What params would you like to use for the model',
+                        type=str,
+                        required=False,
+                        default='{"random_state": 0}')
     
 
     args = parser.parse_args()
