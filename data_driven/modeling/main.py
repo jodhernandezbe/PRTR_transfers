@@ -28,8 +28,8 @@ def modeling_pipeline(data, model, model_params):
 
     # Cross validation
     logger.info(f' Applying 5-fold cross validation for {model} model')
-    score_train, score_validation = stratified_k_fold_cv(model,
+    score_train, score_validation, score_analysis = stratified_k_fold_cv(model,
                                                     classifier,
                                                     X_train, Y_train)
 
-    return score_train, score_validation
+    return score_train, score_validation, score_analysis
