@@ -49,7 +49,7 @@ def machine_learning_pipeline(args):
                                 sheet_name='Sheet1',
                                 header=None,
                                 skiprows=[0, 1, 2],
-                                usecols=range(19))
+                                usecols=range(20))
         essay = list(range(input_parms.shape[0]))
 
         # Opening file for data-driven model params
@@ -81,11 +81,12 @@ def machine_learning_pipeline(args):
             data = data_preparation_pipeline(args)
 
             # Modeling pipeline
-            score_train, score_validation = modeling_pipeline(data, args.data_driven_model, args.model_params)
+            score_train, score_validation, score_analysis = modeling_pipeline(data, args.data_driven_model, args.model_params)
 
             if len(essay) != 1:
                 input_parms.iloc[i, 17] = score_validation
                 input_parms.iloc[i, 18] = score_train
+                input_parms.iloc[i, 19] = score_analysis
 
                 print(input_parms)
 
@@ -93,6 +94,7 @@ def machine_learning_pipeline(args):
     if len(essay) == 1:
         print(f'The mean training score for stratified 5-fold cross validation is {round(score_train*100, 2)}%')
         print(f'The mean validation score for stratified 5-fold cross validation is {round(score_validation*100, 2)}%')
+        print(f'Scores analysis: {score_analysis}')
     else:
         print(vals)
 
