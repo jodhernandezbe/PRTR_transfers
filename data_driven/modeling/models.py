@@ -5,29 +5,29 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.base import BaseEstimator
+from sklearn.neural_network import MLPClassifier
 
-class DataDrivenModel:
+class DataDrivenModel(BaseEstimator):
 
     def __init__(self, model, **model_params):
         self.model_params = model_params
         self.model = model
-        self.set_model()
+        self._data_driven = self.set_model()
 
     def set_model(self):
         if self.model == 'DTC':
-            self.dd_model = DecisionTreeClassifier(**self.model_params)
+            dd_model = DecisionTreeClassifier(**self.model_params)
         elif self.model == 'RFC':
-            pass
+            dd_model = RandomForestClassifier(**self.model_params)
         elif self.model == 'GBC':
-            pass
+            dd_model = GradientBoostingClassifier(**self.model_params)
         elif self.model == 'ANNC':
-            pass
+            dd_model = MLPClassifier(**self.model_params)
+        return dd_model
 
     def fit(self, X, Y):
-        if self.model in ['DTC', 'RFC', 'GBC']:
-            self.dd_model.fit(X, Y)
-        else:
-            pass
+        self._data_driven.fit(X,Y)
 
-    def predict(self):
-        pass
+    def predict(self, X):
+        return self._data_driven.predict(X)

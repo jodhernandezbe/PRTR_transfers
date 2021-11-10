@@ -11,6 +11,7 @@ import os
 import pandas as pd
 import argparse
 import json
+import yaml
 
 logging.basicConfig(level=logging.INFO)
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
@@ -29,42 +30,7 @@ def isnot_string(val):
         int(float(val))
         return True
     except:
-        return False
-
-
-class dotdict(dict):
-    """dot.notation access to dictionary attributes"""
-
-    __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
-
-
-def run(args):
-    '''
-    Function for running the Machine Learning pipeline
-    '''
-
-    model_params = {'random_state': 1}
-
-    if args.intput_file == 'No':
-        args.model_params = json.loads(args.model_params)
-        score = machine_learning_pipeline(args)
-    else:
-        input_file_path = f'{dir_path}/modeling/output/evaluation_output.xlsx'
-        input_parms = pd.read_excel(input_file_path,
-                                sheet_name='Sheet1',
-                                header=None,
-                                skiprows=[0, 1, 2],
-                                usecols=range(17))
-        for __, vals in input_parms.iterrows():
-            if vals[1] == 'No':
-                args = {par: str(vals[idx+3]) if not isnot_string(str(vals[idx+3])) else int(vals[idx+3]) for idx, par in enumerate(agrs_list)}
-                args.update({'save_info': 'No', 'id': vals[0],
-                            'model_params': model_params})
-                args = dotdict(args)
-                score = machine_learning_pipeline(args)
-            
+        return False            
             
 
 def machine_learning_pipeline(args):
@@ -72,17 +38,65 @@ def machine_learning_pipeline(args):
     Function for creating the Machine Learning pipeline
     '''
 
-    logger = logging.getLogger(' Data-driven modeling')
+    if args.intput_file == 'No':
+        args.model_params = json.loads(args.model_params)
+        essay = [0]
+        run = 'No'
+    else:
+        # Opening file for data preprocesing params
+        input_file_path = f'{dir_path}/modeling/output/evaluation_output.xlsx'
+        input_parms = pd.read_excel(input_file_path,
+                                sheet_name='Sheet1',
+                                header=None,
+                                skiprows=[0, 1, 2],
+                                usecols=range(19))
+        essay = list(range(input_parms.shape[0]))
 
-    logger.info(f' Starting data-driven modeling for steps id {args.id}')
+        # Opening file for data-driven model params
+        params_file_path = f'{dir_path}/modeling/input/model_params.yaml'
+        with open(params_file_path, mode='r') as f:
+            params = yaml.load(f, Loader=yaml.FullLoader)
+    
+    for i in essay:
 
-    # Calling the data preparation pipeline
-    data = data_preparation_pipeline(args)
+        if len(essay) != 1:
+            vals = input_parms.iloc[i]
+            run = vals[1]
+            args_dict = vars(args)
+            args_dict.update({par: str(vals[idx+3]) if not isnot_string(str(vals[idx+3])) else int(vals[idx+3]) for idx, par in enumerate(agrs_list)})
+            if params['model'][args.data_driven_model]['model_params']['defined']:
+                model_params = params['model'][args.data_driven_model]['model_params']['defined']
+            else:
+                model_params = params['model'][args.data_driven_model]['model_params']['default']
+            args_dict.update({'id': vals[0],
+                            'model_params': model_params})
 
-    # Calling the modeling pipeline
-    score = modeling_pipeline(data, args.data_driven_model, args.model_params)
+        if run == 'No':
 
-    return score
+            logger = logging.getLogger(' Data-driven modeling')
+
+            logger.info(f' Starting data-driven modeling for steps id {args.id}')
+
+            # Calling the data preparation pipeline
+            data = data_preparation_pipeline(args)
+
+            # Modeling pipeline
+            score_train, score_validation = modeling_pipeline(data, args.data_driven_model, args.model_params)
+
+            if len(essay) != 1:
+                input_parms.iloc[i, 17] = score_validation
+                input_parms.iloc[i, 18] = score_train
+
+                print(input_parms)
+
+    # Selecting model
+    if len(essay) == 1:
+        print(f'The mean training score for stratified 5-fold cross validation is {round(score_train*100, 2)}%')
+        print(f'The mean validation score for stratified 5-fold cross validation is {round(score_validation*100, 2)}%')
+    else:
+        print(vals)
+
+    # Tuning parameters
 
 
 if __name__ == '__main__':
@@ -220,4 +234,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    run(args)
+    machine_learning_pipeline(args)
