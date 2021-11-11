@@ -3,9 +3,11 @@
 
 # Importing libraries
 from data_driven.data_preparation.main import data_preparation_pipeline
-from data_driven.modeling.main import modeling_pipeline
+from data_driven.model_selection.main import modeling_pipeline
+from data_driven.model_selection.evaluation import select_data_driven_model
 
-
+import time
+import openpyxl
 import logging
 import os
 import pandas as pd
@@ -49,19 +51,46 @@ def machine_learning_pipeline(args):
                                 sheet_name='Sheet1',
                                 header=None,
                                 skiprows=[0, 1, 2],
-                                usecols=range(20))
+                                usecols=range(24))
         essay = list(range(input_parms.shape[0]))
 
         # Opening file for data-driven model params
         params_file_path = f'{dir_path}/modeling/input/model_params.yaml'
         with open(params_file_path, mode='r') as f:
             params = yaml.load(f, Loader=yaml.FullLoader)
+
+        myworkbook = openpyxl.load_workbook(input_file_path)
+        worksheet = myworkbook.get_sheet_by_name('Sheet1')
     
+    step_old = 1
+
     for i in essay:
 
         if len(essay) != 1:
+
             vals = input_parms.iloc[i]
+            step_new = vals[2]
+
+            # Selecting combination is previous steps with the best performance
+            if step_new != step_old:
+                pos_steps = list(range(1, step_old + 1))
+                # FAHP to rank the previous combinations
+                rank = select_data_driven_model(
+                    input_parms.loc[input_parms[2].isin(pos_steps), [19, 20]]
+                                        )
+                best = rank.index(min(rank))
+                # Looking for column numbers
+                cols = [j for j, val in enumerate(input_parms.iloc[i, 0:17].isnull()) if val]
+                # Allocating the value
+                for col in cols:
+                    input_val = input_parms.iloc[best, col]
+                    input_parms.iloc[i:, col] = input_val
+                    [worksheet.cell(row=row+4, column=col+1).value for row in list(range(9, input_parms.shape[0]))]
+                
+                step_old = step_new
+
             run = vals[1]
+
             args_dict = vars(args)
             args_dict.update({par: str(vals[idx+3]) if not isnot_string(str(vals[idx+3])) else int(vals[idx+3]) for idx, par in enumerate(agrs_list)})
             if params['model'][args.data_driven_model]['model_params']['defined']:
@@ -76,6 +105,8 @@ def machine_learning_pipeline(args):
             logger = logging.getLogger(' Data-driven modeling')
 
             logger.info(f' Starting data-driven modeling for steps id {args.id}')
+
+            start_time = time.time()
 
             # Calling the data preparation pipeline
             data = data_preparation_pipeline(args)
@@ -92,20 +123,40 @@ def machine_learning_pipeline(args):
                                                                             args.data_driven_model,
                                                                             args.model_params)
 
+            running_time = round(time.time() - start_time, 2)
+            data_volume = round((X_train.nbytes + X_test.nbytes + Y_train.nbytes + Y_test.nbytes)* 10 ** -9, 2)
+            sample_size = X_train.shape[0] + X_test.shape[0]
+
             if len(essay) != 1:
+
                 input_parms.iloc[i, 17] = score_validation
                 input_parms.iloc[i, 18] = score_train
                 input_parms.iloc[i, 19] = score_analysis
+                input_parms.iloc[i, 20] = running_time
+                input_parms.iloc[i, 21] = data_volume
+                input_parms.iloc[i, 22] = sample_size
 
-                print(input_parms)
+                # Saving
+                worksheet[f'B{i + 4}'].value = 'Yes'
+                worksheet[f'R{i + 4}'].value = score_validation
+                worksheet[f'S{i + 4}'].value = score_train
+                worksheet[f'T{i + 4}'].value = score_analysis
+                worksheet[f'U{i + 4}'].value = running_time
+                worksheet[f'V{i + 4}'].value = data_volume
+                worksheet[f'W{i + 4}'].value = sample_size
+
+                myworkbook.save(input_file_path)
 
     # Selecting model
     if len(essay) == 1:
-        print(f'The mean training score for stratified 5-fold cross validation is {round(score_train*100, 2)}%')
-        print(f'The mean validation score for stratified 5-fold cross validation is {round(score_validation*100, 2)}%')
+        print(f'The mean training score for stratified 5-fold cross validation is {score_train*100: .2f}%')
+        print(f'The mean validation score for stratified 5-fold cross validation is {score_validation*100: .2f}%')
         print(f'Scores analysis: {score_analysis}')
+        print(f'Running time: {running_time: ,.2f} seg')
+        print(f'Data volume: {data_volume: ,.2f} GB')
+        print(f'Sample size: {sample_size}')
     else:
-        print(vals)
+        select_data_driven_model(input_parms)
 
     # Tuning parameters for select model
 

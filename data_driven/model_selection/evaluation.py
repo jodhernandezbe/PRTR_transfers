@@ -22,8 +22,8 @@ def stratified_k_fold_cv(model, classifier, X, Y):
                                     n_jobs=4,
                                     scoring='balanced_accuracy',
                                     return_train_score=True)
-    score_validation = np.mean(results_skfold['test_score'])
-    score_train = np.mean(results_skfold['train_score'])
+    score_validation = round(np.mean(results_skfold['test_score']), 2)
+    score_train = round(np.mean(results_skfold['train_score']), 2)
     score_analysis = overfitting_underfitting(
                                         results_skfold['train_score'],
                                         results_skfold['test_score']
@@ -59,3 +59,12 @@ def overfitting_underfitting(score_train, score_test):
             return 'overfitting (high variance)'
         else:
             return 'neither underfitting nor overfitting'
+
+
+def select_data_driven_model(df):
+    '''
+    Function to select the data driven model
+    '''
+
+    
+    pass
