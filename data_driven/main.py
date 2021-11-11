@@ -80,8 +80,17 @@ def machine_learning_pipeline(args):
             # Calling the data preparation pipeline
             data = data_preparation_pipeline(args)
 
+            # Data
+            X_train = data['X_train']
+            Y_train = data['Y_train']
+            X_test = data['X_test']
+            Y_test = data['Y_test']
+            del data
+
             # Modeling pipeline
-            score_train, score_validation, score_analysis = modeling_pipeline(data, args.data_driven_model, args.model_params)
+            score_train, score_validation, score_analysis = modeling_pipeline(X_train, Y_train, 
+                                                                            args.data_driven_model,
+                                                                            args.model_params)
 
             if len(essay) != 1:
                 input_parms.iloc[i, 17] = score_validation
@@ -98,7 +107,13 @@ def machine_learning_pipeline(args):
     else:
         print(vals)
 
-    # Tuning parameters
+    # Tuning parameters for select model
+
+    # Fitting the selected model
+
+    # Evaluating the selected model
+
+    # Persisting the selected model
 
 
 if __name__ == '__main__':
