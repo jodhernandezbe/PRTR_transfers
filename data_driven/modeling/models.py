@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.base import BaseEstimator
 from sklearn.neural_network import MLPClassifier
 
-class DataDrivenModel(BaseEstimator):
+class DataDrivenModel(BaseEstimator, ClassifierMixin):
 
     def __init__(self, model, **model_params):
         self.model_params = model_params
@@ -31,3 +31,6 @@ class DataDrivenModel(BaseEstimator):
 
     def predict(self, X):
         return self._data_driven.predict(X)
+
+    def predict_proba(self, X):
+        return self._data_driven.predict_proba(X)

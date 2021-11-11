@@ -24,8 +24,10 @@ def stratified_k_fold_cv(model, classifier, X, Y):
                                     return_train_score=True)
     score_validation = np.mean(results_skfold['test_score'])
     score_train = np.mean(results_skfold['train_score'])
-    score_analysis = overfitting_underfitting(results_skfold['test_score'],
-                                            results_skfold['train_score'])
+    score_analysis = overfitting_underfitting(
+                                        results_skfold['train_score'],
+                                        results_skfold['test_score']
+                                        )
 
     return score_train, score_validation, score_analysis
 
