@@ -3,8 +3,8 @@
 
 # Importing libraries
 from data_driven.data_preparation.main import data_preparation_pipeline
-from data_driven.model_selection.main import modeling_pipeline
-from data_driven.model_selection.evaluation import select_data_driven_model
+from data_driven.modeling.main import modeling_pipeline
+from data_driven.modeling.evaluation import data_driven_models_ranking, prediction_evaluation
 
 import time
 import openpyxl
@@ -41,130 +41,165 @@ def machine_learning_pipeline(args):
     '''
 
     if args.intput_file == 'No':
-        args.model_params = json.loads(args.model_params)
-        essay = [0]
-        run = 'No'
+
+        args.model_params = {par: int(val) if isnot_string(str(val)) else (None if str(val) == 'None' else str(val)) for par, val in json.loads(args.model_params).items()}
+        args.model_params_for_tuning = {par: int(val) if isnot_string(str(val)) else (None if str(val) == 'None' else str(val)) for par, val in json.loads(args.model_params_for_tuning).items()}
+
+        logger = logging.getLogger(' Data-driven modeling')
+         
+        logger.info(f' Starting data-driven modeling for steps id {args.id}')
+
+        # Calling the data preparation pipeline
+        data = data_preparation_pipeline(args)
+
+        # Data
+        X_train = data['X_train']
+        Y_train = data['Y_train']
+        X_test = data['X_test']
+        Y_test = data['Y_test']
+        del data
+
     else:
-        # Opening file for data preprocesing params
+
+        # Selecting data preprocessing params
+
+        ## Opening file for data preprocesing params
         input_file_path = f'{dir_path}/modeling/output/evaluation_output.xlsx'
         input_parms = pd.read_excel(input_file_path,
                                 sheet_name='Sheet1',
                                 header=None,
                                 skiprows=[0, 1, 2],
-                                usecols=range(24))
-        essay = list(range(input_parms.shape[0]))
+                                usecols=range(31))
 
-        # Opening file for data-driven model params
+        ## Opening file for data-driven model params
         params_file_path = f'{dir_path}/modeling/input/model_params.yaml'
         with open(params_file_path, mode='r') as f:
             params = yaml.load(f, Loader=yaml.FullLoader)
 
         myworkbook = openpyxl.load_workbook(input_file_path)
-        worksheet = myworkbook.get_sheet_by_name('Sheet1')
+        worksheet = myworkbook['Sheet1']
     
-    step_old = 1
+        step_old = 1
 
-    for i in essay:
+        for i, vals in input_parms.iterrows():
 
-        if len(essay) != 1:
-
-            vals = input_parms.iloc[i]
             step_new = vals[2]
-
-            # Selecting combination is previous steps with the best performance
-            if step_new != step_old:
-                pos_steps = list(range(1, step_old + 1))
-                # FAHP to rank the previous combinations
-                rank = select_data_driven_model(
-                    input_parms.loc[input_parms[2].isin(pos_steps), [19, 20]]
-                                        )
-                best = rank.index(min(rank))
-                # Looking for column numbers
-                cols = [j for j, val in enumerate(input_parms.iloc[i, 0:17].isnull()) if val]
-                # Allocating the value
-                for col in cols:
-                    input_val = input_parms.iloc[best, col]
-                    input_parms.iloc[i:, col] = input_val
-                    [worksheet.cell(row=row+4, column=col+1).value for row in list(range(9, input_parms.shape[0]))]
-                
-                step_old = step_new
-
             run = vals[1]
 
+        #     if step_new != step_old:
+        #         pos_steps = list(range(1, step_old + 1))
+        #         # FAHP to rank the previous combinations
+        #         rank = data_driven_models_ranking(
+        #             input_parms.loc[input_parms[2].isin(pos_steps), [19, 20]]
+        #                                 )
+        #         best = rank.index(min(rank))
+        #         # Looking for column numbers
+        #         cols = [j for j, val in enumerate(input_parms.iloc[i, 0:17].isnull()) if val]
+        #         # Allocating the value
+        #         for col in cols:
+        #             input_val = input_parms.iloc[best, col]
+        #             input_parms.iloc[i:, col] = input_val
+        #             [worksheet.cell(row=row+4, column=col+1).value for row in list(range(9, input_parms.shape[0]))]
+                
+        #         step_old = step_new
+
+
             args_dict = vars(args)
-            args_dict.update({par: str(vals[idx+3]) if not isnot_string(str(vals[idx+3])) else int(vals[idx+3]) for idx, par in enumerate(agrs_list)})
+            args_dict.update({par: int(vals[idx+3]) if isnot_string(str(vals[idx+3])) else (None if str(vals[idx+3]) == 'None' else str(vals[idx+3])) for idx, par in enumerate(agrs_list)})
             if params['model'][args.data_driven_model]['model_params']['defined']:
                 model_params = params['model'][args.data_driven_model]['model_params']['defined']
             else:
                 model_params = params['model'][args.data_driven_model]['model_params']['default']
+            model_params = {par: int(val) if isnot_string(str(val)) else (None if str(val) == 'None' else str(val)) for par, val in model_params.items()}
             args_dict.update({'id': vals[0],
                             'model_params': model_params})
 
-        if run == 'No':
+            if run == 'No':
 
-            logger = logging.getLogger(' Data-driven modeling')
+                logger = logging.getLogger(' Data-driven modeling')
 
-            logger.info(f' Starting data-driven modeling for steps id {args.id}')
+                logger.info(f' Starting data-driven modeling for steps id {args.id}')
 
-            start_time = time.time()
+                start_time = time.time()
 
-            # Calling the data preparation pipeline
-            data = data_preparation_pipeline(args)
+                ## Calling the data preparation pipeline
+                data = data_preparation_pipeline(args)
 
-            # Data
-            X_train = data['X_train']
-            Y_train = data['Y_train']
-            X_test = data['X_test']
-            Y_test = data['Y_test']
-            del data
+                ## Data
+                X_train = data['X_train']
+                Y_train = data['Y_train']
+                X_test = data['X_test']
+                Y_test = data['Y_test']
+                del data
 
-            # Modeling pipeline
-            score_train, score_validation, score_analysis = modeling_pipeline(X_train, Y_train, 
-                                                                            args.data_driven_model,
-                                                                            args.model_params)
+                ## Modeling pipeline
+                modeling_results, classifier = modeling_pipeline(X_train, Y_train, 
+                                            args.data_driven_model,
+                                            args.model_params,
+                                            return_model=True)
 
-            running_time = round(time.time() - start_time, 2)
-            data_volume = round((X_train.nbytes + X_test.nbytes + Y_train.nbytes + Y_test.nbytes)* 10 ** -9, 2)
-            sample_size = X_train.shape[0] + X_test.shape[0]
+                ## Evaluating the selected model
+                error = prediction_evaluation(classifier, X_test, Y_test, metric='error')
 
-            if len(essay) != 1:
+                running_time = round(time.time() - start_time, 2)
+                data_volume = round((X_train.nbytes + X_test.nbytes + Y_train.nbytes + Y_test.nbytes)* 10 ** -9, 2)
+                sample_size = X_train.shape[0] + X_test.shape[0]
 
-                input_parms.iloc[i, 17] = score_validation
-                input_parms.iloc[i, 18] = score_train
-                input_parms.iloc[i, 19] = score_analysis
-                input_parms.iloc[i, 20] = running_time
-                input_parms.iloc[i, 21] = data_volume
-                input_parms.iloc[i, 22] = sample_size
+                input_parms.iloc[i, 17] = modeling_results['balanced_accuracy_validation']
+                input_parms.iloc[i, 18] = modeling_results['balanced_accuracy_train']
+                input_parms.iloc[i, 19] = modeling_results['balanced_accuracy_analysis']
+                input_parms.iloc[i, 20] = modeling_results['error_validation']
+                input_parms.iloc[i, 21] = modeling_results['std_error_validation']
+                input_parms.iloc[i, 22] = modeling_results['error_train']
+                input_parms.iloc[i, 23] = modeling_results['std_error_train']
+                input_parms.iloc[i, 24] = modeling_results['mean_y_randomization_error']
+                input_parms.iloc[i, 25] = modeling_results['std_y_randomization_error']
+                input_parms.iloc[i, 26] = error
+                input_parms.iloc[i, 27] = running_time
+                input_parms.iloc[i, 28] = data_volume
+                input_parms.iloc[i, 29] = sample_size
 
-                # Saving
+                ## Saving
                 worksheet[f'B{i + 4}'].value = 'Yes'
-                worksheet[f'R{i + 4}'].value = score_validation
-                worksheet[f'S{i + 4}'].value = score_train
-                worksheet[f'T{i + 4}'].value = score_analysis
-                worksheet[f'U{i + 4}'].value = running_time
-                worksheet[f'V{i + 4}'].value = data_volume
-                worksheet[f'W{i + 4}'].value = sample_size
+                worksheet[f'R{i + 4}'].value = modeling_results['balanced_accuracy_validation']
+                worksheet[f'S{i + 4}'].value = modeling_results['balanced_accuracy_train']
+                worksheet[f'T{i + 4}'].value = modeling_results['balanced_accuracy_analysis']
+                worksheet[f'U{i + 4}'].value = modeling_results['error_validation']
+                worksheet[f'V{i + 4}'].value = modeling_results['std_error_validation']
+                worksheet[f'W{i + 4}'].value = modeling_results['error_train']
+                worksheet[f'X{i + 4}'].value = modeling_results['std_error_train']
+                worksheet[f'Y{i + 4}'].value = modeling_results['mean_y_randomization_error']
+                worksheet[f'Z{i + 4}'].value = modeling_results['std_y_randomization_error']
+                worksheet[f'AA{i + 4}'].value = error
+                worksheet[f'AB{i + 4}'].value = running_time
+                worksheet[f'AC{i + 4}'].value = data_volume
+                worksheet[f'AD{i + 4}'].value = sample_size
 
                 myworkbook.save(input_file_path)
 
     # Selecting model
-    if len(essay) == 1:
-        print(f'The mean training score for stratified 5-fold cross validation is {score_train*100: .2f}%')
-        print(f'The mean validation score for stratified 5-fold cross validation is {score_validation*100: .2f}%')
-        print(f'Scores analysis: {score_analysis}')
-        print(f'Running time: {running_time: ,.2f} seg')
-        print(f'Data volume: {data_volume: ,.2f} GB')
-        print(f'Sample size: {sample_size}')
-    else:
-        select_data_driven_model(input_parms)
 
     # Tuning parameters for select model
+    if "False" in args.model_params_for_tuning.keys():
+        pass
+    else:
+        pass
 
-    # Fitting the selected model
+    # Fitting the selected model with params
+    modeling_results, classifier = modeling_pipeline(X_train, Y_train,
+                                args.data_driven_model,
+                                args.model_params,
+                                return_model=True)
 
     # Evaluating the selected model
+    error = prediction_evaluation(classifier, X_test, Y_test, metric='error')
+    print(f'The {args.data_driven_model} model error: {error}')
+    for key, val in modeling_results.items():
+        print(f'The {args.data_driven_model} model {key.replace("_", " ")}: {val}') 
 
     # Persisting the selected model
+
+
 
 
 if __name__ == '__main__':
@@ -294,10 +329,15 @@ if __name__ == '__main__':
                         required=False,
                         default=0)
     parser.add_argument('--model_params',
-                        help='What params would you like to use for the model',
+                        help='What params would you like to use for fitting the model',
                         type=str,
                         required=False,
                         default='{"random_state": 0}')
+    parser.add_argument('--model_params_for_tuning',
+                        help='What params would you like to use for tuning the model',
+                        type=str,
+                        required=False,
+                        default='{"False": "False"}')
     
 
     args = parser.parse_args()
