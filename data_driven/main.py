@@ -69,7 +69,7 @@ def machine_learning_pipeline(args):
                                 sheet_name='Sheet1',
                                 header=None,
                                 skiprows=[0, 1, 2],
-                                usecols=range(31))
+                                usecols=range(30))
 
         ## Opening file for data-driven model params
         params_file_path = f'{dir_path}/modeling/input/model_params.yaml'
@@ -86,24 +86,28 @@ def machine_learning_pipeline(args):
             step_new = vals[2]
             run = vals[1]
 
-        #     if step_new != step_old:
-        #         pos_steps = list(range(1, step_old + 1))
-        #         # FAHP to rank the previous combinations
-        #         rank = data_driven_models_ranking(
-        #             input_parms.loc[input_parms[2].isin(pos_steps), [19, 20]]
-        #                                 )
-        #         best = rank.index(min(rank))
-        #         # Looking for column numbers
-        #         cols = [j for j, val in enumerate(input_parms.iloc[i, 0:17].isnull()) if val]
-        #         # Allocating the value
-        #         for col in cols:
-        #             input_val = input_parms.iloc[best, col]
-        #             input_parms.iloc[i:, col] = input_val
-        #             [worksheet.cell(row=row+4, column=col+1).value for row in list(range(9, input_parms.shape[0]))]
+            if step_new != step_old:
+                pos_steps = list(range(1, step_old + 1))
+                # FAHP to rank the previous combinations
+                rank = data_driven_models_ranking(
+                    input_parms.loc[input_parms[2].isin(pos_steps), 
+                                    [17, 18, 20, 24, 25, 26, 27]]
+                                        ).tolist()
+                best = rank.index(min(rank))
+
+                # Looking for column numbers
+                cols = [j for j, val in enumerate(input_parms.iloc[i, 0:17].isnull()) if val]
+                # Allocating the value
+                for col in cols:
+                    input_val = input_parms.iloc[best, col]
+                    input_parms.iloc[i:, col] = input_val
+                    for row in list(range(i, input_parms.shape[0])):
+                        worksheet.cell(row=row+4, column=col+1).value = input_val
                 
-        #         step_old = step_new
+                step_old = step_new
 
 
+            vals = input_parms.iloc[i]
             args_dict = vars(args)
             args_dict.update({par: int(vals[idx+3]) if isnot_string(str(vals[idx+3])) else (None if str(vals[idx+3]) == 'None' else str(vals[idx+3])) for idx, par in enumerate(agrs_list)})
             if params['model'][args.data_driven_model]['model_params']['defined']:
@@ -138,8 +142,6 @@ def machine_learning_pipeline(args):
                                             args.model_params,
                                             return_model=True)
 
-                ## Evaluating the selected model
-                error = prediction_evaluation(classifier, X_test, Y_test, metric='error')
 
                 running_time = round(time.time() - start_time, 2)
                 data_volume = round((X_train.nbytes + X_test.nbytes + Y_train.nbytes + Y_test.nbytes)* 10 ** -9, 2)
@@ -154,10 +156,9 @@ def machine_learning_pipeline(args):
                 input_parms.iloc[i, 23] = modeling_results['std_error_train']
                 input_parms.iloc[i, 24] = modeling_results['mean_y_randomization_error']
                 input_parms.iloc[i, 25] = modeling_results['std_y_randomization_error']
-                input_parms.iloc[i, 26] = error
-                input_parms.iloc[i, 27] = running_time
-                input_parms.iloc[i, 28] = data_volume
-                input_parms.iloc[i, 29] = sample_size
+                input_parms.iloc[i, 26] = running_time
+                input_parms.iloc[i, 27] = data_volume
+                input_parms.iloc[i, 28] = sample_size
 
                 ## Saving
                 worksheet[f'B{i + 4}'].value = 'Yes'
@@ -170,12 +171,15 @@ def machine_learning_pipeline(args):
                 worksheet[f'X{i + 4}'].value = modeling_results['std_error_train']
                 worksheet[f'Y{i + 4}'].value = modeling_results['mean_y_randomization_error']
                 worksheet[f'Z{i + 4}'].value = modeling_results['std_y_randomization_error']
-                worksheet[f'AA{i + 4}'].value = error
-                worksheet[f'AB{i + 4}'].value = running_time
-                worksheet[f'AC{i + 4}'].value = data_volume
-                worksheet[f'AD{i + 4}'].value = sample_size
+                worksheet[f'AA{i + 4}'].value = running_time
+                worksheet[f'AB{i + 4}'].value = data_volume
+                worksheet[f'AC{i + 4}'].value = sample_size
 
                 myworkbook.save(input_file_path)
+
+            else:
+
+                step_old = vals[2]
 
     # Selecting model
 
