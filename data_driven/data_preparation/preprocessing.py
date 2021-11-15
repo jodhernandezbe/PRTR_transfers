@@ -144,7 +144,7 @@ def categorical_data_encoding(df, cat_cols, id,
 
     return df
 
-def balancing_dataset(X, Y, col_to_keep, how_balance):
+def balancing_dataset(X, Y, how_balance):
     '''
     Function to balance the dataset based on the output clasess
     '''
@@ -334,7 +334,7 @@ def data_preprocessing(df, args, logger):
     # Balancing the dataset
     if args.balanced_dataset == 'True':
         logger.info(' Balancing the dataset')
-        X_train, Y_train = balancing_dataset(X_train, Y_train, col_to_keep, args.how_balance)
+        X_train, Y_train = balancing_dataset(X_train, Y_train, args.how_balance)
     else:
         pass
 

@@ -133,39 +133,46 @@ def data_driven_models_ranking(df):
     Function to select the data driven model
     '''
 
-    print(df)
+    # Criterion 1
+    df['criterion_1'] = np.abs(df[17] - df[18])
+    df['criterion_1'] = (df['criterion_1'] - df['criterion_1'].max())/(0 - df['criterion_1'].max())
+
+    # Criterion 2
+    df['criterion_2'] = df[17]
+
+    # Criterion 3
+    df.loc[df[27] == 0, 27] = 10 ** -4
+    df['criterion_3'] = df[26]/df[27]
+    df['criterion_3'] = (df['criterion_3'] - df['criterion_3'].max())/(df['criterion_3'].min() - df['criterion_3'].max())
     
-    pass
+    # Criterion 4
+    df['criterion_4'] = (df[24] - df[25]) - df[20]
+    df['criterion_4'] = (df['criterion_4'] - df['criterion_4'].min())/(df['criterion_4'].max() - df['criterion_4'].min())
+
+    # FAHP
+    df =  df[[f'criterion_{i}' for i in range(1,5)]]
+    df = fahp(df)
+
+    df['rank'] = df['weight'].rank(method='dense', ascending=False).astype(int)
+
+    return df['rank']
 
 
-def comparison_matrix(df, cols):
+def comparison_matrix(df):
     '''
     Function to generate the comparison matrix
     '''
 
     m_criteria = 0
     n = df.shape[0]
-    for col in cols:
+    for col in df.columns:
         m_criteria = m_criteria + 1
         val = df[col].tolist()
-        if col in ['T_CORRELATION', 'COST']:
-            Best = min(val)
-            Worst = max(val)
-        else:
-            Best = max(val)
-            Worst = min(val)
         N_aux = np.empty((n, n))
-        N_aux[:] = np.nan
         for i in range(n):
-            try:
-                score_i = (val[i] - Worst)/(Best - Worst)
-            except ZeroDivisionError:
-                score_i = 1
+            score_i = val[i]
             for j in range(i, n):
-                try:
-                    score_j = (val[j] - Worst)/(Best - Worst)
-                except ZeroDivisionError:
-                    score_j = 1
+                score_j = val[j]
                 diff = score_i - score_j
                 diff = round(4*(diff - 1) + 4)
                 N_aux[i][j] = diff
@@ -173,10 +180,11 @@ def comparison_matrix(df, cols):
             N = N_aux
         else:
             N = np.concatenate((N, N_aux), axis=0)
+
     return N
 
 
-def fahp(n, cols_criteri, df):
+def fahp(df):
     '''
     Function to apply Fuzzy Analytic Hierarchy Process (FAHP)
 
@@ -189,8 +197,10 @@ def fahp(n, cols_criteri, df):
     the third one: strong importance of one over another; the fourth one: very strong importance of one over another
     the fifth one: Absolute importance of one over another
     '''
-    m_criteria = len(cols_criteri)
-    N = comparison_matrix(df, cols_criteri)
+
+    n = df.shape[0]
+    m_criteria = df.shape[1]
+    N = comparison_matrix(df)
     # Definition of variables
     W = np.zeros((1, n))  # initial value of weights vector (desired output)
     w = np.zeros((m_criteria, n))  # initial value of weithts matrix
@@ -276,5 +286,5 @@ def fahp(n, cols_criteri, df):
     # Final weights
     W = (np.sum(W)**-1)*W
     W = W.T
-    df = df.assign(Weight=W)
+    df = df.assign(weight=W)
     return df
