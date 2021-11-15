@@ -9,7 +9,7 @@ dependencies:
   - _openmp_mutex=4.5=1_llvm
   - _tflow_select=2.3.0=mkl
   - absl-py=0.13.0=py39h06a4308_0
-  - aiohttp=3.7.4.post0=py39h3811e60_0
+  - aiohttp=3.7.4.post0=py39h7f8727e_2
   - anyjson=0.3.3=py39h06a4308_1
   - argon2-cffi=20.1.0=py39h27cfd23_1
   - arrow=1.1.1=py39h06a4308_0
@@ -44,8 +44,6 @@ dependencies:
   - gettext=0.21.0=hf68c758_0
   - glib=2.68.3=h9c3ff4c_0
   - glib-tools=2.68.3=h9c3ff4c_0
-  - google-auth=2.0.2=pyh6c4a22f_0
-  - google-auth-oauthlib=0.4.6=pyhd8ed1ab_0
   - google-pasta=0.2.0=pyhd3eb1b0_0
   - greenlet=1.1.0=py39h2531618_0
   - grpcio=1.38.1=py39hff7568b_0
@@ -150,9 +148,7 @@ dependencies:
   - sqlalchemy=1.4.14=py39h3811e60_0
   - sqlalchemy-utils=0.37.1=pyhd3eb1b0_0
   - sqlite=3.36.0=hc218d9a_0
-  - tensorboard=2.4.0=pyhc547734_0
   - tensorboard-plugin-wit=1.8.0=pyh44b312d_0
-  - tensorflow=2.4.1=mkl_py39h4683426_0
   - tensorflow-base=2.4.1=mkl_py39h43e0292_0
   - tensorflow-estimator=2.5.0=pyh7b7c402_0
   - termcolor=1.1.0=py39h06a4308_1
