@@ -3,7 +3,7 @@ model:
     model_params:
       default:
         ccp_alpha: 0.0
-        class_weight: None
+        class_weight: balanced
         criterion: gini
         max_depth: None
         max_features: None
@@ -22,7 +22,7 @@ model:
       default:
         bootstrap: True
         ccp_alpha: 0.0
-        class_weight: None
+        class_weight: balanced
         criterion: gini
         max_depth: None
         max_features: auto
