@@ -83,7 +83,11 @@ The EERD model in the following figure represents the PRTR_transfers database sc
 
 A conda environment can be created by executing the following command:
 
-```conda env create -n PRTR -f environment.yml```
+
+```
+conda env create -n PRTR -f environment.yml
+
+```
 
 The above command is written assuming that you are in the folder containing .yml file, i.e. the root folder PRTR_transfers. 
 
