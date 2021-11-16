@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_driven.modeling.models import DataDrivenModel
+from data_driven.modeling.models import defining_mode
 from data_driven.modeling.evaluation import stratified_k_fold_cv, y_randomization
 
 import logging
@@ -18,7 +18,7 @@ def modeling_pipeline(X_train, Y_train, model, model_params, return_model=False)
 
     # Instantiating the model with params
     logger.info(f' Instantiating {model} model')
-    classifier = DataDrivenModel(model, **model_params)
+    classifier = defining_mode(model, model_params)
 
     # Cross validation
     logger.info(f' Applying 5-fold cross validation for {model} model')

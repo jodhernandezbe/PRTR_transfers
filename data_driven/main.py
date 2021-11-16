@@ -4,7 +4,7 @@
 # Importing libraries
 from data_driven.data_preparation.main import data_preparation_pipeline
 from data_driven.modeling.main import modeling_pipeline
-from data_driven.modeling.evaluation import data_driven_models_ranking, prediction_evaluation
+from data_driven.modeling.evaluation import data_driven_models_ranking, prediction_evaluation, parameter_tuning
 
 import time
 import openpyxl
@@ -14,6 +14,7 @@ import pandas as pd
 import argparse
 import json
 import yaml
+import numpy as np
 
 logging.basicConfig(level=logging.INFO)
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
@@ -32,7 +33,32 @@ def isnot_string(val):
         int(float(val))
         return True
     except:
-        return False            
+        return False
+
+
+def to_numeric(val):
+    '''
+    Function to convert string to numeric
+    '''
+
+    val = str(val)
+    try:
+        return int(val)
+    except ValueError:
+        return float(val)
+
+
+def checking_boolean(val):
+    '''
+    Function to check boolean values
+    '''
+
+    if val == 'True':
+        return True
+    elif val == 'False':
+        return False
+    else:
+        return val          
             
 
 def machine_learning_pipeline(args):
@@ -42,22 +68,14 @@ def machine_learning_pipeline(args):
 
     if args.intput_file == 'No':
 
-        args.model_params = {par: int(val) if isnot_string(str(val)) else (None if str(val) == 'None' else str(val)) for par, val in json.loads(args.model_params).items()}
-        args.model_params_for_tuning = {par: int(val) if isnot_string(str(val)) else (None if str(val) == 'None' else str(val)) for par, val in json.loads(args.model_params_for_tuning).items()}
-
         logger = logging.getLogger(' Data-driven modeling')
          
         logger.info(f' Starting data-driven modeling for steps id {args.id}')
 
-        # Calling the data preparation pipeline
-        data = data_preparation_pipeline(args)
-
-        # Data
-        X_train = data['X_train']
-        Y_train = data['Y_train']
-        X_test = data['X_test']
-        Y_test = data['Y_test']
-        del data
+        args.model_params = {par: to_numeric(val) if isnot_string(str(val)) else (None if str(val) == 'None' else val) for par, val in json.loads(args.model_params).items()}
+        args.model_params = {par: checking_boolean(val) for par, val in args.model_params.items()}
+        args.model_params_for_tuning = {par: [to_numeric(val) if isnot_string(str(val)) else (None if str(val) == 'None' else val) for val in vals] for par, vals in json.loads(args.model_params_for_tuning).items()}
+        args.model_params_for_tuning = {par: [checking_boolean(val) for val in vals] for par, vals in args.model_params_for_tuning.items()}
 
     else:
 
@@ -101,6 +119,10 @@ def machine_learning_pipeline(args):
                 for col in cols:
                     input_val = input_parms.iloc[best, col]
                     input_parms.iloc[i:, col] = input_val
+                    if input_val:
+                        input_val = 'True'
+                    else:
+                        input_val = 'False'
                     for row in list(range(i, input_parms.shape[0])):
                         worksheet.cell(row=row+4, column=col+1).value = input_val
                 
@@ -109,12 +131,13 @@ def machine_learning_pipeline(args):
 
             vals = input_parms.iloc[i]
             args_dict = vars(args)
-            args_dict.update({par: int(vals[idx+3]) if isnot_string(str(vals[idx+3])) else (None if str(vals[idx+3]) == 'None' else str(vals[idx+3])) for idx, par in enumerate(agrs_list)})
+            args_dict.update({par: int(vals[idx+3]) if isnot_string(str(vals[idx+3])) else (None if str(vals[idx+3]) == 'None' else vals[idx+3]) for idx, par in enumerate(agrs_list)})
             if params['model'][args.data_driven_model]['model_params']['defined']:
                 model_params = params['model'][args.data_driven_model]['model_params']['defined']
             else:
                 model_params = params['model'][args.data_driven_model]['model_params']['default']
-            model_params = {par: int(val) if isnot_string(str(val)) else (None if str(val) == 'None' else str(val)) for par, val in model_params.items()}
+            model_params = {par: to_numeric(val) if isnot_string(str(val)) else (None if str(val) == 'None' else val) for par, val in model_params.items()}
+            model_params = {par: checking_boolean(val) for par, val in model_params.items()}
             args_dict.update({'id': vals[0],
                             'model_params': model_params})
 
@@ -137,10 +160,10 @@ def machine_learning_pipeline(args):
                 del data
 
                 ## Modeling pipeline
-                modeling_results, classifier = modeling_pipeline(X_train, Y_train, 
+                modeling_results = modeling_pipeline(X_train, Y_train, 
                                             args.data_driven_model,
                                             args.model_params,
-                                            return_model=True)
+                                            return_model=False)
 
 
                 running_time = round(time.time() - start_time, 2)
@@ -181,25 +204,76 @@ def machine_learning_pipeline(args):
 
                 step_old = vals[2]
 
-    # Selecting model
+        # Selecting model
 
-    # Tuning parameters for select model
+        logger = logging.getLogger(' Data-driven modeling --> Selection')
+        logger.info(f' Selecting the model with the best performance based on FAHP')
+
+
+        input_parms['rank'] = data_driven_models_ranking(
+                        input_parms.loc[input_parms[2].isin(pos_steps), 
+                                        [17, 18, 20, 24, 25, 26, 27]]
+                                            )
+        for idx, row in input_parms.iterrows():
+            worksheet[f'AD{idx + 4}'].value = row['rank']
+        myworkbook.save(input_file_path)
+        input_parms = input_parms[input_parms['rank'] == 1]
+        input_parms.drop_duplicates(keep='last', subset=[16],
+                                        inplace=True)
+        if input_parms.shape[0] != 1:
+            complexity = {'DTC': 1, 'RFC': 2, 'GBC': 3, 'ANNC': 4}
+            input_parms['complexity'] = input_parms[16].apply(lambda x: complexity[x])
+            input_parms = input_parms[input_parms.complexity == input_parms.complexity.min()]
+        
+        vals = input_parms.values[0]
+        args_dict = vars(args)
+        args_dict.update({par: int(vals[idx+3]) if isnot_string(str(vals[idx+3])) else (None if str(vals[idx+3]) == 'None' else vals[idx+3]) for idx, par in enumerate(agrs_list)})
+        if params['model'][args.data_driven_model]['model_params']['defined']:
+            model_params = params['model'][args.data_driven_model]['model_params']['defined']
+        else:
+            model_params = params['model'][args.data_driven_model]['model_params']['default']
+        model_params = {par: to_numeric(val) if isnot_string(str(val)) else (None if str(val) == 'None' else val) for par, val in model_params.items()}
+        model_params = {par: checking_boolean(val) for par, val in model_params.items()}
+        args_dict.update({'id': vals[0],
+                        'model_params': model_params,
+                        'save_info': 'Yes'})
+
+
+    # Calling the data preparation pipeline
+    data = data_preparation_pipeline(args)
+
+    # Data
+    X_train = data['X_train']
+    Y_train = data['Y_train']
+    X_test = data['X_test']
+    Y_test = data['Y_test']
+    del data
+    
     if "False" in args.model_params_for_tuning.keys():
-        pass
-    else:
-        pass
 
-    # Fitting the selected model with params
-    modeling_results, classifier = modeling_pipeline(X_train, Y_train,
-                                args.data_driven_model,
-                                args.model_params,
-                                return_model=True)
+        # Fitting the selected model with params
+        modeling_results, classifier = modeling_pipeline(X_train, Y_train,
+                                    args.data_driven_model,
+                                    args.model_params,
+                                    return_model=True)
+
+    else:
+
+        # Tuning parameters for select model
+        logger = logging.getLogger(' Data-driven modeling --> Tuning')
+        logger.info(f' Applying randomized grid search for {args.model_params} model')
+
+        results, running_time, classifier = parameter_tuning(X_train, Y_train,
+                                                    args.data_driven_model,
+                                                    fixed_params,
+                                                    space)
+                                        
 
     # Evaluating the selected model
-    error = prediction_evaluation(classifier, X_test, Y_test, metric='error')
-    print(f'The {args.data_driven_model} model error: {error}')
-    for key, val in modeling_results.items():
-        print(f'The {args.data_driven_model} model {key.replace("_", " ")}: {val}') 
+    #error = prediction_evaluation(classifier, X_test, Y_test, metric='error')
+    #print(f'The {args.data_driven_model} model error: {error}')
+    #for key, val in modeling_results.items():
+    #    print(f'The {args.data_driven_model} model {key.replace("_", " ")}: {val}') 
 
     # Persisting the selected model
 
