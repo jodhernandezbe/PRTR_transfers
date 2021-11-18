@@ -4,11 +4,11 @@
 # Importing libraries
 from sklearn.model_selection import cross_validate
 from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, confusion_matrix, f1_score, recall_score, precision_score
 import numpy as np
 from tqdm import tqdm
 from scipy.stats import mannwhitneyu
+import os
 
 def stratified_k_fold_cv(classifier, X, Y):
     '''
@@ -293,32 +293,3 @@ def fahp(df):
     W = W.T
     df = df.assign(weight=W)
     return df
-
-
-def parameter_tuning(X, Y, model, fixed_params, space):
-    '''
-    Function to search parameters based on randomized grid search
-    '''
-
-    skfold = StratifiedKFold(n_splits=5,
-                            random_state=100,
-                            shuffle=True)
-
-    classifier = DataDrivenModel(model, **fixed_params)
-
-    search = RandomizedSearchCV(classifier, space,
-                        n_iter=100, 
-                        scoring=('balanced_accuracy',
-                                'accuracy'),
-                        n_jobs=-1, cv=skfold,
-                        random_state=1,
-                        return_train_score=True,
-                        refit=True)
-
-    search.fit(X, Y)
-
-    results = search.cv_results_
-    time = search.refit_time_
-    best_estimator = search.best_estimator_
-
-    return results, time, best_estimator

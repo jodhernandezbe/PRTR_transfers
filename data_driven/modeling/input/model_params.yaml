@@ -77,28 +77,15 @@ model:
   ANNC:
     model_params:
       default:
-        activation: relu
-        alpha: 0.0001
-        batch_size: auto
+        units_per_layer: !!python/tuple [100]
+        dropout: False
+        dropout_rate: 0.0
+        hidden_layers_activation: sigmoid
+        learning_rate: 0.001
         beta_1: 0.9
         beta_2: 0.999
-        early_stopping: False
-        epsilon: 1e-08
-        hidden_layer_sizes: !!python/tuple [100]
-        learning_rate: constant
-        learning_rate_init: 0.001
-        max_fun: 15000
-        max_iter: 200
-        momentum: 0.9
-        n_iter_no_change: 10
-        nesterovs_momentum: True
-        power_t: 0.5
-        random_state: 0
-        shuffle: True
-        solver: adam
-        tol: 0.0001
-        validation_fraction: 0.1
-        verbose: False
-        warm_start: False
+        epochs: 150
+        batch_size: 10
+        verbose: 0
       defined:
       for_tuning:

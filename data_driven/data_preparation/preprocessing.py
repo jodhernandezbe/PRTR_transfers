@@ -238,7 +238,7 @@ def data_preprocessing(df, args, logger):
     df = df.sample(100000)
 
     # Data before 2005 or not (green chemistry and engineering boom!)
-    if args.before_2005 == 'True':
+    if args.before_2005:
         pass
     else:
         df = df[df.reporting_year >= 2005]
@@ -296,7 +296,7 @@ def data_preprocessing(df, args, logger):
     del fcols, icols
 
     # Outliers detection
-    if args.outliers_removal == 'True':
+    if args.outliers_removal:
         logger.info(' Removing outliers')
         iso = IsolationForest(max_samples=100,
                             random_state=0,
@@ -315,7 +315,7 @@ def data_preprocessing(df, args, logger):
 
     # Splitting the data
     logger.info(' Splitting the dataset')
-    if args.balanced_splitting == 'True':
+    if args.balanced_splitting:
         Target = Y
     else:
         Target = None
@@ -332,22 +332,22 @@ def data_preprocessing(df, args, logger):
     X_test = scalerMinMax.transform(X_test)
 
     # Balancing the dataset
-    if args.balanced_dataset == 'True':
+    if args.balanced_dataset:
         logger.info(' Balancing the dataset')
         X_train, Y_train = balancing_dataset(X_train, Y_train, args.how_balance)
     else:
         pass
 
     # Dimensionality reduction
-    if args.dimensionality_reduction == 'False':
-        pass
-    else:
+    if args.dimensionality_reduction:
         logger.info(f' Reducing dimensionality by {args.dimensionality_reduction_method.upper()}')
         X_train, X_test = dimensionality_reduction(X_train,
                                                 Y_train,
                                                 args.dimensionality_reduction_method,
                                                 X_test,
                                                 feature_cols)
+    else:
+        pass
 
 
     return {'X_train': X_train,

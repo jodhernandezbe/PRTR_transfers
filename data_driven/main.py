@@ -4,18 +4,23 @@
 # Importing libraries
 from data_driven.data_preparation.main import data_preparation_pipeline
 from data_driven.modeling.main import modeling_pipeline
-from data_driven.modeling.evaluation import data_driven_models_ranking, prediction_evaluation, parameter_tuning
+from data_driven.modeling.evaluation import data_driven_models_ranking, prediction_evaluation
+from data_driven.modeling.tuning import parameter_tuning
 
 import time
 import openpyxl
 import logging
 import os
 import pandas as pd
+import numpy as np
 import argparse
 import json
+import ast
 import yaml
-import numpy as np
+from joblib import dump
 
+os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 logging.basicConfig(level=logging.INFO)
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 agrs_list = ['including_groups', 'grouping_type', 'flow_handling',
@@ -74,8 +79,10 @@ def machine_learning_pipeline(args):
 
         args.model_params = {par: to_numeric(val) if isnot_string(str(val)) else (None if str(val) == 'None' else val) for par, val in json.loads(args.model_params).items()}
         args.model_params = {par: checking_boolean(val) for par, val in args.model_params.items()}
-        args.model_params_for_tuning = {par: [to_numeric(val) if isnot_string(str(val)) else (None if str(val) == 'None' else val) for val in vals] for par, vals in json.loads(args.model_params_for_tuning).items()}
-        args.model_params_for_tuning = {par: [checking_boolean(val) for val in vals] for par, vals in args.model_params_for_tuning.items()}
+        args.model_params_for_tuning = json.loads(args.model_params_for_tuning)
+        args.model_params_for_tuning = {par: ast.literal_eval(val) for par, val in args.model_params_for_tuning.items()}
+        args_dict = vars(args)
+        args_dict.update({par: checking_boolean(val) for par, val in args_dict.items()})
 
     else:
 
@@ -160,6 +167,9 @@ def machine_learning_pipeline(args):
                 del data
 
                 ## Modeling pipeline
+                if args.data_driven_model == 'ANNC':
+                    args.model_params.update({'input_shape': X_train.shape[1],
+                                              'output_shape': len(np.unique(Y_train))})
                 modeling_results = modeling_pipeline(X_train, Y_train, 
                                             args.data_driven_model,
                                             args.model_params,
@@ -248,34 +258,43 @@ def machine_learning_pipeline(args):
     X_test = data['X_test']
     Y_test = data['Y_test']
     del data
+
+
+    if args.data_driven_model == 'ANNC':
+        args.model_params.update({'input_shape': X_train.shape[1],
+                                  'output_shape': len(np.unique(Y_train))})
     
-    if "False" in args.model_params_for_tuning.keys():
+    # if "False" in args.model_params_for_tuning.keys():
 
-        # Fitting the selected model with params
-        modeling_results, classifier = modeling_pipeline(X_train, Y_train,
-                                    args.data_driven_model,
-                                    args.model_params,
-                                    return_model=True)
+    #     # Fitting the selected model with params
+    #     modeling_results, classifier = modeling_pipeline(X_train, Y_train,
+    #                                 args.data_driven_model,
+    #                                 args.model_params,
+    #                                 return_model=True)
 
-    else:
+    # else:
 
-        # Tuning parameters for select model
-        logger = logging.getLogger(' Data-driven modeling --> Tuning')
-        logger.info(f' Applying randomized grid search for {args.model_params} model')
-
-        results, running_time, classifier = parameter_tuning(X_train, Y_train,
-                                                    args.data_driven_model,
-                                                    fixed_params,
-                                                    space)
+    #     # Tuning parameters for select model
+    #     logger = logging.getLogger(' Data-driven modeling --> Tuning')
+    #     logger.info(f' Applying randomized grid search for {args.model_params} model')
+    #     fixed_params = {p: v for p, v in args.model_params.items() if p not in args.model_params_for_tuning.keys()}
+    #     results, running_time, classifier = parameter_tuning(X_train, Y_train,
+    #                                                 args.data_driven_model,
+    #                                                 fixed_params,
+    #                                                 args.model_params_for_tuning)
                                         
 
     # Evaluating the selected model
+    #logger = logging.getLogger(' Data-driven modeling --> External evaluation')
+    #logger.info(f' Testing the {args.model_params} model on the test set')
     #error = prediction_evaluation(classifier, X_test, Y_test, metric='error')
     #print(f'The {args.data_driven_model} model error: {error}')
     #for key, val in modeling_results.items():
     #    print(f'The {args.data_driven_model} model {key.replace("_", " ")}: {val}') 
 
     # Persisting the selected model
+    #if args.save_info == 'Yes':
+    #    dump(classifier, f'{dir_path}/modeling/output/estimator_id_{args.id}.joblib') 
 
 
 
@@ -415,7 +434,7 @@ if __name__ == '__main__':
                         help='What params would you like to use for tuning the model',
                         type=str,
                         required=False,
-                        default='{"False": "False"}')
+                        default='{"False": "[1, None]"}')
     
 
     args = parser.parse_args()

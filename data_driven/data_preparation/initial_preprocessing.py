@@ -115,7 +115,7 @@ def initial_data_preprocessing(logger, args):
         # Organizing descriptors for chemicals belonging to the groups
         fcols = None
         icols = None
-        if (dataset == 'chemical') and (including_groups == 'True'):
+        if (dataset == 'chemical') and (including_groups):
             df.drop(columns=['chemical_in_category_cas'], inplace=True)
             descriptors = [col for col in df.columns if col != 'generic_substance_id']
             fcols = df[descriptors].select_dtypes('float').columns
