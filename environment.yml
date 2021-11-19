@@ -1,15 +1,16 @@
 name: PRTR
 channels:
+  - intel
   - anaconda
-  - rdkit
-  - defaults
   - conda-forge
+  - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=1_llvm
+  - _py-xgboost-mutex=2.0=cpu_0
   - _tflow_select=2.3.0=mkl
   - absl-py=0.13.0=py39h06a4308_0
-  - aiohttp=3.7.4.post0=py39h7f8727e_2
+  - aiohttp=3.7.4.post0=py39h3811e60_0
   - anyjson=0.3.3=py39h06a4308_1
   - argon2-cffi=20.1.0=py39h27cfd23_1
   - arrow=1.1.1=py39h06a4308_0
@@ -25,7 +26,7 @@ dependencies:
   - brotlipy=0.7.0=py39h27cfd23_1003
   - bzip2=1.0.8=h7b6447c_0
   - c-ares=1.17.2=h7f98852_0
-  - ca-certificates=2021.10.26=h06a4308_2
+  - ca-certificates=2020.12.5=0
   - cachetools=4.2.2=pyhd3eb1b0_0
   - cairo=1.16.0=hf32fb01_1
   - certifi=2021.10.8=py39h06a4308_0
@@ -44,6 +45,8 @@ dependencies:
   - gettext=0.21.0=hf68c758_0
   - glib=2.68.3=h9c3ff4c_0
   - glib-tools=2.68.3=h9c3ff4c_0
+  - google-auth=2.0.2=pyh6c4a22f_0
+  - google-auth-oauthlib=0.4.6=pyhd8ed1ab_0
   - google-pasta=0.2.0=pyhd3eb1b0_0
   - greenlet=1.1.0=py39h2531618_0
   - grpcio=1.38.1=py39hff7568b_0
@@ -88,6 +91,7 @@ dependencies:
   - libuuid=2.32.1=h7f98852_1000
   - libwebp-base=1.2.0=h27cfd23_0
   - libxcb=1.14=h7b6447c_0
+  - libxgboost=1.3.3=h2531618_0
   - libxml2=2.9.12=h72842e0_0
   - libxslt=1.1.33=h15afd5d_2
   - llvm-openmp=12.0.1=h4bd325d_1
@@ -96,15 +100,13 @@ dependencies:
   - markdown=3.3.4=py39h06a4308_0
   - matplotlib-base=3.4.2=py39h2fa2bec_0
   - multidict=5.1.0=py39h27cfd23_2
-  - mysql-connector-c=6.1.11=h597af5e_1
-  - mysqlclient=2.0.3=py39h2531618_1
   - ncurses=6.2=he6710b0_1
   - numpy=1.21.0=py39hdbf815f_0
   - oauthlib=3.1.1=pyhd3eb1b0_0
   - olefile=0.46=py_0
   - openjpeg=2.4.0=h3ad879b_0
   - openpyxl=3.0.9=pyhd3eb1b0_0
-  - openssl=1.1.1l=h7f8727e_0
+  - openssl=1.1.1k=h14c3975_3
   - opt_einsum=3.3.0=pyhd3eb1b0_1
   - orderedmultidict=1.0.1=py_0
   - pandas=1.2.4=py39h2531618_0
@@ -117,6 +119,7 @@ dependencies:
   - pixman=0.40.0=h7b6447c_0
   - protobuf=3.17.2=py39h295c915_0
   - psycopg2=2.8.6=py39h3c74f83_1
+  - py-xgboost=1.3.3=py39h06a4308_0
   - pyasn1=0.4.8=pyhd3eb1b0_0
   - pyasn1-modules=0.2.8=py_0
   - pycairo=1.20.1=py39hedcb9fc_0
@@ -141,14 +144,16 @@ dependencies:
   - requests=2.25.1=pyhd3eb1b0_0
   - requests-oauthlib=1.3.0=py_0
   - rsa=4.7.2=pyhd3eb1b0_1
-  - scikit-learn=0.24.2=py39ha9443f7_0
+  - scikit-learn=1.0.1=py39h51133e4_0
   - scipy=1.7.0=py39hee8e79c_0
   - setuptools=52.0.0=py39h06a4308_0
   - six=1.16.0=pyhd3eb1b0_0
   - sqlalchemy=1.4.14=py39h3811e60_0
   - sqlalchemy-utils=0.37.1=pyhd3eb1b0_0
   - sqlite=3.36.0=hc218d9a_0
+  - tensorboard=2.4.0=pyhc547734_0
   - tensorboard-plugin-wit=1.8.0=pyh44b312d_0
+  - tensorflow=2.4.1=mkl_py39h4683426_0
   - tensorflow-base=2.4.1=mkl_py39h43e0292_0
   - tensorflow-estimator=2.5.0=pyh7b7c402_0
   - termcolor=1.1.0=py39h06a4308_1
@@ -162,11 +167,11 @@ dependencies:
   - werkzeug=2.0.1=pyhd8ed1ab_0
   - wheel=0.36.2=pyhd3eb1b0_0
   - wrapt=1.12.1=py39he8ac12f_1
-  - xlrd=2.0.1=pyhd3eb1b0_0
+  - xgboost=1.3.3=py39h06a4308_0
   - xz=5.2.5=h7b6447c_0
   - yaml=0.2.5=h7b6447c_0
   - yarl=1.6.3=py39h27cfd23_0
   - zipp=3.5.0=pyhd3eb1b0_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.5.0=ha95c52a_0
-prefix: /home/jose-d-hernandez/anaconda3/envs/PRTR
+prefix: /home/jodhernandezbe/anaconda3/envs/PRTR

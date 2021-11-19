@@ -37,10 +37,6 @@ def obtaining_intervals(df, vals_for_intervals, number_of_intervals, flow_handli
     # Saving equal-width intervals 
     intervals = intervals.reset_index()
     intervals.rename(columns={'index': 'Flow rate interval [kg]'}, inplace=True)
-    if flow_handling == 3:
-        string = 'balanced'
-    else:
-        string = 'equal-width'
     if save_info == 'Yes':
         intervals.to_csv(f'{dir_path}/output/intervals_for_flow_rates_for_params_id_{id}.csv',
                         index=False)
@@ -217,7 +213,7 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
             X_test_reduced = skb.transform(X_test_reduced)
             descriptors = [descriptors[idx] for idx, val in enumerate(skb.get_support()) if val]
         elif dimensionality_reduction_method == 'RFC':
-            sel = SelectFromModel(RandomForestClassifier(random_state=0, n_estimators=100, n_jobs=4))
+            sel = SelectFromModel(RandomForestClassifier(random_state=0, n_estimators=100, n_jobs=-1))
             sel.fit(X_train_reduced, Y_train)
             X_train_reduced = sel.transform(X_train_reduced)
             X_test_reduced = sel.transform(X_test_reduced)
@@ -301,7 +297,7 @@ def data_preprocessing(df, args, logger):
         iso = IsolationForest(max_samples=100,
                             random_state=0,
                             contamination=0.2,
-                            n_jobs=4)
+                            n_jobs=-1)
         filter = iso.fit_predict(df[[col for col in df.columns if col not in col_to_keep]].values)
         df = df[filter == 1]
     else:

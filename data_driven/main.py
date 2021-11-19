@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+import warnings
+warnings.filterwarnings("ignore")
+
 from data_driven.data_preparation.main import data_preparation_pipeline
 from data_driven.modeling.main import modeling_pipeline
 from data_driven.modeling.evaluation import data_driven_models_ranking, prediction_evaluation
@@ -221,8 +224,7 @@ def machine_learning_pipeline(args):
 
 
         input_parms['rank'] = data_driven_models_ranking(
-                        input_parms.loc[input_parms[2].isin(pos_steps), 
-                                        [17, 18, 20, 24, 25, 26, 27]]
+                        input_parms[[17, 18, 20, 24, 25, 26, 27]]
                                             )
         for idx, row in input_parms.iterrows():
             worksheet[f'AD{idx + 4}'].value = row['rank']
@@ -244,9 +246,14 @@ def machine_learning_pipeline(args):
             model_params = params['model'][args.data_driven_model]['model_params']['default']
         model_params = {par: to_numeric(val) if isnot_string(str(val)) else (None if str(val) == 'None' else val) for par, val in model_params.items()}
         model_params = {par: checking_boolean(val) for par, val in model_params.items()}
+        model_params_for_tuning = params['model'][args.data_driven_model]['model_params']['for_tuning']
+        model_params_for_tuning = {k: v if not isinstance(v, dict) else [int(x) for x in np.linspace(**v)] for k, v in model_params_for_tuning.items()}
         args_dict.update({'id': vals[0],
                         'model_params': model_params,
-                        'save_info': 'Yes'})
+                        'save_info': 'Yes',
+                        'model_params_for_tuning': model_params_for_tuning})
+
+        logger.info(f' The model {args.data_driven_model} and data preparation id {args.id} were selected ')
 
 
     # Calling the data preparation pipeline
@@ -264,37 +271,50 @@ def machine_learning_pipeline(args):
         args.model_params.update({'input_shape': X_train.shape[1],
                                   'output_shape': len(np.unique(Y_train))})
     
-    # if "False" in args.model_params_for_tuning.keys():
+    if "False" in args.model_params_for_tuning.keys():
 
-    #     # Fitting the selected model with params
-    #     modeling_results, classifier = modeling_pipeline(X_train, Y_train,
-    #                                 args.data_driven_model,
-    #                                 args.model_params,
-    #                                 return_model=True)
+        # Fitting the selected model with params
+        modeling_results, classifier = modeling_pipeline(X_train, Y_train,
+                                    args.data_driven_model,
+                                    args.model_params,
+                                    return_model=True)
+        for key, val in modeling_results.items():
+            logger.info(f'The {args.data_driven_model} model {key.replace("_", " ")}: {val}')
 
-    # else:
-
-    #     # Tuning parameters for select model
-    #     logger = logging.getLogger(' Data-driven modeling --> Tuning')
-    #     logger.info(f' Applying randomized grid search for {args.model_params} model')
-    #     fixed_params = {p: v for p, v in args.model_params.items() if p not in args.model_params_for_tuning.keys()}
-    #     results, running_time, classifier = parameter_tuning(X_train, Y_train,
-    #                                                 args.data_driven_model,
-    #                                                 fixed_params,
-    #                                                 args.model_params_for_tuning)
-                                        
+    else:
+        # Tuning parameters for select model
+        fixed_params = {k: v for k, v in args.model_params.items() if k not in  args.model_params_for_tuning}
+        logger = logging.getLogger(' Data-driven modeling --> Tuning')
+        logger.info(f' Applying randomized grid search for {args.data_driven_model} model')
+        fixed_params = {p: v for p, v in args.model_params.items() if p not in args.model_params_for_tuning.keys()}
+        results, running_time, classifier = parameter_tuning(X_train, Y_train,
+                                                    args.data_driven_model,
+                                                    fixed_params,
+                                                    args.model_params_for_tuning)
+        results = pd.DataFrame(results)
+        cols_report = ['mean_fit_time', 'std_fit_time',
+                        'mean_test_balanced_accuracy',
+                        'std_test_balanced_accuracy',
+                        'mean_train_balanced_accuracy',
+                        'std_train_balanced_accuracy',
+                        'mean_test_accuracy',
+                        'std_test_accuracy',
+                        'mean_train_accuracy',
+                        'std_train_accuracy',
+                        'rank_test_accuracy'] + [col for col in results.columns if col.startswith('param_')]
+        results = results[cols_report]
+        results.to_excel(f'{dir_path}/modeling/output/parameters_tuning_id_{args.id}.xlsx',
+                        index=False)
 
     # Evaluating the selected model
-    #logger = logging.getLogger(' Data-driven modeling --> External evaluation')
-    #logger.info(f' Testing the {args.model_params} model on the test set')
-    #error = prediction_evaluation(classifier, X_test, Y_test, metric='error')
-    #print(f'The {args.data_driven_model} model error: {error}')
-    #for key, val in modeling_results.items():
-    #    print(f'The {args.data_driven_model} model {key.replace("_", " ")}: {val}') 
+    logger = logging.getLogger(' Data-driven modeling --> External evaluation')
+    logger.info(f' Testing the {args.model_params} model on the test set')
+    error = prediction_evaluation(classifier, X_test, Y_test, metric='error')
+    logger.info(f'The  {args.data_driven_model} model error: {error}')
 
     # Persisting the selected model
-    #if args.save_info == 'Yes':
-    #    dump(classifier, f'{dir_path}/modeling/output/estimator_id_{args.id}.joblib') 
+    if args.save_info == 'Yes':
+       dump(classifier, f'{dir_path}/modeling/output/estimator_id_{args.id}.joblib') 
 
 
 
