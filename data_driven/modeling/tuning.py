@@ -7,7 +7,8 @@ from data_driven.modeling.models import defining_model
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import RandomizedSearchCV
 
-def parameter_tuning(X, Y, model, fixed_params, space):
+
+def parameter_tuning(X, Y, model, fixed_params, random_grid):
     '''
     Function to search parameters based on randomized grid search
     '''
@@ -16,13 +17,13 @@ def parameter_tuning(X, Y, model, fixed_params, space):
                             random_state=100,
                             shuffle=True)
 
-    classifier = defining_model(model, **fixed_params)
+    classifier = defining_model(model, fixed_params)
 
-    search = RandomizedSearchCV(classifier, space,
+    search = RandomizedSearchCV(classifier, random_grid,
                         n_iter=100, 
                         scoring=('balanced_accuracy',
                                 'accuracy'),
-                        n_jobs=-1, cv=skfold,
+                        cv=skfold,
                         random_state=1,
                         return_train_score=True,
                         refit='balanced_accuracy')

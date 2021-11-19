@@ -6,9 +6,9 @@ from sklearn.model_selection import cross_validate
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, confusion_matrix, f1_score, recall_score, precision_score
 import numpy as np
-from tqdm import tqdm
+from joblib import Parallel, delayed
 from scipy.stats import mannwhitneyu
-import os
+
 
 def stratified_k_fold_cv(classifier, X, Y):
     '''
@@ -22,7 +22,7 @@ def stratified_k_fold_cv(classifier, X, Y):
     results_skfold = cross_validate(classifier,
                                     X, Y,
                                     cv=skfold,
-                                    n_jobs=4,
+                                    n_jobs=-1,
                                     scoring=('balanced_accuracy',
                                             'accuracy'),
                                     return_train_score=True)
@@ -91,18 +91,14 @@ def y_randomization(classifier, X, Y):
 
     shuffled_errors = []
     indexes = Y.index.tolist()
-    pbar = tqdm(total=30)
-  
-    for i in range(30):
-        np.random.shuffle(indexes)
-        
-        classifier.fit(X,Y[indexes])
-        
-        Ypred = classifier.predict(X)
-        shuffled_errors.append(1 - accuracy_score(Y[indexes],Ypred))
 
-        pbar.update(n=1)
-    
+    def inner_loop():
+        np.random.shuffle(indexes)
+        classifier.fit(X,Y[indexes])
+        Ypred = classifier.predict(X)
+        return 1 - accuracy_score(Y[indexes],Ypred)
+
+    shuffled_errors = Parallel(n_jobs=-1)(delayed(inner_loop)() for i in range(30))
     
     y_randomization_error = {'mean_y_randomization_error': round(np.mean(shuffled_errors), 2),
                             'std_y_randomization_error': round(np.std(shuffled_errors), 6)}
