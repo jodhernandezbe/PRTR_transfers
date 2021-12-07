@@ -43,13 +43,18 @@ def annclassifier(units_per_layer, dropout, dropout_rate,
     Function to build the Artificial Neural Network Classifier
     '''
 
+    # Selecting weights initilizer
+    if hidden_layers_activation == 'sigmoid':
+        initializer = tf.keras.initializers.GlorotNormal(seed=0)
+    else:
+        initializer = tf.keras.initializers.VarianceScaling(seed=0)
+
     # Initialize model
     model = tf.keras.Sequential()
 
     # Input layer
     model.add(
-        tf.keras.layers.Dense(units=input_shape,
-                activation=hidden_layers_activation)
+        tf.keras.Input(shape=(input_shape,))
                 )
     
     # Hidden layers
@@ -57,13 +62,14 @@ def annclassifier(units_per_layer, dropout, dropout_rate,
     for i in range(n_hidden_layers):
         if dropout:
             model.add(
-                tf.keras.layers.Dropout(dropout_rate)
+                tf.keras.layers.Dropout(dropout_rate, seed=0)
                 )
         else:
             pass
         model.add(
             tf.keras.layers.Dense(units=units_per_layer[i],
-                                activation=hidden_layers_activation)
+                                activation=hidden_layers_activation,
+                                kernel_initializer=initializer)
         )
 
     # Output layer

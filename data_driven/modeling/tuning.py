@@ -6,6 +6,7 @@ from data_driven.modeling.models import defining_model
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import RandomizedSearchCV
+import itertools
 
 
 def parameter_tuning(X, Y, model, fixed_params, random_grid):
@@ -35,3 +36,4 @@ def parameter_tuning(X, Y, model, fixed_params, random_grid):
     best_estimator = search.best_estimator_
 
     return results, time, best_estimator
+

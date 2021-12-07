@@ -21,6 +21,9 @@ import json
 import ast
 import yaml
 from joblib import dump
+from resource import getrusage, RUSAGE_SELF
+from scipy import stats
+
 
 os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -66,7 +69,57 @@ def checking_boolean(val):
     elif val == 'False':
         return False
     else:
-        return val          
+        return val
+
+def calc_distance(dimensionality_reduction_method,
+                dimensionality_reduction,
+                X, feature_cols, num_cols,
+                c_centroid=True, centroid=None):
+
+    if (not dimensionality_reduction) or (dimensionality_reduction_method != 'PCA'):
+        if c_centroid:
+            # Ahmad & dey’s distance
+            print(X.shape)
+            col_central = list(np.mean(X[:, [i for i, col in enumerate(feature_cols) if col in num_cols]], axis=0))
+            col_central_type = ['mean'] * len(col_central)
+            index = [i for i, col in enumerate(feature_cols) if col in num_cols]
+            col_central = col_central + list(stats.mode(X[:, [i for i, col in enumerate(feature_cols) if not col in num_cols]], axis=0).mode)
+            col_central_type = col_central_type + ['mode']*len(set(feature_cols) - set(num_cols))
+            index = index +  [i for i, col in enumerate(feature_cols) if col not in num_cols]
+            print(len(col_central), len(col_central_type))
+            centroid = pd.DataFrame({'centroid': col_central, 'central_tendency': col_central_type})
+            print(centroid)
+            numerical_vals = centroid.loc[centroid['central_tendency'] == 'mean', 'centroid'].index.tolist()
+            distance_numerical = np.sum((X[:, numerical_vals] - centroid.iloc[numerical_vals, 'centroid']) ** 2, axis=1) ** 0.5
+            categorical_vals = centroid.loc[centroid['central_tendency'] == 'mode', 'centroid'].index.tolist()
+            func = lambda x: 1 if not x else 0
+            func = np.vectorize(func)
+            matrix_caterorical = X[:, categorical_vals] == centroid.iloc[categorical_vals, 'centroid']
+            matrix_caterorical = func(matrix_caterorical)
+            distance_categorical = np.sum(matrix_caterorical, axis=1)
+            print(distance_numerical.shape, distance_categorical.shape)
+            distances = distance_numerical + distance_categorical
+            return distances, centroid
+        else:
+            numerical_vals = centroid.loc[centroid['central_tendency'] == 'mean', 'centroid'].index.tolist()
+            distance_numerical = np.sum((X[:, numerical_vals] - centroid.iloc[numerical_vals, 'centroid']) ** 2, axis=1) ** 0.5
+            categorical_vals = centroid.loc[centroid['central_tendency'] == 'mode', 'centroid'].index.tolist()
+            func = lambda x: 1 if not x else 0
+            func = np.vectorize(func)
+            matrix_caterorical = X[:, categorical_vals] == centroid.iloc[categorical_vals, 'centroid']
+            matrix_caterorical = func(matrix_caterorical)
+            distance_categorical = np.sum(matrix_caterorical, axis=1)
+            distances = distance_numerical + distance_categorical
+            return distances
+    else:
+        if c_centroid:
+            # Euclidean distance
+            centroid = pd.DataFrame({'centroid': np.mean(X, axis=0), 'central_tendency': ['mean']*X.shape[1]})
+            print(X.shape, centroid.shape)
+            distances = np.sum((X - centroid['centroid'].T) ** 2, axis=1) ** 0.5
+            return distances, centroid
+        else:
+            return np.sum((X - centroid['centroid'].T) ** 2, axis=1) ** 0.5
             
 
 def machine_learning_pipeline(args):
@@ -74,7 +127,7 @@ def machine_learning_pipeline(args):
     Function for creating the Machine Learning pipeline
     '''
 
-    if args.intput_file == 'No':
+    if args.input_file == 'No':
 
         logger = logging.getLogger(' Data-driven modeling')
          
@@ -129,10 +182,12 @@ def machine_learning_pipeline(args):
                 for col in cols:
                     input_val = input_parms.iloc[best, col]
                     input_parms.iloc[i:, col] = input_val
-                    if input_val:
+                    if input_val == True:
                         input_val = 'True'
-                    else:
+                    elif input_val == False:
                         input_val = 'False'
+                    else:
+                        pass
                     for row in list(range(i, input_parms.shape[0])):
                         worksheet.cell(row=row+4, column=col+1).value = input_val
                 
@@ -247,7 +302,8 @@ def machine_learning_pipeline(args):
         model_params = {par: to_numeric(val) if isnot_string(str(val)) else (None if str(val) == 'None' else val) for par, val in model_params.items()}
         model_params = {par: checking_boolean(val) for par, val in model_params.items()}
         model_params_for_tuning = params['model'][args.data_driven_model]['model_params']['for_tuning']
-        model_params_for_tuning = {k: v if not isinstance(v, dict) else [int(x) for x in np.linspace(**v)] for k, v in model_params_for_tuning.items()}
+        func_flatten = lambda t: [item for sublist in t for item in sublist]
+        model_params_for_tuning = {k: v if not isinstance(v, dict) else func_flatten([[int(x) if isinstance(vv['start'], int) else round(x, 5) for x in np.linspace(**vv)] if 'default' not in kk else [vv] for kk, vv in v.items()]) for k, v in model_params_for_tuning.items()}
         args_dict.update({'id': vals[0],
                         'model_params': model_params,
                         'save_info': 'Yes',
@@ -264,9 +320,22 @@ def machine_learning_pipeline(args):
     Y_train = data['Y_train']
     X_test = data['X_test']
     Y_test = data['Y_test']
+    feature_cols = data['feature_cols']
+    num_cols = data['num_cols']
     del data
 
+    # Training data centroid
+    distances_train, centroid = calc_distance(args.dimensionality_reduction_method,
+                                            args.dimensionality_reduction,
+                                            X_train, feature_cols, num_cols,
+                                            c_centroid=True)
+    q25, q50, q75 = np.quantile(distances_train, [0.25, 0.5, 0.75])
+    iqr = q75 - q25
+    cut_off_threshold = q50 + 1.5 * iqr
+    if args.save_info == 'Yes':
+        centroid.to_csv(f'{dir_path}/modeling/output/data_centroid_id_{args.id}.csv')
 
+    # Including params for ANNC
     if args.data_driven_model == 'ANNC':
         args.model_params.update({'input_shape': X_train.shape[1],
                                   'output_shape': len(np.unique(Y_train))})
@@ -279,7 +348,7 @@ def machine_learning_pipeline(args):
                                     args.model_params,
                                     return_model=True)
         for key, val in modeling_results.items():
-            logger.info(f'The {args.data_driven_model} model {key.replace("_", " ")}: {val}')
+            logger.info(f' The {args.data_driven_model} model {key.replace("_", " ")}: {val}')
 
     else:
         # Tuning parameters for select model
@@ -303,14 +372,38 @@ def machine_learning_pipeline(args):
                         'std_train_accuracy',
                         'rank_test_accuracy'] + [col for col in results.columns if col.startswith('param_')]
         results = results[cols_report]
+        results.sort_values(by=['rank_test_accuracy'],
+                            inplace=True)
         results.to_excel(f'{dir_path}/modeling/output/parameters_tuning_id_{args.id}.xlsx',
                         index=False)
 
     # Evaluating the selected model
-    logger = logging.getLogger(' Data-driven modeling --> External evaluation')
-    logger.info(f' Testing the {args.model_params} model on the test set')
     error = prediction_evaluation(classifier, X_test, Y_test, metric='error')
-    logger.info(f'The  {args.data_driven_model} model error: {error}')
+    logger.info(f' Testing the {args.data_driven_model} model on the test set. The {args.data_driven_model} model error: {error}')
+    distances_test = np.sum((X_test - centroid) ** 2, axis=1) ** 0.5
+    n_outside = X_test[distances_test > cut_off_threshold].shape[0]
+    logger.info(f' Number of test samples oustide the applicability domain: {n_outside}')
+    error_outside = prediction_evaluation(classifier,
+                                X_test[distances_test > cut_off_threshold],
+                                Y_test[distances_test > cut_off_threshold],
+                                metric='error')
+    logger.info(f' Testing the {args.data_driven_model} model on the test samples oustide the applicability domain. The {args.data_driven_model} model error: {error_outside}')
+    n_inside = X_test.shape[0] - n_outside
+    logger.info(f' Number of test samples inside the applicability domain: {n_inside}')
+    error_inside = prediction_evaluation(classifier,
+                                X_test[distances_test <= cut_off_threshold],
+                                Y_test[distances_test <= cut_off_threshold],
+                                metric='error')
+    logger.info(f' Testing the {args.data_driven_model} model on the test samples inside the applicability domain. The {args.data_driven_model} model error: {error_inside}')
+    if args.save_info == 'Yes':
+        result = pd.Series({'Model error on test set': error,
+                            'Number of test samples outside the applicability domain': n_outside,
+                            'Model error on test samples outside the applicability domain': error_outside,
+                            'Number of test samples inside the applicability domain': n_inside,
+                            'Model error on test samples inside the applicability domain': error_inside,
+                            'Distance threshold for applicability domain': round(cut_off_threshold, 4)})
+        result.to_csv(f'{dir_path}/modeling/output/test_error_analysis_{args.id}.xlsx',
+                    header=False)
 
     # Persisting the selected model
     if args.save_info == 'Yes':
@@ -422,7 +515,7 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='True')
-    parser.add_argument('--intput_file',
+    parser.add_argument('--input_file',
                         help='Do you have an input file?',
                         choices=['Yes', 'No'],
                         type=str,
@@ -459,4 +552,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    start_simulation = time.time()
     machine_learning_pipeline(args)
+    simulation_running_time = round(time.time() - start_simulation, 2)
+
+    print(f'Simulation time [seg]: {simulation_running_time}')
+    print("Peak memory (MiB):", int(getrusage(RUSAGE_SELF).ru_maxrss / 1024))
