@@ -17,6 +17,7 @@ from functools import partial
 import pandas as pd
 import numpy as np
 import os
+from joblib import dump
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 
@@ -140,27 +141,42 @@ def categorical_data_encoding(df, cat_cols, id,
 
     return df
 
+
 def balancing_dataset(X, Y, how_balance):
     '''
     Function to balance the dataset based on the output clasess
     '''
 
     if how_balance == 'random_oversample':
-        sampler = RandomOverSampler(random_state=42)
+        sampler = RandomOverSampler(random_state=0)
+        oversampling = True
     elif how_balance == 'smote':
-        sampler = SMOTE(k_neighbors=2)
+        sampler = SMOTE(k_neighbors=2, random_state=0)
+        oversampling = True
     elif how_balance == 'adasyn':
-        sampler = ADASYN(random_state=42)
+        sampler = ADASYN(random_state=0)
+        oversampling = True
     elif how_balance == 'random_undersample':
-        sampler = RandomUnderSampler(random_state=42)
+        sampler = RandomUnderSampler(random_state=0)
+        oversampling = False
     elif how_balance == 'near_miss':
-        sampler = NearMiss()
+        sampler = NearMiss(n_neighbors=3)
+        oversampling = False
 
-    X_balanced, Y_balanced = sampler.fit_resample(X, Y)
+    try:
+        X_balanced, Y_balanced = sampler.fit_resample(X, Y)
+    except ValueError:
+        if oversampling:
+            sampler.sampling_strategy = 'minority'
+        else:
+            sampler.sampling_strategy = 'majority'
+        X_balanced, Y_balanced = sampler.fit_resample(X, Y)
 
     return X_balanced, Y_balanced
 
-def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, X_test, feature_cols):
+
+def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, X_test,
+                            feature_cols, save_info, id):
     '''
     Function to apply dimensionality reduction
     '''
@@ -177,7 +193,11 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
                 break
         X_train_reduced = pca.transform(X_train)[:, 0: components_idx + 1]
         X_test_reduced = pca.transform(X_test)[:, 0: components_idx + 1]
-        feature_names = None
+        if save_info == 'Yes':
+            pca = PCA(n_components=components_idx)
+            pca.fit(X_train)
+            dump(pca, f'{dir_path}/output/pca_{components_idx + 1}_components_id_{id}.joblib')
+            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features_id_{id}.csv')
     else:
 
         # Separating flows and sectors from chemical descriptors
@@ -219,11 +239,14 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
             X_test_reduced = sel.transform(X_test_reduced)
             descriptors = [descriptors[idx] for idx, val in enumerate(sel.get_support()) if val]
 
+        feature_cols = feature_cols + descriptors
+        pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features_id_{id}.csv', header=False)
+
         # Concatenating
         X_train_reduced = np.concatenate((X_train, X_train_reduced), axis=1)
         X_test_reduced = np.concatenate((X_test, X_test_reduced), axis=1)
 
-    return X_train_reduced, X_test_reduced
+    return X_train_reduced, X_test_reduced, feature_cols
 
 
 def data_preprocessing(df, args, logger):
@@ -231,7 +254,7 @@ def data_preprocessing(df, args, logger):
     Function to apply further preprocessing to the dataset
     '''
 
-    df = df.sample(100000)
+    df = df.sample(100000, random_state=0)
 
     # Data before 2005 or not (green chemistry and engineering boom!)
     if args.before_2005:
@@ -262,7 +285,7 @@ def data_preprocessing(df, args, logger):
                 number_of_intervals=args.number_of_intervals,
                 save_info=args.save_info)
 
-    # Dropping columns are not needed
+    # Dropping columns that are not needed
     logger.info(' Dropping not needed columns')
     to_drop = ['transfer_record_id',
                 'reporting_year',
@@ -271,6 +294,8 @@ def data_preprocessing(df, args, logger):
                 'national_facility_and_generic_sector_id']
     df.drop(columns=to_drop, inplace=True)
     num_cols = list(set(num_cols) - set(to_drop))
+    if args.flow_handling in [3, 4]:
+        num_cols = list(set(num_cols) - set(['transfer_amount_kg']))
     
     # Organizing categorical data
     logger.info(' Encoding categorical features')
@@ -303,22 +328,19 @@ def data_preprocessing(df, args, logger):
     else:
         pass
 
-    # X and Y
-    feature_cols = [col for col in df.columns if (col != f'{col_to_keep}_label')]
-    X = df[feature_cols].values
-    Y = df[f'{col_to_keep}_label']
-    del df
-
     # Splitting the data
+    feature_cols = [col for col in df.columns if (col != f'{col_to_keep}_label')]
     logger.info(' Splitting the dataset')
     if args.balanced_splitting:
-        Target = Y
+        Target = df[f'{col_to_keep}_label']
     else:
         Target = None
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y,
-                                                test_size=0.3,
+    X_train, X_test, Y_train, Y_test = train_test_split(df[feature_cols],
+                                                df[f'{col_to_keep}_label'],
+                                                test_size=0.2,
                                                 random_state=0,
                                                 stratify=Target)
+    del df
 
     # Scaling
     logger.info(' Performing min-max scaling')
@@ -326,6 +348,13 @@ def data_preprocessing(df, args, logger):
     scalerMinMax.fit(X_train)
     X_train = scalerMinMax.transform(X_train)
     X_test = scalerMinMax.transform(X_test)
+    if args.save_info == 'Yes':
+        min_scale = scalerMinMax.data_min_
+        max_scale = scalerMinMax.data_max_
+        pd.DataFrame({'feature': feature_cols,
+                    'min': min_scale,
+                    'max': max_scale}).to_csv(f'{dir_path}/output/scaling_id_{args.id}.csv',
+                    index=False)
 
     # Balancing the dataset
     if args.balanced_dataset:
@@ -337,11 +366,12 @@ def data_preprocessing(df, args, logger):
     # Dimensionality reduction
     if args.dimensionality_reduction:
         logger.info(f' Reducing dimensionality by {args.dimensionality_reduction_method.upper()}')
-        X_train, X_test = dimensionality_reduction(X_train,
+        X_train, X_test, feature_cols = dimensionality_reduction(X_train,
                                                 Y_train,
                                                 args.dimensionality_reduction_method,
                                                 X_test,
-                                                feature_cols)
+                                                feature_cols,
+                                                args.save_info, args.id)
     else:
         pass
 
@@ -349,4 +379,6 @@ def data_preprocessing(df, args, logger):
     return {'X_train': X_train,
             'Y_train': Y_train,
             'X_test': X_test,
-            'Y_test': Y_test}
+            'Y_test': Y_test,
+            'feature_cols': feature_cols,
+            'num_cols': [col for col in num_cols if col in feature_cols]}
