@@ -243,6 +243,8 @@ def initial_data_preprocessing(logger, args):
                                 'generic_substance_id',
                                 'generic_sector_code',
                                 'prtr_system']
+            df = df.groupby(grouping_columns + [target_colum],
+                            as_index=False).count()
             ddf = dd.from_pandas(df, npartitions=10)
             df = ddf.groupby(grouping_columns).apply(count_transfer_classes, target_colum, meta={key: val for key, val in df.dtypes.apply(lambda x: x.name).to_dict().items()}).compute(scheduler='processes').sort_index().reset_index(drop=True)
             del ddf
@@ -271,7 +273,7 @@ def initial_data_preprocessing(logger, args):
 
 def count_transfer_classes(group, target_colum):
     '''
-    Function to group the target
+    Function to group the target column in the dataframe
     '''
 
     if target_colum == 'generic_transfer_class_id':

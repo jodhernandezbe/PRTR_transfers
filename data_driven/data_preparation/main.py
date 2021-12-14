@@ -135,6 +135,18 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='True')
+    parser.add_argument('--balanced_dataset',
+                        help='Would you like to balance the dataset',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
+    parser.add_argument('--how_balance',
+                        help='What method to balance the dataset you would like to use (see options)',
+                        choices=['random_oversample', 'smote', 'adasyn', 'random_undersample', 'near_miss'],
+                        type=str,
+                        required=False,
+                        default='random_oversample')
     parser.add_argument('--dimensionality_reduction',
                         help='Would you like to apply dimensionality reduction?',
                         choices=['False',  'True'],
@@ -142,11 +154,17 @@ if __name__ == '__main__':
                         required=False,
                         default='False')
     parser.add_argument('--dimensionality_reduction_method',
-                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by UFS - Univariate Feature Selection with mutual infomation (filter method) or RFR - Random Forest Regressor (embedded method via feature importance)',
-                        choices=['PCA', 'UFS', 'RFR'],
+                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by UFS - Univariate Feature Selection with mutual infomation (filter method) or RFC - Random Forest Classifier (embedded method via feature importance)',
+                        choices=['PCA', 'UFS', 'RFC'],
                         type=str,
                         required=False,
                         default='PCA')
+    parser.add_argument('--balanced_splitting',
+                        help='Would you like to split the dataset in a balanced fashion',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
     parser.add_argument('--before_2005',
                         help='Would you like to include data reported before 2005?',
                         choices=['True', 'False'],
