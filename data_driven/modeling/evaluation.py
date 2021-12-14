@@ -3,48 +3,44 @@
 
 # Importing libraries
 from sklearn.model_selection import cross_validate
-from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, confusion_matrix, f1_score, recall_score, precision_score
+from sklearn.metrics import mean_absolute_percentage_error, mean_squared_error, make_scorer, r2_score
 import numpy as np
+import pandas as pd
 from joblib import Parallel, delayed
 from scipy.stats import mannwhitneyu
+from scipy import stats
 
 
-def stratified_k_fold_cv(classifier, X, Y):
+def performing_cross_validation(regressor, X, Y):
     '''
-    Function to apply stratified k-fold cross validation
+    Function to apply k-fold cross validation
     '''
 
-    skfold = StratifiedKFold(n_splits=5,
-                            random_state=100,
-                            shuffle=True)
-
-    results_skfold = cross_validate(classifier,
+    results_kfold = cross_validate(regressor,
                                     X, Y,
-                                    cv=skfold,
+                                    cv=5,
                                     n_jobs=-1,
-                                    scoring=('balanced_accuracy',
-                                            'accuracy'),
+                                    scoring={'mean_absolute_percentage_error': make_scorer(mean_absolute_percentage_error),
+                                            'r2': make_scorer(r2_score, multioutput='variance_weighted'),
+                                            'mean_squared_error': make_scorer(mean_squared_error)},
                                     return_train_score=True)
-    
-    balanced_accuracy_validation = round(np.mean(results_skfold['test_balanced_accuracy']), 2)
-    balanced_accuracy_train = round(np.mean(results_skfold['train_balanced_accuracy']), 2)
-    balanced_accuracy_analysis = overfitting_underfitting(
-                                        results_skfold['train_balanced_accuracy'],
-                                        results_skfold['test_balanced_accuracy']
-                                        )
-    error_train = round(np.mean(1 - results_skfold['train_accuracy']), 2)
-    error_validation = round(np.mean(1 - results_skfold['test_accuracy']), 2)
-    std_error_train = round(np.std(1 - results_skfold['train_accuracy']), 6)
-    std_error_validation = round(np.std(1 - results_skfold['test_accuracy']), 6)
 
-    cv_result = {'balanced_accuracy_validation': balanced_accuracy_validation,
-            'balanced_accuracy_train': balanced_accuracy_train,
-            'balanced_accuracy_analysis': balanced_accuracy_analysis,
-            'error_train': error_train,
-            'error_validation': error_validation,
-            'std_error_train': std_error_train,
-            'std_error_validation': std_error_validation}
+    print(results_kfold)
+    
+    mape_analysis = overfitting_underfitting(
+                                        results_kfold['train_mean_absolute_percentage_error'],
+                                        results_kfold['test_mean_absolute_percentage_error']
+                                        )
+    mape_train = round(np.mean(results_kfold['train_mean_absolute_percentage_error']), 2)
+    mape_validation = round(np.mean(results_kfold['test_mean_absolute_percentage_error']), 2)
+    std_mape_train = round(np.std(results_kfold['train_mean_absolute_percentage_error']), 6)
+    std_mape_validation = round(np.std(results_kfold['test_mean_absolute_percentage_error']), 6)
+
+    cv_result = {'mape_validation': mape_validation,
+            'mape_train': mape_train,
+            'mape_analysis': mape_analysis,
+            'std_mape_train': std_mape_train,
+            'std_mape_validation': std_mape_validation}
 
     return cv_result
 
@@ -66,89 +62,97 @@ def overfitting_underfitting(score_train, score_test):
     5% level of significance (i.e., α=0.05)
     '''
 
-    if np.mean(score_train) < 0.75:
-        U1, p = mannwhitneyu(score_train,
-                            score_test,
-                            method="exact")
-        if p < 0.05:
-            return 'under-fitting (high bias and high variance)'
-        else:
-            return 'under-fitting (high bias)'
+    mean_score_test = round(np.mean(score_test), 2)
+    U1, p = mannwhitneyu(score_train,
+                        score_test,
+                        method="exact")
+
+    # Analysing MAPE
+    if mean_score_test < 0.1:
+        string = 'MAPE is very good'
+    elif (mean_score_test >= 0.1) and (mean_score_test < 0.2):
+        string = 'MAPE is good'
+    elif (mean_score_test >= 0.2) and (mean_score_test < 0.5):
+        string = 'MAPE is ok'
+    elif mean_score_test >= 0.5:
+        string = 'MAPE is not good'
+
+    # Analysing the difference beteween the scores
+    if p < 0.05:
+        return f'{string} (variance is high)'
     else:
-        U1, p = mannwhitneyu(score_train,
-                            score_test,
-                            method="exact")
-        if p < 0.05:
-            return 'over-fitting (high variance)'
-        else:
-            return 'optimal-fitting'
+        return f'{string} (variance is not high)'
 
 
-def y_randomization(classifier, X, Y):
+def y_randomization(regressor, X, Y):
     '''
     Function to apply Y-Randomization
     '''
 
     shuffled_errors = []
-    indexes = Y.index.tolist()
+    indexes = list(range(Y.shape[0]))
 
     def inner_loop():
         np.random.shuffle(indexes)
-        classifier.fit(X,Y[indexes])
-        Ypred = classifier.predict(X)
-        return 1 - accuracy_score(Y[indexes],Ypred)
+        regressor.fit(X,Y[indexes])
+        Ypred = regressor.predict(X)
+        return mean_absolute_percentage_error(Y[indexes],Ypred)
 
     shuffled_errors = Parallel(n_jobs=-1)(delayed(inner_loop)() for i in range(30))
     
-    y_randomization_error = {'mean_y_randomization_error': round(np.mean(shuffled_errors), 2),
-                            'std_y_randomization_error': round(np.std(shuffled_errors), 6)}
+    y_randomization_error = {'mean_y_randomization_mape': round(np.mean(shuffled_errors), 2),
+                            'std_y_randomization_mape': round(np.std(shuffled_errors), 6)}
 
     return y_randomization_error
 
 
-def prediction_evaluation(classifier, X, Y, metric='balanced_accuracy'):
+def prediction_evaluation(regressor, X, Y, metric='mean_absolute_percentage_error'):
     '''
     Function to assess the final model
     '''
 
-    Y_pred = classifier.predict(X)
+    Y_pred = regressor.predict(X)
 
-    if metric == 'balanced_accuracy':
-        return round(balanced_accuracy_score(Y, Y_pred), 2)
-    elif metric == 'accuracy':
-        return round(accuracy_score(Y, Y_pred), 2)
-    elif metric == 'matrix':
-        return confusion_matrix(Y, Y_pred)
-    elif metric == 'f1_weighted':
-        return round(f1_score(Y, Y_pred, average='weighted'), 2)
-    elif metric == 'recall_weighted':
-        return round(recall_score(Y, Y_pred,  average='weighted'), 2)
-    elif metric == 'precision_weighted':
-        return round(precision_score(Y, Y_pred,  average='weighted'), 2)
-    elif metric == 'error':
-        return round(1 - accuracy_score(Y, Y_pred), 2)
+    if metric == 'mean_absolute_percentage_error':
+        return round(mean_absolute_percentage_error(Y, Y_pred), 2)
+    elif metric == 'mean_squared_error':
+        return round(mean_squared_error(Y, Y_pred), 2)
 
 
 def data_driven_models_ranking(df):
     '''
     Function to select the data driven model
+
+    Here a best-worst scaling is applied as well
+    criterion = (score -  score_worst)/(score - score_best)
     '''
 
+    dict_for_mape = {'MAPE is very good (variance is not high)': 8,
+                    'MAPE is very good (variance is high)': 7,
+                    'MAPE is good (variance is not high)': 6,
+                    'MAPE is good (variance is high)': 5,
+                    'MAPE is ok (variance is not high)': 4,
+                    'MAPE is ok (variance is high)': 3,
+                    'MAPE is not good (variance is not high)': 2,
+                    'MAPE is not good (variance is high)': 1
+                    }
+
     # Criterion 1
-    df['criterion_1'] = np.abs(df[17] - df[18])
-    df['criterion_1'] = (df['criterion_1'] - df['criterion_1'].max())/(0 - df['criterion_1'].max())
+    df['criterion_1'] = df[14].apply(lambda x: dict_for_mape[x])
+    df['criterion_1'] = (df['criterion_1'] - 1)/(8 - 1)
 
     # Criterion 2
-    df['criterion_2'] = df[17]
+    df['criterion_2'] = df[15]
+    df['criterion_2'] = (df['criterion_2'] - 1)/(0 - 1)
 
     # Criterion 3
-    df.loc[df[27] == 0, 27] = 10 ** -4
-    df['criterion_3'] = df[26]/df[27]
+    df.loc[df[22] == 0, 22] = 10 ** -4
+    df['criterion_3'] = df[21]/df[22]
     df['criterion_3'] = (df['criterion_3'] - df['criterion_3'].max())/(df['criterion_3'].min() - df['criterion_3'].max())
     
     # Criterion 4
-    df['criterion_4'] = (df[24] - df[25]) - df[20]
-    df['criterion_4'] = (df['criterion_4'] - df['criterion_4'].min())/(df['criterion_4'].max() - df['criterion_4'].min())
+    df['criterion_4'] = df[15]/(df[19] - df[20])
+    df['criterion_4'] = (df['criterion_4'] - df['criterion_4'].max())/(0 - df['criterion_4'].max())
 
     # FAHP
     df =  df[[f'criterion_{i}' for i in range(1,5)]]
@@ -289,3 +293,51 @@ def fahp(df):
     W = W.T
     df = df.assign(weight=W)
     return df
+
+
+def calc_distance(dimensionality_reduction_method,
+                dimensionality_reduction,
+                X, centroid):
+    '''
+    Function to calculate the distance between data centroid and any point
+    '''
+
+    if (not dimensionality_reduction) or (dimensionality_reduction_method != 'PCA'):
+        # Ahmad & dey’s distance
+        numerical_vals = centroid.loc[centroid['central_tendency'] == 'mean', 'centroid'].index.tolist()
+        distance_numerical = np.sum((X[:, numerical_vals] - centroid.loc[numerical_vals, 'centroid'].values) ** 2, axis=1) ** 0.5
+        categorical_vals = centroid.loc[centroid['central_tendency'] == 'mode', 'centroid'].index.tolist()
+        func = lambda x: 1 if not x else 0
+        func = np.vectorize(func)
+        matrix_caterorical = X[:, categorical_vals].round(2) == centroid.loc[categorical_vals, 'centroid'].values.round(2)
+        matrix_caterorical = func(matrix_caterorical)
+        distance_categorical = np.sum(matrix_caterorical, axis=1)
+        distances = distance_numerical + distance_categorical
+    else:
+        # Euclidean distance
+        distances = np.sum((X - centroid['centroid'].values) ** 2, axis=1) ** 0.5
+        
+    return distances
+
+
+def centroid_cal(dimensionality_reduction_method,
+                dimensionality_reduction,
+                X, feature_cols, num_cols):
+    '''
+    Function to calculate data centroid
+    '''
+
+    if (not dimensionality_reduction) or (dimensionality_reduction_method != 'PCA'):
+        # Ahmad & dey’s distance
+        col_central = list(np.mean(X[:, [i for i, col in enumerate(feature_cols) if col in num_cols]], axis=0))
+        col_central_type = ['mean'] * len(col_central)
+        index = [i for i, col in enumerate(feature_cols) if col in num_cols]
+        col_central = col_central + list(stats.mode(X[:, [i for i, col in enumerate(feature_cols) if not col in num_cols]], axis=0).mode[0])
+        col_central_type = col_central_type + ['mode']*len(set(feature_cols) - set(num_cols))
+        index = index +  [i for i, col in enumerate(feature_cols) if col not in num_cols]
+        centroid = pd.DataFrame({'centroid': col_central, 'central_tendency': col_central_type}, index=index)
+        centroid.sort_index(inplace=True)
+    else:
+        centroid = pd.DataFrame({'centroid': np.mean(X, axis=0), 'central_tendency': ['mean']*X.shape[1]})
+        
+    return centroid

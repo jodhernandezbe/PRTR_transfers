@@ -7,8 +7,46 @@ from data_driven.data_preparation.preprocessing import data_preprocessing
 
 import logging
 import argparse
+import json
+import ast
 
 logging.basicConfig(level=logging.INFO)
+
+def isnot_string(val):
+    '''
+    Function to verify if it is a string
+    '''
+
+    try:
+        int(float(val))
+        return True
+    except:
+        return False
+
+
+def to_numeric(val):
+    '''
+    Function to convert string to numeric
+    '''
+
+    val = str(val)
+    try:
+        return int(val)
+    except ValueError:
+        return float(val)
+
+
+def checking_boolean(val):
+    '''
+    Function to check boolean values
+    '''
+
+    if val == 'True':
+        return True
+    elif val == 'False':
+        return False
+    else:
+        return val
 
 
 def data_preparation_pipeline(args):
@@ -86,7 +124,7 @@ if __name__ == '__main__':
                         required=False,
                         default='one-hot-encoding')
     parser.add_argument('--output_column',
-                        help='What column would you like to keep as the classifier output',
+                        help='What column would you like to keep as the regressor output',
                         choices=['generic', 'wm_hierarchy'],
                         type=str,
                         required=False,
@@ -97,18 +135,6 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='True')
-    parser.add_argument('--balanced_dataset',
-                        help='Would you like to balance the dataset',
-                        choices=['True', 'False'],
-                        type=str,
-                        required=False,
-                        default='True')
-    parser.add_argument('--how_balance',
-                        help='What method to balance the dataset you would like to use (see options)',
-                        choices=['random_oversample', 'smote', 'adasyn', 'random_undersample', 'near_miss'],
-                        type=str,
-                        required=False,
-                        default='random_oversample')
     parser.add_argument('--dimensionality_reduction',
                         help='Would you like to apply dimensionality reduction?',
                         choices=['False',  'True'],
@@ -116,17 +142,11 @@ if __name__ == '__main__':
                         required=False,
                         default='False')
     parser.add_argument('--dimensionality_reduction_method',
-                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by UFS - Univariate Feature Selection with mutual information metric or RFC - Random Forest Classifier',
-                        choices=['PCA', 'UFS', 'RFC'],
+                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by UFS - Univariate Feature Selection with mutual infomation (filter method) or RFR - Random Forest Regressor (embedded method via feature importance)',
+                        choices=['PCA', 'UFS', 'RFR'],
                         type=str,
                         required=False,
                         default='PCA')
-    parser.add_argument('--balanced_splitting',
-                        help='Would you like to split the dataset in a balanced fashion',
-                        choices=['True', 'False'],
-                        type=str,
-                        required=False,
-                        default='True')
     parser.add_argument('--before_2005',
                         help='Would you like to include data reported before 2005?',
                         choices=['True', 'False'],
@@ -154,4 +174,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    args_dict = vars(args)
+    args_dict.update({par: checking_boolean(val) for par, val in args_dict.items()})
+
+
     data_preparation_pipeline(args)
+

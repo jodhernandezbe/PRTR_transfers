@@ -1,12 +1,11 @@
 model:
-  DTC:
+  DTR:
     model_params:
       default:
         ccp_alpha: 0.0
-        class_weight: balanced
-        criterion: gini
+        criterion: squared_error
         max_depth: null
-        max_features: sqrt
+        max_features: null
         max_leaf_nodes: null
         min_impurity_decrease: 0.0
         min_samples_leaf: 1
@@ -46,15 +45,14 @@ model:
           - log2
           - sqrt
           - null
-  RFC:
+  RFR:
     model_params:
       default:
         bootstrap: True
         ccp_alpha: 0.0
-        class_weight: balanced
-        criterion: gini
+        criterion: squared_error
         max_depth: null
-        max_features: sqrt
+        max_features: null
         max_leaf_nodes: null
         max_samples: null
         min_impurity_decrease: 0.0
@@ -97,10 +95,10 @@ model:
             stop: 110
             num: 11
           region_default: null
-  GBC:
+  GBR:
     model_params:
       default:
-        base_score: 0.5
+        base_score: null
         booster: gbtree
         colsample_bylevel: 1
         colsample_bynode: 1
@@ -126,8 +124,8 @@ model:
         validate_parameters: 1
         verbosity: 0
         use_label_encoder: False
-        objective: 'multi:softmax'
-        eval_metric: mlogloss
+        objective: 'reg:squarederror'
+        eval_metric: rmse
       defined:
       for_tuning:
         learning_rate:
@@ -176,7 +174,7 @@ model:
             start: 50
             stop: 2000
             num: 20
-  ANNC:
+  ANNR:
     model_params:
       default:
         units_per_layer: !!python/tuple [16, 16, 16]
