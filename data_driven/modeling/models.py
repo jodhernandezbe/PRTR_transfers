@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from xgboost import XGBRegressor
+from sklearn.multioutput import MultiOutputRegressor
 import tensorflow as tf
-
 
 
 def defining_model(model, model_params):
@@ -14,19 +14,19 @@ def defining_model(model, model_params):
     Function to define the model
     '''
 
-    if model == 'DTC':
-        dd_model = DecisionTreeClassifier(**model_params)
-    elif model == 'RFC':
-        dd_model = RandomForestClassifier(**model_params)
-    elif model == 'GBC':
-        dd_model = XGBClassifier(**model_params)
-    elif model == 'ANNC':
+    if model == 'DTR':
+        dd_model = DecisionTreeRegressor(**model_params)
+    elif model == 'RFR':
+        dd_model = RandomForestRegressor(**model_params)
+    elif model == 'GBR':
+        dd_model = MultiOutputRegressor(estimator=XGBRegressor(**model_params))
+    elif model == 'ANNR':
         epochs = model_params['epochs']
         batch_size = model_params['batch_size']
         verbose = model_params['verbose']
         model_params = {par: val for par, val in model_params.items() if par not in ['epochs', 'batch_size', 'verbose']}
-        dd_model = tf.keras.wrappers.scikit_learn.KerasClassifier(
-           build_fn=annclassifier,
+        dd_model = tf.keras.wrappers.scikit_learn.KerasRegressor(
+           build_fn=annregressor,
            **model_params,
            epochs=epochs,
            batch_size=batch_size,
@@ -36,11 +36,11 @@ def defining_model(model, model_params):
     return dd_model
 
 
-def annclassifier(units_per_layer, dropout, dropout_rate,
+def annregressor(units_per_layer, dropout, dropout_rate,
                   hidden_layers_activation, learning_rate,
                   beta_1, beta_2, input_shape, output_shape):
     '''
-    Function to build the Artificial Neural Network Classifier
+    Function to build the Artificial Neural Network Regressor
     '''
 
     # Selecting weights initilizer
@@ -75,7 +75,7 @@ def annclassifier(units_per_layer, dropout, dropout_rate,
     # Output layer
     model.add(
         tf.keras.layers.Dense(units=output_shape,
-                        activation='softmax')
+                        activation=None)
     )
 
     # Optimizer
@@ -87,9 +87,8 @@ def annclassifier(units_per_layer, dropout, dropout_rate,
 
     # Compiling the model
     model.compile(optimizer=optimizer, 
-            loss=tf.losses.CategoricalCrossentropy(from_logits=False),
-            metrics=['accuracy']
-                    )
+            loss='mse',
+            metrics=['mape'])
 
 
     return model

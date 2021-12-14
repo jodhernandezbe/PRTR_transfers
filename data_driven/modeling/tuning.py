@@ -2,32 +2,29 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+import warnings
+warnings.filterwarnings("ignore")
+warnings.filterwarnings(action="ignore", message=r'.*Use subset.*of np.ndarray is not recommended')
+
 from data_driven.modeling.models import defining_model
 
-from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import RandomizedSearchCV
-import itertools
-
+from sklearn.metrics import mean_absolute_percentage_error, make_scorer
 
 def parameter_tuning(X, Y, model, fixed_params, random_grid):
     '''
     Function to search parameters based on randomized grid search
     '''
 
-    skfold = StratifiedKFold(n_splits=5,
-                            random_state=100,
-                            shuffle=True)
+    regressor = defining_model(model, fixed_params)
 
-    classifier = defining_model(model, fixed_params)
-
-    search = RandomizedSearchCV(classifier, random_grid,
+    search = RandomizedSearchCV(regressor, random_grid,
                         n_iter=100, 
-                        scoring=('balanced_accuracy',
-                                'accuracy'),
-                        cv=skfold,
+                        scoring={'mean_absolute_percentage_error': make_scorer(mean_absolute_percentage_error)},
+                        cv=5,
                         random_state=1,
                         return_train_score=True,
-                        refit='balanced_accuracy')
+                        refit='mean_absolute_percentage_error')
 
     search.fit(X, Y)
 

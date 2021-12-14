@@ -117,15 +117,13 @@ def opening_dataset(args,dataset):
 
     # Query for fetching transfer records
     sql_query_record = '''
-    SELECT tr.transfer_record_id,
-	   tr.reporting_year,
+    SELECT tr.reporting_year,
 	   tr.transfer_amount_kg,
-	   tr.reliability_score,
 	   ngs.generic_substance_id,
 	   gtc.generic_transfer_class_id,
 	   gtc.transfer_class_wm_hierarchy_name,
-	   tr.national_facility_and_generic_sector_id,
-	   ngse.generic_sector_code
+	   ngse.generic_sector_code,
+       ns.prtr_system
     FROM transfer_record AS tr
     INNER JOIN national_generic_substance AS ngs
     ON tr.national_generic_substance_id = ngs.national_generic_substance_id
@@ -136,7 +134,9 @@ def opening_dataset(args,dataset):
     INNER JOIN facility AS f
     ON f.national_facility_and_generic_sector_id = tr.national_facility_and_generic_sector_id
     INNER JOIN national_generic_sector AS ngse
-    ON f.national_generic_sector_id = ngse.national_generic_sector_id;
+    ON f.national_generic_sector_id = ngse.national_generic_sector_id
+    INNER JOIN national_substance AS ns
+    ON ns.national_substance_prtr_system_id = ngs.national_substance_prtr_system_id;
     '''
 
     sql_query_dict = {'chemical': sql_query_chemicals,
