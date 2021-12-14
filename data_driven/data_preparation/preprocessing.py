@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
+from imblearn.under_sampling import RandomUnderSampler, NearMiss
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import IsolationForest
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
-from sklearn.feature_selection import SelectKBest, mutual_info_regression
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
-from sklearn.multioutput import MultiOutputRegressor
+from sklearn.multioutput import MultiOutputClassifier
 import pandas as pd
 import numpy as np
 import os
@@ -133,11 +135,11 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         if dimensionality_reduction_method == 'UFS':
             # Select half of the features
             n_features = X_train_reduced.shape[1] // 3
-            skb = MultiOutputRegressor(SelectKBest(partial(mutual_info_regression, random_state=0), k=n_features))
+            skb = MultiOutputClassifier(SelectKBest(partial(mutual_info_classif, random_state=0), k=n_features))
             skb.fit(X_train_reduced, Y_train)
             results = np.array([list(estimator.get_support()) for estimator in skb.estimators_]).T.any(axis=1)
-        elif dimensionality_reduction_method == 'RFR':
-            sel = MultiOutputRegressor(SelectFromModel(RandomForestRegressor(random_state=0, n_estimators=100, n_jobs=-1)))
+        elif dimensionality_reduction_method == 'RFC':
+            sel = MultiOutputClassifier(SelectFromModel(RandomForestClassifier(random_state=0, n_estimators=100, n_jobs=-1)))
             sel.fit(X_train_reduced, Y_train)
             results = np.array([list(estimator.get_support()) for estimator in sel.estimators_]).T.any(axis=1)
         X_train_reduced = X_train_reduced[:, results]
@@ -152,6 +154,38 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         X_test_reduced = np.concatenate((X_test, X_test_reduced), axis=1)
 
     return X_train_reduced, X_test_reduced, feature_cols
+
+def balancing_dataset(X, Y, how_balance):
+    '''
+    Function to balance the dataset based on the output clasess
+    '''
+
+    if how_balance == 'random_oversample':
+        sampler = RandomOverSampler(random_state=0)
+        oversampling = True
+    elif how_balance == 'smote':
+        sampler = SMOTE(k_neighbors=2, random_state=0)
+        oversampling = True
+    elif how_balance == 'adasyn':
+        sampler = ADASYN(random_state=0)
+        oversampling = True
+    elif how_balance == 'random_undersample':
+        sampler = RandomUnderSampler(random_state=0)
+        oversampling = False
+    elif how_balance == 'near_miss':
+        sampler = NearMiss(n_neighbors=3)
+        oversampling = False
+
+    try:
+        X_balanced, Y_balanced = sampler.fit_resample(X, Y)
+    except ValueError:
+        if oversampling:
+            sampler.sampling_strategy = 'minority'
+        else:
+            sampler.sampling_strategy = 'majority'
+        X_balanced, Y_balanced = sampler.fit_resample(X, Y)
+
+    return X_balanced, 
 
 
 def data_preprocessing(df, args, logger):
@@ -206,14 +240,27 @@ def data_preprocessing(df, args, logger):
     feature_cols = [col for col in df.columns if (col != target_colum)]
     X = df[feature_cols].values
     Y = df[target_colum].values
-    Y = np.array([[float(element) for element in row.split(' ')] for row in Y])
     logger.info(' Splitting the dataset')
+    if args.balanced_splitting:
+        Target = Y
+    else:
+        Target = None
     X_train, X_test, Y_train, Y_test = train_test_split(X,
                                                 Y,
                                                 test_size=0.2,
                                                 random_state=0,
-                                                shuffle=True)
+                                                shuffle=True,
+                                                stratify=Target)
     del X, Y, df
+    Y_test = np.array([[int(element) for element in row.split(' ')] for row in Y_test])
+
+    # Balancing the dataset
+    if args.balanced_dataset:
+        logger.info(f' Balancing the dataset by {args.how_balance}')
+        X_train, Y_train = balancing_dataset(X_train, Y_train, args.how_balance)
+    else:
+        pass
+    Y_train = np.array([[int(element) for element in row.split(' ')] for row in Y_train])
 
     # Scaling
     logger.info(' Performing min-max scaling')
