@@ -30,8 +30,9 @@ logging.basicConfig(level=logging.INFO)
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 agrs_list = ['including_groups', 'grouping_type', 'flow_handling',
             'number_of_intervals', 'encoding', 'output_column',
-            'outliers_removal', 'dimensionality_reduction', 'dimensionality_reduction_method',
-            'before_2005', 'data_driven_model']
+            'outliers_removal', 'balanced_dataset', 'how_balance',
+            'dimensionality_reduction', 'dimensionality_reduction_method',
+            'balanced_splitting', 'before_2005', 'data_driven_model']
 
 def isnot_string(val):
     '''
@@ -98,7 +99,7 @@ def machine_learning_pipeline(args):
                                 sheet_name='Sheet1',
                                 header=None,
                                 skiprows=[0, 1, 2],
-                                usecols=range(25))
+                                usecols=range(30))
 
         ## Opening file for data-driven model params
         params_file_path = f'{dir_path}/modeling/input/model_params.yaml'
@@ -120,12 +121,12 @@ def machine_learning_pipeline(args):
                 # FAHP to rank the previous combinations
                 rank = data_driven_models_ranking(
                     input_parms.loc[input_parms[2].isin(pos_steps), 
-                                    [14, 15, 19, 20, 21, 22]]
+                                    [17, 19, 20, 24, 25, 26, 27]]
                                         ).tolist()
                 best = rank.index(min(rank))
 
                 # Looking for column numbers
-                cols = [j for j, val in enumerate(input_parms.iloc[i, 0:14].isnull()) if val]
+                cols = [j for j, val in enumerate(input_parms.iloc[i, 0:17].isnull()) if val]
                 # Allocating the value
                 for col in cols:
                     input_val = input_parms.iloc[best, col]
@@ -173,7 +174,7 @@ def machine_learning_pipeline(args):
                 del data
 
                 ## Modeling pipeline
-                if args.data_driven_model == 'ANNR':
+                if args.data_driven_model == 'ANNC':
                     n_inputs, n_outputs = X_train.shape[1], Y_train.shape[1]
                     args.model_params.update({'input_shape': n_inputs,
                                               'output_shape': n_outputs})
@@ -187,29 +188,33 @@ def machine_learning_pipeline(args):
                 data_volume = round((X_train.nbytes + X_test.nbytes + Y_train.nbytes + Y_test.nbytes)* 10 ** -9, 2)
                 sample_size = X_train.shape[0] + X_test.shape[0]
 
-                input_parms.iloc[i, 14] = modeling_results['mape_analysis']
-                input_parms.iloc[i, 15] = modeling_results['mape_validation']
-                input_parms.iloc[i, 16] = modeling_results['std_mape_validation']
-                input_parms.iloc[i, 17] = modeling_results['mape_train']
-                input_parms.iloc[i, 18] = modeling_results['std_mape_train']
-                input_parms.iloc[i, 19] = modeling_results['mean_y_randomization_mape']
-                input_parms.iloc[i, 20] = modeling_results['std_y_randomization_mape']
-                input_parms.iloc[i, 21] = running_time
-                input_parms.iloc[i, 22] = data_volume
-                input_parms.iloc[i, 23] = sample_size
+                input_parms.iloc[i, 17] = modeling_results['balanced_accuracy_validation']
+                input_parms.iloc[i, 18] = modeling_results['balanced_accuracy_train']
+                input_parms.iloc[i, 19] = modeling_results['balanced_accuracy_analysis']
+                input_parms.iloc[i, 20] = modeling_results['error_validation']
+                input_parms.iloc[i, 21] = modeling_results['std_error_validation']
+                input_parms.iloc[i, 22] = modeling_results['error_train']
+                input_parms.iloc[i, 23] = modeling_results['std_error_train']
+                input_parms.iloc[i, 24] = modeling_results['mean_y_randomization_error']
+                input_parms.iloc[i, 25] = modeling_results['std_y_randomization_error']
+                input_parms.iloc[i, 26] = running_time
+                input_parms.iloc[i, 27] = data_volume
+                input_parms.iloc[i, 28] = sample_size
 
                 ## Saving
                 worksheet[f'B{i + 4}'].value = 'Yes'
-                worksheet[f'O{i + 4}'].value = modeling_results['mape_analysis']
-                worksheet[f'P{i + 4}'].value = modeling_results['mape_validation']
-                worksheet[f'Q{i + 4}'].value = modeling_results['std_mape_validation']
-                worksheet[f'R{i + 4}'].value = modeling_results['mape_train']
-                worksheet[f'S{i + 4}'].value = modeling_results['std_mape_train']
-                worksheet[f'T{i + 4}'].value = modeling_results['mean_y_randomization_mape']
-                worksheet[f'U{i + 4}'].value = modeling_results['std_y_randomization_mape']
-                worksheet[f'V{i + 4}'].value = running_time
-                worksheet[f'W{i + 4}'].value = data_volume
-                worksheet[f'X{i + 4}'].value = sample_size
+                worksheet[f'R{i + 4}'].value = modeling_results['balanced_accuracy_validation']
+                worksheet[f'S{i + 4}'].value = modeling_results['balanced_accuracy_train']
+                worksheet[f'T{i + 4}'].value = modeling_results['balanced_accuracy_analysis']
+                worksheet[f'U{i + 4}'].value = modeling_results['error_validation']
+                worksheet[f'V{i + 4}'].value = modeling_results['std_error_validation']
+                worksheet[f'W{i + 4}'].value = modeling_results['error_train']
+                worksheet[f'X{i + 4}'].value = modeling_results['std_error_train']
+                worksheet[f'Y{i + 4}'].value = modeling_results['mean_y_randomization_error']
+                worksheet[f'Z{i + 4}'].value = modeling_results['std_y_randomization_error']
+                worksheet[f'AA{i + 4}'].value = running_time
+                worksheet[f'AB{i + 4}'].value = data_volume
+                worksheet[f'AC{i + 4}'].value = sample_size
 
                 myworkbook.save(input_file_path)
 
@@ -224,16 +229,16 @@ def machine_learning_pipeline(args):
 
 
         input_parms['rank'] = data_driven_models_ranking(
-                        input_parms[[14, 15, 19, 20, 21, 22]]
+                        input_parms[[17, 19, 20, 24, 25, 26, 27]]
                                             )
         for idx, row in input_parms.iterrows():
             worksheet[f'Y{idx + 4}'].value = row['rank']
         myworkbook.save(input_file_path)
         input_parms = input_parms[input_parms['rank'] == 1]
-        input_parms.drop_duplicates(keep='last', subset=[13],
+        input_parms.drop_duplicates(keep='last', subset=[16],
                                         inplace=True)
         if input_parms.shape[0] != 1:
-            complexity = {'DTR': 1, 'RFR': 2, 'GBR': 3, 'ANNR': 4}
+            complexity = {'DTC': 1, 'RFC': 2, 'GBC': 3, 'ANNC': 4}
             input_parms['complexity'] = input_parms[13].apply(lambda x: complexity[x])
             input_parms = input_parms[input_parms.complexity == input_parms.complexity.min()]
         
@@ -270,7 +275,7 @@ def machine_learning_pipeline(args):
     del data
 
     # Including params for ANNR
-    if args.data_driven_model == 'ANNR':
+    if args.data_driven_model == 'ANNC':
         n_inputs, n_outputs = X_train.shape[1], Y_train.shape[1]
         args.model_params.update({'input_shape': n_inputs,
                                   'output_shape': n_outputs})
@@ -278,7 +283,7 @@ def machine_learning_pipeline(args):
     if "False" in args.model_params_for_tuning.keys():
 
         # Fitting the selected model with params
-        modeling_results, regressor = modeling_pipeline(X_train, Y_train,
+        modeling_results, classifier = modeling_pipeline(X_train, Y_train,
                                     args.data_driven_model,
                                     args.model_params,
                                     return_model=True)
@@ -292,19 +297,23 @@ def machine_learning_pipeline(args):
         logger = logging.getLogger(' Data-driven modeling --> Tuning')
         logger.info(f' Applying randomized grid search for {args.data_driven_model} model')
         fixed_params = {p: v for p, v in args.model_params.items() if p not in args.model_params_for_tuning.keys()}
-        results, running_time, regressor = parameter_tuning(X_train, Y_train,
+        results, running_time, classifier = parameter_tuning(X_train, Y_train,
                                                     args.data_driven_model,
                                                     fixed_params,
                                                     args.model_params_for_tuning)
         results = pd.DataFrame(results)
         cols_report = ['mean_fit_time', 'std_fit_time',
-                        'mean_test_mean_absolute_percentage_error',
-                        'std_test_mean_absolute_percentage_error',
-                        'mean_train_mean_absolute_percentage_error',
-                        'std_train_mean_absolute_percentage_error',
-                        'rank_test_mean_absolute_percentage_error'] + [col for col in results.columns if col.startswith('param_')]
+                        'mean_test_balanced_accuracy',
+                        'std_test_balanced_accuracy',
+                        'mean_train_balanced_accuracy',
+                        'std_train_balanced_accuracy',
+                        'mean_test_accuracy',
+                        'std_test_accuracy',
+                        'mean_train_accuracy',
+                        'std_train_accuracy',
+                        'rank_test_accuracy'] + [col for col in results.columns if col.startswith('param_')]
         results = results[cols_report]
-        results.sort_values(by=['rank_test_mean_absolute_percentage_error'],
+        results.sort_values(by=['rank_test_accuracy'],
                             inplace=True)
         results.to_excel(f'{dir_path}/modeling/output/parameters_tuning_id_{args.id}.xlsx',
                         index=False)
@@ -334,35 +343,36 @@ def machine_learning_pipeline(args):
                                     X_test, centroid)
 
     # Evaluating the selected model
-    mape_test = prediction_evaluation(regressor, X_test, Y_test)
-    logger.info(f' Testing the {args.data_driven_model} model on the test set. The {args.data_driven_model} model MAPE: {mape_test}')
+    error_test = prediction_evaluation(classifier, X_test, Y_test, metric='error')
+    logger.info(f' Testing the {args.data_driven_model} model on the test set. The {args.data_driven_model} model error: {error_test}')
     n_outside = X_test[distances_test > cut_off_threshold].shape[0]
     logger.info(f' Number of test samples oustide the applicability domain: {n_outside}')
-    mape_test_outside = prediction_evaluation(regressor,
+    error_test_outside = prediction_evaluation(classifier,
                                 X_test[distances_test > cut_off_threshold],
                                 Y_test[distances_test > cut_off_threshold])
-    logger.info(f' Testing the {args.data_driven_model} model on the test samples oustide the applicability domain. The {args.data_driven_model} model MAPE: {mape_test_outside}')
+    logger.info(f' Testing the {args.data_driven_model} model on the test samples oustide the applicability domain. The {args.data_driven_model} model error: {error_test_outside}')
     n_inside = X_test.shape[0] - n_outside
     logger.info(f' Number of test samples inside the applicability domain: {n_inside}')
-    mape_test_inside = prediction_evaluation(regressor,
+    error_test_inside = prediction_evaluation(classifier,
                                 X_test[distances_test <= cut_off_threshold],
                                 Y_test[distances_test <= cut_off_threshold])
-    logger.info(f' Testing the {args.data_driven_model} model on the test samples inside the applicability domain. The {args.data_driven_model} model MAPE: {mape_test_inside}')
+    logger.info(f' Testing the {args.data_driven_model} model on the test samples inside the applicability domain. The {args.data_driven_model} model error: {error_test_inside}')
     n_test_equal_to_train = (X_train == X_test[:, None]).all(axis=2).any(axis=1).sum()
     logger.info(f' The number of test examples whose predictors (Xs) are in the training data is {n_test_equal_to_train} ')
     if args.save_info == 'Yes':
-        result = pd.Series({'Model MAPE on test set': mape_test,
+        result = pd.Series({'Model error on test set': error_test,
                             'Number of test samples outside the applicability domain': n_outside,
-                            'Model MAPE on test samples outside the applicability domain': mape_test_outside,
+                            'Model error on test samples outside the applicability domain': error_test_outside,
                             'Number of test samples inside the applicability domain': n_inside,
-                            'Model error on test samples inside the applicability domain': mape_test_inside,
-                            'Distance threshold for applicability domain': round(cut_off_threshold, 4)})
+                            'Model error on test samples inside the applicability domain': error_test_inside,
+                            'Distance threshold for applicability domain': round(cut_off_threshold, 4),
+                            'Number of test examples whose predictors (Xs) are in the training data': n_test_equal_to_train})
         result.to_csv(f'{dir_path}/modeling/output/test_error_analysis_{args.id}.xlsx',
                     header=False)
 
     # Persisting the selected model
     if args.save_info == 'Yes':
-       pickle.dump(regressor, open(f'{dir_path}/modeling/output/estimator_id_{args.id}.pkl', 'wb')) 
+       pickle.dump(classifier, open(f'{dir_path}/modeling/output/estimator_id_{args.id}.pkl', 'wb')) 
 
 
 
@@ -423,7 +433,7 @@ if __name__ == '__main__':
                         required=False,
                         default='one-hot-encoding')
     parser.add_argument('--output_column',
-                        help='What column would you like to keep as the regressor output',
+                        help='What column would you like to keep as the classifier output',
                         choices=['generic', 'wm_hierarchy'],
                         type=str,
                         required=False,
@@ -434,6 +444,18 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='True')
+    parser.add_argument('--balanced_dataset',
+                        help='Would you like to balance the dataset',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
+    parser.add_argument('--how_balance',
+                        help='What method to balance the dataset you would like to use (see options)',
+                        choices=['random_oversample', 'smote', 'adasyn', 'random_undersample', 'near_miss'],
+                        type=str,
+                        required=False,
+                        default='random_oversample')
     parser.add_argument('--dimensionality_reduction',
                         help='Would you like to apply dimensionality reduction?',
                         choices=['False',  'True'],
@@ -441,11 +463,17 @@ if __name__ == '__main__':
                         required=False,
                         default='False')
     parser.add_argument('--dimensionality_reduction_method',
-                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by UFS - Univariate Feature Selection with mutual infomation (filter method) or RFR - Random Forest Regressor (embedded method via feature importance)',
-                        choices=['PCA', 'UFS', 'RFR'],
+                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by UFS - Univariate Feature Selection with mutual infomation (filter method) or RFC - Random Forest Classifier (embedded method via feature importance)',
+                        choices=['PCA', 'UFS', 'RFC'],
                         type=str,
                         required=False,
                         default='PCA')
+    parser.add_argument('--balanced_splitting',
+                        help='Would you like to split the dataset in a balanced fashion',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
     parser.add_argument('--before_2005',
                         help='Would you like to include data reported before 2005?',
                         choices=['True', 'False'],
@@ -466,10 +494,10 @@ if __name__ == '__main__':
                         default='No')
     parser.add_argument('--data_driven_model',
                         help='What regression model would you like to use?',
-                        choices=['DTR', 'RFR', 'GBR', 'ANNR'],
+                        choices=['DTC', 'RFC', 'GBC', 'ANNC'],
                         type=str,
                         required=False,
-                        default='DTR')
+                        default='DTC')
     parser.add_argument('--id',
                         help='What id whould your like to use',
                         type=int,
