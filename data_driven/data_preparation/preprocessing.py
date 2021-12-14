@@ -12,6 +12,7 @@ from sklearn.feature_selection import VarianceThreshold
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 from sklearn.multioutput import MultiOutputRegressor
+from imblearn.over_sampling import RandomOverSampler
 import pandas as pd
 import numpy as np
 import os
@@ -206,7 +207,6 @@ def data_preprocessing(df, args, logger):
     feature_cols = [col for col in df.columns if (col != target_colum)]
     X = df[feature_cols].values
     Y = df[target_colum].values
-    Y = np.array([[float(element) for element in row.split(' ')] for row in Y])
     logger.info(' Splitting the dataset')
     X_train, X_test, Y_train, Y_test = train_test_split(X,
                                                 Y,
@@ -214,6 +214,13 @@ def data_preprocessing(df, args, logger):
                                                 random_state=0,
                                                 shuffle=True)
     del X, Y, df
+    Y_train
+    Y_test
+
+    # Balancing the dataset
+    logger.info(' Applying random oversampling')
+
+
 
     # Scaling
     logger.info(' Performing min-max scaling')

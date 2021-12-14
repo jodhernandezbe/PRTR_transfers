@@ -243,11 +243,8 @@ def initial_data_preprocessing(logger, args):
                                 'generic_substance_id',
                                 'generic_sector_code',
                                 'prtr_system']
-            df['times'] = 1
-            df = df.groupby(grouping_columns + [target_colum],
-                            as_index=False).count()
             ddf = dd.from_pandas(df, npartitions=10)
-            df = ddf.groupby(grouping_columns).apply(count_transfer_classes, target_colum, meta={key: val for key, val in df.dtypes.apply(lambda x: x.name).to_dict().items() if key != 'times'}).compute(scheduler='processes').sort_index().reset_index(drop=True)
+            df = ddf.groupby(grouping_columns).apply(count_transfer_classes, target_colum, meta={key: val for key, val in df.dtypes.apply(lambda x: x.name).to_dict().items()}).compute(scheduler='processes').sort_index().reset_index(drop=True)
             del ddf
 
             # Obtaining the Environmental Policy Stringency Index (EPSI)
@@ -274,23 +271,20 @@ def initial_data_preprocessing(logger, args):
 
 def count_transfer_classes(group, target_colum):
     '''
-    Function to group the target and count their frequencies
+    Function to group the target
     '''
-
-    classes_counting = dict(zip(list(group[target_colum]), list(group['times'])))
 
     if target_colum == 'generic_transfer_class_id':
         existing_classes = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10']
     else:
         existing_classes = ['Disposal', 'Sewerage', 'Treatment', 'Energy recovery', 'Recycling']
 
-    group.drop(columns=[target_colum, 'times'], inplace=True)
+    result = [1 if (group[target_colum] == class_t).any() else 0 for class_t in existing_classes]
+    result = ' '.join([str(elem) for elem in result])
+
+    group.drop(columns=[target_colum], inplace=True)
     group.drop_duplicates(keep='first', inplace=True)
     group.reset_index(drop=True, inplace=True)
-
-    generic_classes = np.array([classes_counting[c] if c in classes_counting.keys() else 0 for c in existing_classes])
-    result = np.log((1 + generic_classes/np.sum(generic_classes)) / (1 + len(existing_classes))).round(2)
-    result = ' '.join([str(elem) for elem in result])
 
     group[target_colum] = None
     group[target_colum].iloc[0] = result
