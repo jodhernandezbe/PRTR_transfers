@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 from scipy.stats import zscore, mode
 import os
+import dask.dataframe as dd
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 seed(1) # seed random number generator
@@ -68,6 +69,64 @@ def looking_for_smiles(cas_number):
         smiles = nlm(cas_number)
 
     return smiles
+
+
+def transfer_flow_rates(df, id, flow_handling=1, number_of_intervals=10, save_info='No'):
+    '''
+    Function to organize the transfer flow rates
+
+    Options:
+
+    (1) Float values (default)
+    (2) Integer values
+    (3) m balanced intervals split by quantiles
+    (4) m non-balanced equal-width intervals
+    '''
+
+    if flow_handling == 2:
+        df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(int)
+    elif flow_handling == 3:
+        df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(int)
+        quantiles = np.linspace(start=0, stop=1,
+                                num=number_of_intervals+1)
+        quantile_values = df['transfer_amount_kg'].quantile(quantiles).astype(int).unique().tolist()
+        df = obtaining_intervals(df, quantile_values, number_of_intervals,
+                            flow_handling, save_info, id)
+    elif flow_handling == 4:
+        df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(int)
+        max_value = df['transfer_amount_kg'].max()
+        linear = np.linspace(start=0,
+                            stop=max_value+2,
+                            num=number_of_intervals+1,
+                            dtype=int).tolist()
+        df = obtaining_intervals(df, linear, number_of_intervals,
+                flow_handling, save_info, id)
+        
+    return df
+
+
+def obtaining_intervals(df, vals_for_intervals, number_of_intervals, flow_handling, save_info, id):
+    '''
+    Function to obtain the intervals for the flows
+    '''
+
+    num_different_elements = len(vals_for_intervals)
+    if flow_handling == 3:
+        vals_for_intervals[-1] = vals_for_intervals[-1] + 2
+    intervals = pd.DataFrame({'From': vals_for_intervals[0:num_different_elements-1],
+                                'To': vals_for_intervals[1:]})
+    intervals['Value'] = pd.Series(intervals.index.tolist()) + 1
+    intervals = intervals.set_index(pd.IntervalIndex.from_arrays(intervals['From'], intervals['To'], closed='left'))['Value'] 
+    df['transfer_amount_kg'] = df['transfer_amount_kg'].map(intervals)
+    df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(object)
+    # Saving equal-width intervals 
+    intervals = intervals.reset_index()
+    intervals.rename(columns={'index': 'Flow rate interval [kg]'}, inplace=True)
+    if save_info == 'Yes':
+        intervals.to_csv(f'{dir_path}/output/intervals_for_flow_rates_for_params_id_{id}.csv',
+                        index=False)
+
+    return df
 
 
 def initial_data_preprocessing(logger, args):
@@ -134,9 +193,11 @@ def initial_data_preprocessing(logger, args):
                 fcols = df[descriptors].select_dtypes('float').columns
                 icols = df[descriptors].select_dtypes('integer').columns
             df_chem = pd.concat([df_chem, df], ignore_index=True, axis=0)
+
             # Dropping columns with a lot missing values
             to_drop = df_chem.columns[pd.isnull(df_chem).sum(axis=0)/df_chem.shape[0] > 0.8].tolist()
             df_chem.drop(columns=to_drop, inplace=True)
+
             # Missing values imputation
             to_impute = df_chem.columns[pd.isnull(df_chem).any(axis=0)].tolist()
             fcols_i = [col for col in to_impute if col in fcols]
@@ -148,16 +209,90 @@ def initial_data_preprocessing(logger, args):
             df_chem[icols] = df_chem[icols].apply(pd.to_numeric, downcast='integer')
             del to_impute, fcols_i, icols_i, fcols, icols
         elif (dataset == 'record'):
+
             # Keeping the column selected by the user as the model output
             if args.output_column == 'generic':
                 df.drop(columns=['transfer_class_wm_hierarchy_name'],
                         inplace=True)
+                target_colum = 'generic_transfer_class_id'
             else:
                 df.drop(columns=['generic_transfer_class_id'],
                         inplace=True)
+                target_colum = 'transfer_class_wm_hierarchy_name'
+
+            # Data before 2005 or not (green chemistry and engineering boom!)
+            if args.before_2005:
+                pass
+            else:
+                df = df[df.reporting_year >= 2005]
+
+            df = df.sample(200000, random_state=0)
+            df.reset_index(drop=True, inplace=True)
+
+            # Organazing transfers flow rates
+            logger.info(' Organizing transfer flows')
+            df = transfer_flow_rates(df, args.id,
+                        flow_handling=args.flow_handling,
+                        number_of_intervals=args.number_of_intervals,
+                        save_info=args.save_info)
+
+            # Grouping generic transfer classes
+            logger.info(f' Organizing the target column {target_colum}')
+            grouping_columns = ['reporting_year',
+                                'transfer_amount_kg',
+                                'generic_substance_id',
+                                'generic_sector_code',
+                                'prtr_system']
+            df['times'] = 1
+            df = df.groupby(grouping_columns + [target_colum],
+                            as_index=False).count()
+            ddf = dd.from_pandas(df, npartitions=10)
+            df = ddf.groupby(grouping_columns).apply(count_transfer_classes, target_colum, meta={key: val for key, val in df.dtypes.apply(lambda x: x.name).to_dict().items() if key != 'times'}).compute(scheduler='processes').sort_index().reset_index(drop=True)
+            del ddf
+
+            # Obtaining the Environmental Policy Stringency Index (EPSI)
+            logger.info(f' Adding the Environmental Policy Stringency Index')
+            df_epsi = pd.read_csv(f'{dir_path}/../../ancillary/OECD_EPSI.csv', index_col=0).round(2)
+            df_epsi.columns = [int(col) for col in df_epsi.columns]
+            fun_epsi = lambda year, list_years, list_epsis: list_epsis[list_years.index(year)] if year in list_years else (list_epsis[np.argmin(list_years)] if year < 1990 else list_epsis[np.argmax(list_years)])
+            df['epsi'] = df[['prtr_system', 'reporting_year']].apply(lambda row: fun_epsi(row['reporting_year'],
+                                                                                        df_epsi.columns.tolist(),
+                                                                                        df_epsi.loc[row['prtr_system']].tolist()),
+                                                                    axis=1)
+
+            # Dropping columns that are not needed more
+            df.drop(columns=['prtr_system', 'reporting_year'],
+                        inplace=True)
             df_ml = pd.merge(df, df_chem, on='generic_substance_id', how='inner')
+            df_ml.drop(columns=['generic_substance_id'], inplace=True)
             del df_chem
 
         del df
 
     return df_ml
+
+
+def count_transfer_classes(group, target_colum):
+    '''
+    Function to group the target and count their frequencies
+    '''
+
+    classes_counting = dict(zip(list(group[target_colum]), list(group['times'])))
+
+    if target_colum == 'generic_transfer_class_id':
+        existing_classes = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10']
+    else:
+        existing_classes = ['Disposal', 'Sewerage', 'Treatment', 'Energy recovery', 'Recycling']
+
+    group.drop(columns=[target_colum, 'times'], inplace=True)
+    group.drop_duplicates(keep='first', inplace=True)
+    group.reset_index(drop=True, inplace=True)
+
+    generic_classes = np.array([classes_counting[c] if c in classes_counting.keys() else 0 for c in existing_classes])
+    result = np.log((1 + generic_classes/np.sum(generic_classes)) / (1 + len(existing_classes))).round(2)
+    result = ' '.join([str(elem) for elem in result])
+
+    group[target_colum] = None
+    group[target_colum].iloc[0] = result
+
+    return group
