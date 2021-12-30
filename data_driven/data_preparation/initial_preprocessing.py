@@ -226,7 +226,7 @@ def initial_data_preprocessing(logger, args):
             else:
                 df = df[df.reporting_year >= 2005]
 
-            df = df.sample(200000, random_state=0)
+            df = df.sample(100000, random_state=0)
             df.reset_index(drop=True, inplace=True)
 
             # Organazing transfers flow rates
@@ -243,10 +243,12 @@ def initial_data_preprocessing(logger, args):
                                 'generic_substance_id',
                                 'generic_sector_code',
                                 'prtr_system']
-            df = df.groupby(grouping_columns + [target_colum],
-                            as_index=False).count()
             ddf = dd.from_pandas(df, npartitions=10)
-            df = ddf.groupby(grouping_columns).apply(count_transfer_classes, target_colum, meta={key: val for key, val in df.dtypes.apply(lambda x: x.name).to_dict().items()}).compute(scheduler='processes').sort_index().reset_index(drop=True)
+            metadata = df.dtypes.apply(lambda x: x.name).to_dict()
+            metadata = {col: metadata[col] for col in grouping_columns + [target_colum]}
+            df = ddf.groupby(grouping_columns).apply(count_transfer_classes,
+                                                    target_colum,
+                                                    meta=metadata).compute(scheduler='processes').sort_index().reset_index(drop=True)
             del ddf
 
             # Obtaining the Environmental Policy Stringency Index (EPSI)

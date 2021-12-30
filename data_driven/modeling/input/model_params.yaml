@@ -28,7 +28,7 @@ model:
             stop: 1.0
             num: 10
           region_2:
-            start: 0.000001
+            start: 0.0001
             stop: 0.05
             num: 10
           region_default: 2
@@ -38,7 +38,7 @@ model:
             stop: 0.5
             num: 9
           region_2:
-            start: 0.000001
+            start: 0.0001
             stop: 0.05
             num: 10
           region_default: 1
@@ -77,11 +77,21 @@ model:
             start: 0.1
             stop: 0.5
             num: 9
+          region_2:
+            start: 0.0001
+            stop: 0.05
+            num: 10
+          region_default: 1
         min_samples_split:
           region_1:
             start: 0.1
             stop: 1.0
             num: 10
+          region_2:
+            start: 0.0001
+            stop: 0.05
+            num: 10
+          region_default: 2
         max_features:
           - log2
           - sqrt
@@ -126,8 +136,8 @@ model:
         validate_parameters: 1
         verbosity: 0
         use_label_encoder: False
-        objective: 'multi:softmax'
-        eval_metric: mlogloss
+        objective: 'binary:logistic'
+        eval_metric: error
       defined:
       for_tuning:
         learning_rate:
