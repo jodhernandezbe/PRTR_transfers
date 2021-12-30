@@ -7,8 +7,6 @@ from data_driven.data_preparation.preprocessing import data_preprocessing
 
 import logging
 import argparse
-import json
-import ast
 
 logging.basicConfig(level=logging.INFO)
 
@@ -117,12 +115,6 @@ if __name__ == '__main__':
                         type=int,
                         required=False,
                         default=10)
-    parser.add_argument('--encoding',
-                        help='How you want to encode the non-ordinal categorical data',
-                        choices=['one-hot-encoding', 'target-encoding'],
-                        type=str,
-                        required=False,
-                        default='one-hot-encoding')
     parser.add_argument('--output_column',
                         help='What column would you like to keep as the regressor output',
                         choices=['generic', 'wm_hierarchy'],
@@ -141,12 +133,6 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='True')
-    parser.add_argument('--how_balance',
-                        help='What method to balance the dataset you would like to use (see options)',
-                        choices=['random_oversample', 'smote', 'adasyn', 'random_undersample', 'near_miss'],
-                        type=str,
-                        required=False,
-                        default='random_oversample')
     parser.add_argument('--dimensionality_reduction',
                         help='Would you like to apply dimensionality reduction?',
                         choices=['False',  'True'],
@@ -154,17 +140,11 @@ if __name__ == '__main__':
                         required=False,
                         default='False')
     parser.add_argument('--dimensionality_reduction_method',
-                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by PCA - Principal Component Analysis or feature selection by UFS - Univariate Feature Selection with mutual infomation (filter method) or RFC - Random Forest Classifier (embedded method via feature importance)',
-                        choices=['PCA', 'UFS', 'RFC'],
+                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by FAMD - Factor Analysis of Mixed Data or feature selection by UFS - Univariate Feature Selection with mutual infomation (filter method) or RFC - Random Forest Classifier (embedded method via feature importance)',
+                        choices=['FAMD', 'UFS', 'RFC'],
                         type=str,
                         required=False,
-                        default='PCA')
-    parser.add_argument('--balanced_splitting',
-                        help='Would you like to split the dataset in a balanced fashion',
-                        choices=['True', 'False'],
-                        type=str,
-                        required=False,
-                        default='True')
+                        default='FAMD')
     parser.add_argument('--before_2005',
                         help='Would you like to include data reported before 2005?',
                         choices=['True', 'False'],

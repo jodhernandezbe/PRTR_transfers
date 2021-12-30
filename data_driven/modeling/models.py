@@ -6,6 +6,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.multioutput import MultiOutputClassifier
+from scikeras.wrappers import KerasClassifier
 import tensorflow as tf
 
 
@@ -19,21 +20,29 @@ def defining_model(model, model_params):
     elif model == 'RFC':
         dd_model = RandomForestClassifier(**model_params)
     elif model == 'GBC':
-        dd_model = MultiOutputClassifier(estimator=XGBClassifier(**model_params))
+        dd_model = MultiOutputClassifier(estimator=XGBClassifier(**model_params), n_jobs=-1)
     elif model == 'ANNC':
         epochs = model_params['epochs']
         batch_size = model_params['batch_size']
         verbose = model_params['verbose']
+        callback = myCallback()
         model_params = {par: val for par, val in model_params.items() if par not in ['epochs', 'batch_size', 'verbose']}
-        dd_model = tf.keras.wrappers.scikit_learn.KerasClassifier(
-           build_fn=annclassifier,
+        dd_model = KerasClassifier(
+           model=annclassifier,
            **model_params,
            epochs=epochs,
            batch_size=batch_size,
-           verbose=verbose
+           verbose=verbose,
+           callbacks=[callback]
         )
         
     return dd_model
+
+class myCallback(tf.keras.callbacks.Callback):
+  def on_epoch_end(self, epoch, logs={}):
+      if round(logs.get('accuracy'), 2) >= 0.75:
+          print("Reached 70% accuracy so cancelling training!")
+          self.model.stop_training = True
 
 
 def annclassifier(units_per_layer, dropout, dropout_rate,
@@ -87,8 +96,8 @@ def annclassifier(units_per_layer, dropout, dropout_rate,
 
     # Compiling the model
     model.compile(optimizer=optimizer, 
-            loss=tf.losses.CategoricalCrossentropy(from_logits=False),
-            metrics=[tf.keras.metrics.SparseCategoricalAccuracy])
+            loss=tf.losses.BinaryCrossentropy(from_logits=False),
+            metrics=['accuracy'])
 
 
     return model
