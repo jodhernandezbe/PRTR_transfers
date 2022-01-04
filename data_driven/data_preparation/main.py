@@ -2,11 +2,16 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+from random import choices
 from data_driven.data_preparation.initial_preprocessing import initial_data_preprocessing
 from data_driven.data_preparation.preprocessing import data_preprocessing
 
 import logging
 import argparse
+import pandas as pd
+import numpy as np
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 
 logging.basicConfig(level=logging.INFO)
 
@@ -47,7 +52,7 @@ def checking_boolean(val):
         return val
 
 
-def data_preparation_pipeline(args):
+def data_preparation_pipeline(args, target_class=None):
     '''
     Function to run the data preparation pipeline
     '''
@@ -56,12 +61,34 @@ def data_preparation_pipeline(args):
 
     # Preliminary data preprocessing
     logger.info(' Running preliminary data preprocessing')
-    df_ml = initial_data_preprocessing(logger, args)
+
+    filepath = f'{dir_path}/output/data/raw/initial_dataset_{args.id}.csv'    
+    if not os.path.isfile(filepath):
+        df_ml = initial_data_preprocessing(logger, args)
+        df_ml.to_csv(filepath, index=False, sep=',')
+    else:
+        df_ml = pd.read_csv(filepath)
 
     # Preprocessing
     logger.info(' Running data preprocessing')
-    data = data_preprocessing(df_ml, args, logger)
 
+    x_train_path = f'{dir_path}/output/data/transformed/X_train_{args.id}_class_{target_class}.npy'
+    y_train_path = f'{dir_path}/output/data/transformed/Y_train_{args.id}_class_{target_class}.npy'
+    x_test_path = f'{dir_path}/output/data/transformed/X_test_{args.id}_class_{target_class}.npy'
+    y_test_path = f'{dir_path}/output/data/transformed/Y_test_{args.id}_class_{target_class}.npy'
+    
+    if not os.path.isfile(x_train_path):
+        data = data_preprocessing(df_ml, args, logger, target_class=target_class)
+        np.save(x_train_path, data['X_train'])
+        np.save(y_train_path, data['Y_train'])
+        np.save(x_test_path, data['X_test'])
+        np.save(y_test_path, data['Y_test'])
+    else:
+        data = {'X_train': np.load(x_train_path),
+            'Y_train': np.load(y_train_path),
+            'X_test': np.load(x_test_path),
+            'Y_test': np.load(y_test_path)}
+    
     return data 
     
 
@@ -164,10 +191,22 @@ if __name__ == '__main__':
                         required=False,
                         default='No')
     parser.add_argument('--id',
-                        help='What id whould your like to use',
+                        help='What id whould your like to use for the data preparation workflow',
                         type=int,
                         required=False,
                         default=0)
+    parser.add_argument('--classification_type',
+                        help='What kind of classification problem would you like?',
+                        choices=['multi-model binary classification', 'multi-label classification', 'multi-class classification'],
+                        type=str,
+                        required=False,
+                        default='multi-class classification')
+    parser.add_argument('--balanaced_split',
+                        help='Would you like to obtain an stratified train-test split?',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=False,
+                        default='True')
 
 
     args = parser.parse_args()
@@ -175,6 +214,15 @@ if __name__ == '__main__':
     args_dict = vars(args)
     args_dict.update({par: checking_boolean(val) for par, val in args_dict.items()})
 
+    if args.classification_type == 'multi-model binary classification':
+        if args.output_column == 'generic':
+            target_classes =  ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10']
+        else:
+            target_classes = ['Disposal', 'Sewerage', 'Treatment', 'Energy recovery', 'Recycling']
 
-    data_preparation_pipeline(args)
+        for target_class in target_classes:
+            data_preparation_pipeline(args, target_class=target_class)
+        
+    else:
+        data_preparation_pipeline(args)
 

@@ -483,7 +483,7 @@ if __name__ == '__main__':
                         required=False,
                         default='DTC')
     parser.add_argument('--id',
-                        help='What id whould your like to use',
+                        help='What id whould your like to use for the data preparation workflow',
                         type=int,
                         required=False,
                         default=0)
@@ -497,6 +497,18 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='{"False": "[1, None]"}')
+    parser.add_argument('--classification_type',
+                        help='What kind of classification problem would you like ',
+                        choices=['multi-model binary classification', 'multi-label classification', 'multi-class classification'],
+                        type=str,
+                        required=True,
+                        default='multi-class classification')
+    parser.add_argument('--balanaced_split',
+                        help='Would you like to obtain an stratified train-test split?',
+                        choices=['True', 'False'],
+                        type=str,
+                        required=True,
+                        default='True')
     
 
     args = parser.parse_args()

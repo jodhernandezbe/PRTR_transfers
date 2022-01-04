@@ -5,6 +5,7 @@
 from data_driven.data_preparation.mlsmote import get_minority_instace, MLSMOTE
 
 from skmultilearn.model_selection import iterative_train_test_split
+from imblearn.over_sampling import SMOTE
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import IsolationForest
@@ -29,6 +30,7 @@ def industry_sector_encoding(
                             feature_dtype,
                             flow_handling,
                             number_of_intervals,
+                            target_class,
                             save_info='No'
                             ):
     '''
@@ -57,7 +59,7 @@ def industry_sector_encoding(
     X_train, X_test = df.iloc[0:n_train_idx].values, df.iloc[n_train_idx:].values
 
     if save_info == 'Yes':
-        df[[col for col in df.columns if 'sector' in col]].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/generic_sector_for_params_id_{id}.csv',
+        df[[col for col in df.columns if 'sector' in col]].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/generic_sector_for_params_id_{id}_class_{target_class}.csv',
                 index=False)
 
     del df
@@ -66,7 +68,8 @@ def industry_sector_encoding(
 
 
 def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, X_test,
-                            feature_cols, feature_dtype, save_info, id, feature_cols_encoding=None):
+                            feature_cols, feature_dtype, save_info, id, target_class,
+                            feature_cols_encoding=None):
     '''
     Function to apply dimensionality reduction
     '''
@@ -92,9 +95,9 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         X_train_reduced = famd.transform(X_train).values
         X_test_reduced = famd.transform(X_test).values
         if save_info == 'Yes':
-            pickle.dump(famd, open(f'{dir_path}/output/pca_{components_idx + 1}_components_id_{id}.pkl', 'wb'))
-            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features_id_{id}.csv')
-            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features_dtype_{id}.csv')
+            pickle.dump(famd, open(f'{dir_path}/output/pca_id_{id}_class_{target_class}.pkl', 'wb'))
+            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features_id_{id}_class_{target_class}.csv')
+            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features_dtype_{id}_class_{target_class}.csv')
     else:
 
         # Separating flows and sectors from chemical descriptors
@@ -149,8 +152,8 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         feature_cols = feature_cols + descriptors
         feature_dtype = {f: feature_dtype[f] for f in feature_cols}
         if save_info == 'Yes':
-            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features_id_{id}.csv', header=False)
-            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features_dtype_{id}.csv')
+            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features_id_{id}_class_{target_class}.csv', header=False)
+            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features_dtype_{id}_class_{target_class}.csv')
 
         # Concatenating
         X_train_reduced = np.concatenate((X_train, X_train_reduced), axis=1)
@@ -159,45 +162,59 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
     return X_train_reduced, X_test_reduced, feature_cols, feature_dtype
 
 
-def balancing_dataset(X, Y):
+def balancing_dataset(X, Y, data_augmentation_algorithem):
     '''
     Function to balance the dataset based on the output clasess
     '''
 
-    X = pd.DataFrame(data=X)
-    Y = pd.DataFrame(data=Y)
+    if data_augmentation_algorithem == 'MLSMOTE':
 
-    X_sub, Y_sub, X, Y = get_minority_instace(X, Y)
-    n_samples = X.shape[0] // 4 -  X_sub.shape[0]
-    X_res, Y_res = MLSMOTE(X_sub, Y_sub, n_samples)
-    del X_sub, Y_sub
+        X = pd.DataFrame(data=X)
+        Y = pd.DataFrame(data=Y)
 
-    X_balanced = pd.concat([X, X_res], axis=0, ignore_index=True)
-    Y_balanced = pd.concat([Y, Y_res], axis=0, ignore_index=True)
+        X_sub, Y_sub, X, Y = get_minority_instace(X, Y)
+        n_samples = X.shape[0] // 4 -  X_sub.shape[0]
+        X_res, Y_res = MLSMOTE(X_sub, Y_sub, n_samples)
+        del X_sub, Y_sub
+
+        X_balanced = pd.concat([X, X_res], axis=0, ignore_index=True).values
+        Y_balanced = pd.concat([Y, Y_res], axis=0, ignore_index=True).values
+
+    else:
+
+        smote = SMOTE(random_state=42, n_jobs=-1)
+        X_balanced, Y_balanced = smote.fit_resample(X, Y)
+
+    return X_balanced, Y_balanced
 
 
-    return X_balanced.values, Y_balanced.values
-
-
-def splitting_the_dataset(df, feature_cols, target_colum, test_size=0.2):
+def splitting_the_dataset(df, feature_cols, target_colum, classification_type, test_size=0.2, balanaced_split=True):
     '''
     Function to split the dataset
     '''
 
     X = df[feature_cols].values
     Y = df[target_colum].values
-    balanaced_split = True
     if balanaced_split:
-        Y = np.array([[int(element) for element in row.split(' ')] for row in Y])
-        X_train, Y_train, X_test, Y_test = iterative_train_test_split(X, Y, test_size=test_size)
+        if classification_type == 'multi-label classification':
+            Y = np.array([[int(element) for element in row.split(' ')] for row in Y])
+            X_train, Y_train, X_test, Y_test = iterative_train_test_split(X, Y, test_size=test_size)
+        else:
+            X_train, X_test, Y_train, Y_test = train_test_split(X,
+                                                    Y,
+                                                    test_size=test_size,
+                                                    random_state=0,
+                                                    shuffle=True,
+                                                    stratify=Y)
     else:
         X_train, X_test, Y_train, Y_test = train_test_split(X,
                                                     Y,
                                                     test_size=test_size,
                                                     random_state=0,
                                                     shuffle=True)
-        Y_test = np.array([[int(element) for element in row.split(' ')] for row in Y_test])
-        Y_train = np.array([[int(element) for element in row.split(' ')] for row in Y_train])
+        if classification_type == 'multi-label classification':
+            Y_test = np.array([[int(element) for element in row.split(' ')] for row in Y_test])
+            Y_train = np.array([[int(element) for element in row.split(' ')] for row in Y_train])
     del X, Y, df
 
     return X_train, X_test, Y_train, Y_test
@@ -238,7 +255,7 @@ def outlier_detection(logger, outliers_removal, X_train, X_test, Y_train, Y_test
 
 
 
-def data_preprocessing(df, args, logger):
+def data_preprocessing(df, args, logger, target_class=None):
     '''
     Function to apply further preprocessing to the dataset
     '''
@@ -259,13 +276,26 @@ def data_preprocessing(df, args, logger):
     feature_cols = [col for col in df.columns if (col != target_colum)]
     feature_dtype = df[feature_cols].dtypes.apply(lambda x: x.name).to_dict()
 
+    # Only for multi-model binary classification
+    if target_class:
+        df[target_colum] = df[target_colum].apply(lambda x: 1 if x == target_class else 0)
+    else:
+        if args.classification_type == 'multi-class classification':
+            if target_colum == 'generic_transfer_class_id':
+                existing_classes = {'M1': 0, 'M2': 1, 'M3': 2, 'M4': 3, 'M5':4 , 'M6': 5, 'M7': 6, 'M8': 7, 'M9': 8, 'M10': 9}
+            else:
+                existing_classes = {'Disposal': 0, 'Sewerage': 1, 'Treatment': 2, 'Energy recovery': 3, 'Recycling': 4}
+            df[target_colum] = df[target_colum].apply(lambda x: existing_classes[x])
+
     # Dropping duplicates
     logger.info(' Dropping duplicated examples')
     df.drop_duplicates(keep='first', inplace=True)
 
     # Splitting the data
     logger.info(' Splitting the dataset')
-    X_train, X_test, Y_train, Y_test = splitting_the_dataset(df, feature_cols, target_colum, test_size=0.2)
+    X_train, X_test, Y_train, Y_test = splitting_the_dataset(df, feature_cols, target_colum,
+                                                        args.classification_type, test_size=0.2, 
+                                                        balanaced_split=args.balanaced_split)
 
     # Scaling
     logger.info(' Performing min-max scaling')
@@ -278,24 +308,25 @@ def data_preprocessing(df, args, logger):
         min_scale = scalerMinMax.data_min_
         max_scale = scalerMinMax.data_max_
         pd.DataFrame({'feature': feature_cols,
-                    'min': min_scale,
-                    'max': max_scale}).to_csv(f'{dir_path}/output/input_features_scaling_id_{args.id}.csv',
-                    index=False)
+                     'min': min_scale,
+                     'max': max_scale}).to_csv(f'{dir_path}/output/input_features_scaling_id_{args.id}_class_{target_class}.csv',
+                     index=False)
 
     # Removing outliers
-    #X_train, X_test, Y_train, Y_test = outlier_detection(logger, args.outliers_removal, X_train, X_test, Y_train, Y_test, feature_cols, feature_dtype)
+    X_train, X_test, Y_train, Y_test = outlier_detection(logger, args.outliers_removal, X_train, X_test, Y_train, Y_test, feature_cols, feature_dtype)
 
     if (args.dimensionality_reduction_method == 'FAMD') and (args.dimensionality_reduction):
 
         # # Dimensionality reduction
         logger.info(f' Reducing dimensionality by {args.dimensionality_reduction_method.upper()}')
         X_train, X_test, _, _ = dimensionality_reduction(X_train,
-                                                Y_train,
-                                                'FAMD',
-                                                X_test,
-                                                feature_cols,
-                                                feature_dtype,
-                                                args.save_info, args.id)
+                                                 Y_train,
+                                                 'FAMD',
+                                                 X_test,
+                                                 feature_cols,
+                                                 feature_dtype,
+                                                 args.save_info,
+                                                 args.id, target_class)
 
         # Scaling after FAMD
         logger.info(' Performing min-max scaling for features after FAMD')
@@ -308,7 +339,7 @@ def data_preprocessing(df, args, logger):
             max_scale = scalerMinMax.data_max_
             pd.DataFrame({'feature': feature_cols,
                         'min': min_scale,
-                        'max': max_scale}).to_csv(f'{dir_path}/output/famd_input_features_scaling_id_{args.id}.csv',
+                        'max': max_scale}).to_csv(f'{dir_path}/output/famd_input_features_scaling_id_{args.id}_class_{target_class}.csv',
                         index=False)
     
     else:
@@ -321,6 +352,7 @@ def data_preprocessing(df, args, logger):
                                 feature_dtype,
                                 args.flow_handling,
                                 args.number_of_intervals,
+                                target_class,
                                 save_info=args.save_info)
 
         if args.dimensionality_reduction:
@@ -332,7 +364,7 @@ def data_preprocessing(df, args, logger):
                                                     X_test,
                                                     feature_cols,
                                                     feature_dtype,
-                                                    args.save_info, args.id,
+                                                    args.save_info, args.id, target_class,
                                                     feature_cols_encoding=feature_cols_encoding)
 
     if args.dimensionality_reduction:
@@ -348,16 +380,18 @@ def data_preprocessing(df, args, logger):
         Y_test = test.iloc[:, X_train.shape[1]:].values
         del test     
 
-    # # Balancing the dataset
-    # # if args.balanced_dataset:
-    # #     logger.info(f' Balancing the dataset by MLSMOTE')
-    # #     X_train, Y_train = balancing_dataset(X_train, Y_train)
-    # # else:
-    # #     pass
+    # Balancing the dataset
+    if args.balanced_dataset:
+        if args.classification_type == 'multi-label classification':
+            data_augmentation_algorithem = 'MLSMOTE'
+        else:
+            data_augmentation_algorithem = 'SMOTE'
+        logger.info(f' Balancing the dataset by {data_augmentation_algorithem}')
+        X_train, Y_train = balancing_dataset(X_train, Y_train, data_augmentation_algorithem)
+    else:
+        pass
 
-    # return {'X_train': X_train,
-    #         'Y_train': Y_train,
-    #         'X_test': X_test,
-    #         'Y_test': Y_test,
-    #         'feature_cols': feature_cols,
-    #         'num_cols': [col for col in num_cols if col in feature_cols]}
+    return {'X_train': X_train,
+            'Y_train': Y_train,
+            'X_test': X_test,
+            'Y_test': Y_test}

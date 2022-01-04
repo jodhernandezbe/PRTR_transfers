@@ -4,12 +4,14 @@ from data_engineering.extract.nlm_scraper import looking_for_structure_details a
 from data_engineering.extract.pubchem_scraper import looking_for_structure_details as pubchem
 from data_driven.data_preparation.opening_dataset import opening_dataset
 
+from sklearn.preprocessing import KBinsDiscretizer
 import random
 from random import seed
 import pandas as pd
 import numpy as np
 from scipy.stats import zscore, mode
 import os
+import pickle
 import dask.dataframe as dd
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
@@ -83,49 +85,22 @@ def transfer_flow_rates(df, id, flow_handling=1, number_of_intervals=10, save_in
     (4) m non-balanced equal-width intervals
     '''
 
-    if flow_handling == 2:
+    if flow_handling == 1:
+        pass
+    elif flow_handling == 2:
         df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(int)
-    elif flow_handling == 3:
-        df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(int)
-        quantiles = np.linspace(start=0, stop=1,
-                                num=number_of_intervals+1)
-        quantile_values = df['transfer_amount_kg'].quantile(quantiles).astype(int).unique().tolist()
-        df = obtaining_intervals(df, quantile_values, number_of_intervals,
-                            flow_handling, save_info, id)
-    elif flow_handling == 4:
-        df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(int)
-        max_value = df['transfer_amount_kg'].max()
-        linear = np.linspace(start=0,
-                            stop=max_value+2,
-                            num=number_of_intervals+1,
-                            dtype=int).tolist()
-        df = obtaining_intervals(df, linear, number_of_intervals,
-                flow_handling, save_info, id)
+    else:
+        if flow_handling == 3:
+            discretizer = KBinsDiscretizer(n_bins=number_of_intervals, encode='ordinal', strategy='quantile')
+        else:
+            discretizer = KBinsDiscretizer(n_bins=number_of_intervals, encode='ordinal', strategy='uniform')
+        discretizer = KBinsDiscretizer(n_bins=number_of_intervals, encode='ordinal', strategy='uniform')
+        discretizer.fit(df['transfer_amount_kg'].values.reshape((df.shape[0], 1)))
+        df['transfer_amount_kg'] = discretizer.transform(df['transfer_amount_kg'].values.reshape((df.shape[0], 1))).astype('int32').astype('str')
+
+        if save_info == 'Yes':
+            pickle.dump(discretizer, open(f'{dir_path}/output/flow_discretizer_flow_handling_{flow_handling}_{id}.pkl', 'wb'))
         
-    return df
-
-
-def obtaining_intervals(df, vals_for_intervals, number_of_intervals, flow_handling, save_info, id):
-    '''
-    Function to obtain the intervals for the flows
-    '''
-
-    num_different_elements = len(vals_for_intervals)
-    if flow_handling == 3:
-        vals_for_intervals[-1] = vals_for_intervals[-1] + 2
-    intervals = pd.DataFrame({'From': vals_for_intervals[0:num_different_elements-1],
-                                'To': vals_for_intervals[1:]})
-    intervals['Value'] = pd.Series(intervals.index.tolist()) + 1
-    intervals = intervals.set_index(pd.IntervalIndex.from_arrays(intervals['From'], intervals['To'], closed='left'))['Value'] 
-    df['transfer_amount_kg'] = df['transfer_amount_kg'].map(intervals)
-    df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(object)
-    # Saving equal-width intervals 
-    intervals = intervals.reset_index()
-    intervals.rename(columns={'index': 'Flow rate interval [kg]'}, inplace=True)
-    if save_info == 'Yes':
-        intervals.to_csv(f'{dir_path}/output/intervals_for_flow_rates_for_params_id_{id}.csv',
-                        index=False)
-
     return df
 
 
@@ -147,9 +122,9 @@ def initial_data_preprocessing(logger, args):
         # Opening and/or creating the dataset
         logger.info(f' Fetching the needed information for the {dataset} dataset from the {db_name} database')
 
-        if os.path.isfile(f'{dir_path}/output/{dataset}.csv'):
+        if os.path.isfile(f'{dir_path}/output/data/raw/{dataset}.csv'):
 
-            df = pd.read_csv(f'{dir_path}/output/{dataset}.csv',
+            df = pd.read_csv(f'{dir_path}/output/data/raw/{dataset}.csv',
                             dtype={'generic_substance_id': object})
         else:
 
@@ -169,7 +144,7 @@ def initial_data_preprocessing(logger, args):
                 df.drop(columns=['smiles'], inplace=True)
 
             # Saving information for further use and speeding up ML pipeline
-            df.to_csv(f'{dir_path}/output/{dataset}.csv', index=False, sep=',')
+            df.to_csv(f'{dir_path}/output/data/raw/{dataset}.csv', index=False, sep=',')
 
         # Organizing descriptors for chemicals belonging to the groups
         fcols = None
@@ -226,9 +201,6 @@ def initial_data_preprocessing(logger, args):
             else:
                 df = df[df.reporting_year >= 2005]
 
-            df = df.sample(100000, random_state=0)
-            df.reset_index(drop=True, inplace=True)
-
             # Organazing transfers flow rates
             logger.info(' Organizing transfer flows')
             df = transfer_flow_rates(df, args.id,
@@ -236,20 +208,30 @@ def initial_data_preprocessing(logger, args):
                         number_of_intervals=args.number_of_intervals,
                         save_info=args.save_info)
 
+            df = df.sample(10000, random_state=0)
+
             # Grouping generic transfer classes
-            logger.info(f' Organizing the target column {target_colum}')
-            grouping_columns = ['reporting_year',
-                                'transfer_amount_kg',
-                                'generic_substance_id',
-                                'generic_sector_code',
-                                'prtr_system']
-            ddf = dd.from_pandas(df, npartitions=10)
-            metadata = df.dtypes.apply(lambda x: x.name).to_dict()
-            metadata = {col: metadata[col] for col in grouping_columns + [target_colum]}
-            df = ddf.groupby(grouping_columns).apply(count_transfer_classes,
-                                                    target_colum,
-                                                    meta=metadata).compute(scheduler='processes').sort_index().reset_index(drop=True)
-            del ddf
+            if args.classification_type == 'multi-label classification':
+
+                logger.info(f' Organizing the target column {target_colum} for multi-label classification')
+
+                filepath = f'{dir_path}/output/data/raw/record_dataset_for_multi_label_classification_{args.id}.csv'
+                if not os.path.isfile(filepath):
+                    grouping_columns = ['reporting_year',
+                                        'transfer_amount_kg',
+                                        'generic_substance_id',
+                                        'generic_sector_code',
+                                        'prtr_system']
+                    ddf = dd.from_pandas(df, npartitions=10)
+                    metadata = df.dtypes.apply(lambda x: x.name).to_dict()
+                    metadata = {col: metadata[col] for col in grouping_columns + [target_colum]}
+                    df = ddf.groupby(grouping_columns).apply(multi_label_classification_target,
+                                                            target_colum,
+                                                              meta=metadata).compute(scheduler='processes').sort_index().reset_index(drop=True)
+                    del ddf
+                    df.to_csv(filepath, index=False, sep=',')
+                else:
+                    df = pd.read_csv(filepath, dtype={'generic_substance_id': object})
 
             # Obtaining the Environmental Policy Stringency Index (EPSI)
             logger.info(f' Adding the Environmental Policy Stringency Index')
@@ -273,9 +255,9 @@ def initial_data_preprocessing(logger, args):
     return df_ml
 
 
-def count_transfer_classes(group, target_colum):
+def multi_label_classification_target(group, target_colum):
     '''
-    Function to group the target column in the dataframe
+    Function to group the target column in the dataframe for multi-label classification
     '''
 
     if target_colum == 'generic_transfer_class_id':
