@@ -127,7 +127,7 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         # Removing highly correlated variables
         cor_matrix = pd.DataFrame(X_train_reduced).corr().abs()
         upper_tri = cor_matrix.where(np.triu(np.ones(cor_matrix.shape),k=1).astype(np.bool))
-        to_drop = [column for column in upper_tri.columns if any(upper_tri[column] >= 0.9)]
+        to_drop = [column for column in upper_tri.columns if any(upper_tri[column] >= 0.7)]
         X_train_reduced = pd.DataFrame(X_train_reduced).drop(to_drop, axis=1).values
         X_test_reduced = pd.DataFrame(X_test_reduced).drop(to_drop, axis=1).values
         descriptors = [val for idx, val in enumerate(descriptors) if not idx in to_drop]
