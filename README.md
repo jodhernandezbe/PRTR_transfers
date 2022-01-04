@@ -1,8 +1,14 @@
+# PRTR transfers
+
+<p align="center">
+  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/main/logo.svg width="50%">
+</p>
+
 <hr/>
 
-# Overview
+## Overview
 
-## Project tree
+### Project tree
 
 The following is the project tree considering only its most important files for a developer. Don't hesitate to fully check the folders, including the [ancillary](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/ancillary) one that contains important information for the data processing.  
 
@@ -67,7 +73,7 @@ PRTR_transfers
 
 ```
 
-## Enhanced entity-relationship diagram (EERD) for the PRTR_transfers database 
+### Enhanced entity-relationship diagram (EERD) for the PRTR_transfers database 
 
 The EERD model in the following figure represents the PRTR_transfers database schema created after data engineering. The prtr_system table is shown without any explicit relationship between the other tables in the database. The reason is that the columns of the prtr_system table were not set as foreign key; however, its columns could be used to connect to other tables like the national_substance table to know the PRTR system the report comes from. 
 
@@ -77,11 +83,11 @@ The EERD model in the following figure represents the PRTR_transfers database sc
 
 <hr/>
 
-# Requirements
+## Requirements
 
-## Developers
+### Developers
 
-### Creating conda environment
+#### Creating conda environment
 
 A conda environment can be created by executing the following command:
 
@@ -93,7 +99,7 @@ conda env create -n PRTR -f environment.yml
 
 The above command is written assuming that you are in the folder containing .yml file, i.e. the root folder PRTR_transfers. 
 
-### Ovoiding ModuleNotFoundError and ImportError<sup>[1](#myfootnote1)</sup>
+#### Ovoiding ModuleNotFoundError and ImportError<sup>[1](#myfootnote1)</sup>
 
 If you are working as a Python developer, you should avoid both ```ModuleNotFoundError``` and ```ImportError``` (see the following [link](https://towardsdatascience.com/how-to-fix-modulenotfounderror-and-importerror-248ce5b69b1c)). Thus, follow the steps below to solve the above mentioned problems:
 
@@ -141,13 +147,13 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
 
 <hr/>
 
-### Installation of Relational Database Management System (RDMS)
+#### Installation of Relational Database Management System (RDMS)
 
 The Extract, Transform, Load (ETL) procedure uses an Object–Relational Mapping (ORT) for data persistence by an RDMS. PostgreSQL and MySQL are the RDMS currently supported by the ETL. Thus, you must have installed any of these RDMSs to run the data engineering pipeline or the data-driven modeling module.
 
-# How to use
+## How to use
 
-## Data engineering module
+### Data engineering module
 
 You can use each .py file in the data engineering module separately. However, the developed module enables to run the ETL pipeline using the main.py inside the [datan_engineering](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/data_engineering) folder. Thus, follow the above steps:
 
@@ -194,6 +200,6 @@ You can use each .py file in the data engineering module separately. However, th
 
 <hr/>
 
-# Notes
+## Notes
 
 <a name="myfootnote1">1</a>: If you have troubles with this step, update ```updatedb```  by running ```sudo updatedb```.
