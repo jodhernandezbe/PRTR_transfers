@@ -1,8 +1,14 @@
+# PRTR transfers
+
+<p align="center">
+  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/main/logo.svg width="50%">
+</p>
+
 <hr/>
 
-# Overview
+## 1. Overview
 
-## Project tree
+### 1.1. Project tree
 
 The following is the project tree considering only its most important files for a developer. Don't hesitate to fully check the folders, including the [ancillary](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/ancillary) one that contains important information for the data processing.  
 
@@ -12,25 +18,31 @@ PRTR_transfers
 ├── ancillary
 ├── application
 ├── data_driven
+│   ├── __init__.py
 │   ├── main.py
 │   ├── data_preparation
+│   │   ├── __init__.py
 │   │   ├── main.py
 │   │   ├── initial_preprocessing.py
+│   │   ├── mlsmote.py
 │   │   ├── opening_dataset.py
 │   │   ├── rdkit_descriptors.py
 │   │   ├── preprocessing.py
 │   │   └── output
-│   ├── modeling
-│   │   ├── main.py
-│   │   ├── evaluation.py
-│   │   ├── models.py
-│   │   ├── tuning.py
-│   │   └── output
-│   └── parameter_tuning
-│       └── main.py
+│   │
+│   └── modeling
+│       ├── __init__.py
+│       ├── main.py
+│       ├── evaluation.py
+│       ├── models.py
+│       ├── tuning.py
+│       └── output
+│    
 └── data_engineering
+    ├── __init__.py
     ├── main.py
     ├── extract
+    |   ├── __init__.py
     │   ├── config.yaml
     │   ├── main.py
     |   ├── common.py
@@ -41,7 +53,9 @@ PRTR_transfers
     │   ├── nlm_scraper.py
     │   ├── pubchem_scraper.py
     │   └── output
+    │ 
     ├── transform
+    |   ├── __init__.py
     │   ├── main.py
     │   ├── common.py
     │   ├── industry_sector_standardizing.py
@@ -52,7 +66,9 @@ PRTR_transfers
     │   ├── tri_transformer.py
     │   ├── database_normalization.py
     │   └── output
+    │ 
     └── load
+        ├── __init__.py
         ├── main.py
         ├── industry_sector.py
         ├── facility.py
@@ -66,21 +82,21 @@ PRTR_transfers
 
 ```
 
-## Enhanced entity-relationship diagram (EERD) for the PRTR_transfers database 
+### 1.2. Enhanced entity-relationship diagram (EERD) for the PRTR_transfers database 
 
 The EERD model in the following figure represents the PRTR_transfers database schema created after data engineering. The prtr_system table is shown without any explicit relationship between the other tables in the database. The reason is that the columns of the prtr_system table were not set as foreign key; however, its columns could be used to connect to other tables like the national_substance table to know the PRTR system the report comes from. 
 
 <p align="center">
-  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/master/data_engineering/load/PRTR_transfers_EER_Diagram.svg width="100%">
+  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/main/data_engineering/load/PRTR_transfers_EER_Diagram.svg width="100%">
 </p>
 
 <hr/>
 
-# Requirements
+## 2. Requirements
 
-## Developers
+### 2.1. Developers
 
-### Creating conda environment
+#### 2.1.1. Creating conda environment
 
 A conda environment can be created by executing the following command:
 
@@ -92,7 +108,7 @@ conda env create -n PRTR -f environment.yml
 
 The above command is written assuming that you are in the folder containing .yml file, i.e. the root folder PRTR_transfers. 
 
-### Ovoiding ModuleNotFoundError and ImportError<sup>[1](#myfootnote1)</sup>
+#### 2.1.2. Ovoiding ModuleNotFoundError and ImportError<sup>[1](#myfootnote1)</sup>
 
 If you are working as a Python developer, you should avoid both ```ModuleNotFoundError``` and ```ImportError``` (see the following [link](https://towardsdatascience.com/how-to-fix-modulenotfounderror-and-importerror-248ce5b69b1c)). Thus, follow the steps below to solve the above mentioned problems:
 
@@ -140,13 +156,13 @@ If you prefer to save the path to the PRTR_transfers project folder as a permane
 
 <hr/>
 
-### Installation of Relational Database Management System (RDMS)
+#### 2.1.3. Installation of Relational Database Management System (RDMS)
 
 The Extract, Transform, Load (ETL) procedure uses an Object–Relational Mapping (ORT) for data persistence by an RDMS. PostgreSQL and MySQL are the RDMS currently supported by the ETL. Thus, you must have installed any of these RDMSs to run the data engineering pipeline or the data-driven modeling module.
 
-# How to use
+## 3. How to use
 
-## Data engineering module
+### 3.1. Data engineering module
 
 You can use each .py file in the data engineering module separately. However, the developed module enables to run the ETL pipeline using the main.py inside the [datan_engineering](https://github.com/jodhernandezbe/PRTR_transfers/tree/master/data_engineering) folder. Thus, follow the above steps:
 
@@ -193,6 +209,6 @@ You can use each .py file in the data engineering module separately. However, th
 
 <hr/>
 
-# Notes
+## 4. Notes
 
 <a name="myfootnote1">1</a>: If you have troubles with this step, update ```updatedb```  by running ```sudo updatedb```.
