@@ -1,51 +1,4 @@
 model:
-  DTC:
-    model_params:
-      default:
-        ccp_alpha: 0.0
-        class_weight: balanced
-        criterion: gini
-        max_depth: null
-        max_features: sqrt
-        max_leaf_nodes: null
-        min_impurity_decrease: 0.0
-        min_samples_leaf: 1
-        min_samples_split: 2
-        min_weight_fraction_leaf: 0.0
-        random_state: 0
-        splitter: best
-      defined:
-      for_tuning:
-        max_depth:
-          region_1:
-            start: 5
-            stop: 110
-            num: 11
-          region_default: null
-        min_samples_split:
-          region_1:
-            start: 0.1
-            stop: 1.0
-            num: 10
-          region_2:
-            start: 0.0001
-            stop: 0.05
-            num: 10
-          region_default: 2
-        min_samples_leaf:
-          region_1:
-            start: 0.1
-            stop: 0.5
-            num: 9
-          region_2:
-            start: 0.0001
-            stop: 0.05
-            num: 10
-          region_default: 1
-        max_features:
-          - log2
-          - sqrt
-          - null
   RFC:
     model_params:
       default:
@@ -107,98 +60,20 @@ model:
             stop: 110
             num: 11
           region_default: null
-  GBC:
-    model_params:
-      default:
-        base_score: 0.5
-        booster: gbtree
-        colsample_bylevel: 1
-        colsample_bynode: 1
-        colsample_bytree: 1
-        gamma: 0.0
-        gpu_id: -1
-        importance_type: gain
-        interaction_constraints: ''
-        learning_rate: 0.3
-        max_delta_step: 0
-        max_depth: null
-        min_child_weight: 1
-        missing: .NAN
-        monotone_constraints: !!python/tuple []
-        n_estimators: 100
-        n_jobs: 4
-        num_parallel_tree: 1
-        random_state: 0
-        reg_alpha: 0.0
-        reg_lambda: 1.0
-        subsample: 1
-        tree_method: exact
-        validate_parameters: 1
-        verbosity: 0
-        use_label_encoder: False
-        objective: 'binary:logistic'
-        eval_metric: error
-      defined:
-      for_tuning:
-        learning_rate:
-          region_1:
-            start: 0.05
-            stop: 0.4
-            num: 15
-        max_depth:
-          region_1:
-            start: 5
-            stop: 110
-            num: 11
-          region_default: null
-        min_child_weight:
-          region_1:
-            start: 1
-            stop: 6
-            num: 4
-        gamma:
-          region_1:
-            start: 0.0
-            stop: 0.5
-            num: 5
-        subsample:
-          region_1:
-            start: 0.5
-            stop: 1.0
-            num: 6
-        colsample_bytree:
-          region_1:
-            start: 0.5
-            stop: 1.0
-            num: 6
-        reg_alpha:
-          region_1:
-            start: 0.0
-            stop: 100.0
-            num: 20
-        reg_lambda:
-          region_1:
-            start: 1.0
-            stop: 100.0
-            num: 20
-        n_estimators:
-          region_1:
-            start: 50
-            stop: 2000
-            num: 20
   ANNC:
     model_params:
       default:
-        units_per_layer: !!python/tuple [16, 16, 16]
-        dropout: False
-        dropout_rate: 0.0
-        hidden_layers_activation: sigmoid
+        units_per_layer: !!python/tuple [512, 128, 32]
+        dropout: !!python/tuple [False, True, False]
+        dropout_rate: 0.3
+        hidden_layers_activation: relu
         learning_rate: 0.001
         beta_1: 0.9
         beta_2: 0.999
-        epochs: 150
-        batch_size: 10
+        epochs: 500
+        batch_size: 50
         verbose: 0
+        shuffle: True
       defined:
       for_tuning:
         learning_rate:
@@ -206,11 +81,11 @@ model:
             start: 0.0005
             stop: 0.4
             num: 15
-        epochs:
+        batch_size:
           region_1:
-            start: 0.0005
-            stop: 0.4
-            num: 15
+            start: 10
+            stop: 100
+            num: 10
         units_per_layer:
           - !!python/tuple [16]
           - !!python/tuple [64]
@@ -224,6 +99,7 @@ model:
           - !!python/tuple [64, 64, 64]
           - !!python/tuple [128, 128, 128]
           - !!python/tuple [512, 512, 512]
+          - !!python/tuple [512, 128, 32]
         hidden_layers_activation:
           - sigmoid
           - relu

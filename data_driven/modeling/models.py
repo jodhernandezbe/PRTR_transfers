@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from sklearn.tree import DecisionTreeClassifier
+from data_driven.modeling.metrics import macro_soft_f1, accuracy
+
 from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-from sklearn.multioutput import MultiOutputClassifier
-from scikeras.wrappers import KerasClassifier
 import tensorflow as tf
 
 
@@ -15,39 +13,24 @@ def defining_model(model, model_params):
     Function to define the model
     '''
 
-    if model == 'DTC':
-        dd_model = DecisionTreeClassifier(**model_params)
-    elif model == 'RFC':
+    if model == 'RFC':
         dd_model = RandomForestClassifier(**model_params)
-    elif model == 'GBC':
-        dd_model = MultiOutputClassifier(estimator=XGBClassifier(**model_params), n_jobs=-1)
     elif model == 'ANNC':
-        epochs = model_params['epochs']
-        batch_size = model_params['batch_size']
-        verbose = model_params['verbose']
-        callback = myCallback()
-        model_params = {par: val for par, val in model_params.items() if par not in ['epochs', 'batch_size', 'verbose']}
-        dd_model = KerasClassifier(
-           model=annclassifier,
-           **model_params,
-           epochs=epochs,
-           batch_size=batch_size,
-           verbose=verbose,
-           callbacks=[callback]
-        )
+        dd_model = annclassifier(**{par: val for par, val in model_params.items() if par not in ['epochs', 'batch_size', 'verbose']})
         
     return dd_model
 
+
 class myCallback(tf.keras.callbacks.Callback):
   def on_epoch_end(self, epoch, logs={}):
-      if round(logs.get('accuracy'), 2) >= 0.75:
-          print("Reached 70% accuracy so cancelling training!")
+      if logs.get('val_accuracy') >= 0.75:
           self.model.stop_training = True
 
 
 def annclassifier(units_per_layer, dropout, dropout_rate,
                   hidden_layers_activation, learning_rate,
-                  beta_1, beta_2, input_shape, output_shape):
+                  beta_1, beta_2, input_shape, output_shape,
+                  classification_type):
     '''
     Function to build the Artificial Neural Network Classifier
     '''
@@ -69,7 +52,7 @@ def annclassifier(units_per_layer, dropout, dropout_rate,
     # Hidden layers
     n_hidden_layers = len(units_per_layer)
     for i in range(n_hidden_layers):
-        if dropout:
+        if dropout[i]:
             model.add(
                 tf.keras.layers.Dropout(dropout_rate, seed=0)
                 )
@@ -82,9 +65,14 @@ def annclassifier(units_per_layer, dropout, dropout_rate,
         )
 
     # Output layer
+    if classification_type == 'multi-class classification':
+        output_activation = 'softmax'
+    else:
+        output_activation = 'sigmoid'
+
     model.add(
         tf.keras.layers.Dense(units=output_shape,
-                        activation='sigmoid')
+                        activation=output_activation)
     )
 
     # Optimizer
@@ -94,10 +82,24 @@ def annclassifier(units_per_layer, dropout, dropout_rate,
                 beta_2=beta_2,
             )
 
+    # Loss function
+    if classification_type == 'multi-model binary classification':
+        loss_fn = 'binary_crossentropy'
+    elif classification_type == 'multi-label classification':
+        loss_fn = macro_soft_f1
+    else:
+        loss_fn = 'categorical_crossentropy'
+
+    # Metric
+    if classification_type == 'multi-label classification':
+        metric_fn = accuracy
+    else:
+        metric_fn = 'accuracy'
+
     # Compiling the model
     model.compile(optimizer=optimizer, 
-            loss=tf.losses.BinaryCrossentropy(from_logits=False),
-            metrics=['accuracy'])
+            loss=loss_fn,
+            metrics=[metric_fn])
 
 
     return model

@@ -2,100 +2,79 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_driven.modeling.models import defining_model
+from data_driven.modeling.models import defining_model, myCallback
+from data_driven.modeling.metrics import prediction_evaluation
 
 from skmultilearn.model_selection import IterativeStratification as KFold
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, multilabel_confusion_matrix, hamming_loss
+from sklearn.model_selection import StratifiedKFold
 import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu
 from scipy import stats
 from tqdm import tqdm
 import time
+import tensorflow as tf
+import os
 
 
-def accuracy(y_true, y_pred):
-    '''
-    Function to calculate the accuracy/hamming score score for multilabel classification
-    '''
-
-    ratio = (((y_true == 1) & (y_pred == 1)).sum(axis=1)) / ((y_true == 1) | (y_pred == 1)).sum(axis=1)
-    ratio[np.isnan(ratio)] = 1
-
-    return ratio.mean()
-    
-
-def prediction_evaluation(classifier=None, X=None, Y=None, Y_pred=None, metric='accuracy', target_colum='generic_transfer_class_id'):
-    '''
-    Function to assess the final model
-    '''
-    
-    if classifier:
-        Y_pred = classifier.predict(X)
-
-    if metric == 'accuracy':
-        return round(accuracy(Y, Y_pred), 2)
-    elif metric == 'f1_score':
-        return round(f1_score(Y, Y_pred, average='samples'), 2)
-    elif metric == 'recall_score':
-        return round(recall_score(Y, Y_pred,  average='samples'), 2)
-    elif metric == 'precision_score':
-        return round(precision_score(Y, Y_pred,  average='samples'), 2)
-    elif metric == 'exact_match_score':
-        return round(accuracy_score(Y, Y_pred, normalize=True, sample_weight=None), 2)
-    elif metric == 'loss_score':
-        return round(1 - accuracy_score(Y, Y_pred, normalize=True, sample_weight=None), 2)
-    elif metric == 'hamming_loss_score':
-        return round(hamming_loss(Y, Y_pred), 2)
-    elif metric == 'confusion_matrix':
-
-        if target_colum == 'generic_transfer_class_id':
-            existing_classes = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10']
-        else:
-            existing_classes = ['Disposal', 'Sewerage', 'Treatment', 'Energy recovery', 'Recycling']
-
-        val = multilabel_confusion_matrix(Y, Y_pred)
-        matrix = dict()
-        for i in range(val.shape[0]):
-            matrix.update({f'{existing_classes[i]} true positive': list(val[i, :, 0]),
-                        f'{existing_classes[i]} true negative': list(val[i, :, 0])})
-        matrix = pd.DataFrame(matrix, index=['Predicted positive', 'Predicted negative'])
-
-
-def performing_cross_validation(model, model_params, X, Y):
+def performing_cross_validation(model, model_params, X, Y, classification_type):
     '''
     Function to apply k-fold cross validation
     '''
 
-    kf = KFold(n_splits=5, random_state=None, order=1)
     pbar = tqdm(desc='5-fold cross validation', total=5, initial=0)
 
+    if classification_type == 'multi-label classification':
+        loss_metric = '0_1_loss'
+        kf = KFold(n_splits=5, random_state=None, order=1)
+    else:
+        loss_metric = 'error'
+        kf = StratifiedKFold(n_splits=5, random_state=None, shuffle=True)
+
     validation_acc = []
-    validation_hamming_loss = []
+    validation_0_1_loss_or_error = []
+    validation_f1 = []
     train_acc = []
-    train_hamming_loss = []
+    train_f1 = []
 
     for train_index , validation_index in kf.split(X, Y):
-        X_train , X_validation = X[train_index,:], X[validation_index,:]
-        Y_train , Y_validation = Y[train_index, :] , Y[validation_index, :]
+        X_train , X_validation = X[train_index], X[validation_index]
+        Y_train , Y_validation = Y[train_index] , Y[validation_index]
 
+        # Instantiating the model
         classifier = defining_model(model, model_params)
-        classifier.fit(X_train, Y_train)
 
-        Y_train_hat = classifier.predict(X_train)
+        # Fitting the model
+        if model == 'RFC':
+            classifier.fit(X_train, Y_train)
+        else:
+            classifier.fit(X_train, Y_train,
+                      batch_size=model_params['batch_size'],
+                      verbose=model_params['verbose'],
+                      epochs=model_params['epochs'],
+                      shuffle=model_params['shuffle'],
+                      callbacks=[myCallback()])
+
+        # Train set evaluation
+        Y_train_hat = np.where(classifier.predict(X_train) > 0.5, 1, 0)
         train_acc.append(
             prediction_evaluation(Y=Y_train, Y_pred=Y_train_hat)
         )
-        train_hamming_loss.append(
-            prediction_evaluation(Y=Y_train, Y_pred=Y_train_hat, metric='hamming_loss_score')
+        train_f1.append(
+            prediction_evaluation(Y=Y_train, Y_pred=Y_train_hat, metric='f1')
         )
+        
 
-        Y_validation_hat = classifier.predict(X_validation)
+        # Validation set evaluation
+        Y_validation_hat = np.where(classifier.predict(X_validation) > 0.5, 1, 0)
         validation_acc.append(
             prediction_evaluation(Y=Y_validation, Y_pred=Y_validation_hat)
         )
-        validation_hamming_loss.append(
-            prediction_evaluation(Y=Y_validation, Y_pred=Y_validation_hat, metric='hamming_loss_score')
+        validation_0_1_loss_or_error.append(
+            prediction_evaluation(Y=Y_validation, Y_pred=Y_validation_hat, metric=loss_metric)
+        )
+        validation_f1.append(
+            prediction_evaluation(Y=Y_validation, Y_pred=Y_validation_hat, metric='f1')
         )
 
         del Y_validation_hat, Y_train_hat
@@ -105,24 +84,25 @@ def performing_cross_validation(model, model_params, X, Y):
 
     pbar.close()
 
-    mean_train_acc = round(np.mean(np.array(train_acc)), 2)
+    # Summaries
     mean_validation_acc = round(np.mean(np.array(validation_acc)), 2)
+    mean_train_acc = round(np.mean(np.array(train_acc)), 2)
     accuracy_analysis = overfitting_underfitting(
                                         np.array(train_acc),
                                         np.array(validation_acc)
                                         )
-    mean_train_hamming_loss = round(np.mean(np.array(train_hamming_loss)), 2)
-    mean_validation_hamming_loss = round(np.mean(np.array(validation_hamming_loss)), 2)
-    std_train_hamming_loss = round(np.std(np.array(train_hamming_loss)), 6)
-    std_validation_hamming_loss = round(np.std(np.array(validation_hamming_loss)), 6)
+    mean_validation_f1 = round(np.mean(np.array(validation_f1)), 2)
+    mean_train_f1 = round(np.mean(np.array(train_f1)), 2)
+    mean_validation_0_1_loss_or_error = round(np.std(np.array(validation_0_1_loss_or_error)), 6)
+    std_validation_0_1_loss_or_error = round(np.std(np.array(validation_0_1_loss_or_error)), 6)
 
-    cv_result = {'mean_validation_acc': mean_validation_acc,
-            'mean_train_acc': mean_train_acc,
+    cv_result = {'mean_validation_accuracy': mean_validation_acc,
+            'mean_train_accuracy': mean_train_acc,
             'accuracy_analysis': accuracy_analysis,
-            'mean_train_hamming_loss': mean_train_hamming_loss,
-            'mean_validation_hamming_loss': mean_validation_hamming_loss,
-            'std_train_hamming_loss': std_train_hamming_loss,
-            'std_validation_hamming_loss': std_validation_hamming_loss}
+            'mean_validation_f1': mean_validation_f1,
+            'mean_train_f1': mean_train_f1,
+            'mean_validation_0_1_loss_or_error': mean_validation_0_1_loss_or_error,
+            'std_validation_0_1_loss_or_error': std_validation_0_1_loss_or_error}
 
     return cv_result
 
@@ -161,10 +141,16 @@ def overfitting_underfitting(score_train, score_test):
             return 'optimal-fitting'
 
 
-def y_randomization(model, model_params, X, Y):
+def y_randomization(model, model_params, X, Y, classification_type):
     '''
     Function to apply Y-Randomization
     '''
+
+
+    if classification_type == 'multi-label classification':
+        loss_metric = '0_1_loss'
+    else:
+        loss_metric = 'error'
 
     shuffled_losses = []
     indexes = list(range(Y.shape[0]))
@@ -173,11 +159,11 @@ def y_randomization(model, model_params, X, Y):
         np.random.shuffle(indexes)
         classifier = defining_model(model, model_params)
         classifier.fit(X,Y[indexes])
-        Ypred = classifier.predict(X)
-        shuffled_losses.append(prediction_evaluation(Y=Y[indexes], Y_pred=Ypred, metric='hamming_loss_score'))
+        Ypred = np.where(classifier.predict(X) > 0.5, 1, 0)
+        shuffled_losses.append(prediction_evaluation(Y=Y[indexes], Y_pred=Ypred, metric=loss_metric))
     
-    y_randomization_error = {'mean_y_randomization_hamming_loss': round(np.mean(np.array(shuffled_losses)), 2),
-                            'std_y_randomization_hamming_loss': round(np.std(np.array(shuffled_losses)), 6)}
+    y_randomization_error = {'y_randomization_mean_0_1_loss_or_error': round(np.mean(np.array(shuffled_losses)), 2),
+                            'y_randomization_std_0_1_loss_or_error': round(np.std(np.array(shuffled_losses)), 6)}
 
     return y_randomization_error
 
@@ -399,3 +385,100 @@ def centroid_cal(dimensionality_reduction_method,
         centroid = pd.DataFrame({'centroid': np.mean(X, axis=0), 'central_tendency': ['mean']*X.shape[1]})
         
     return centroid
+
+
+def external_evaluation(X_test, Y_test, X_train, classifier,
+                        dimensionality_reduction_method,
+                        dimensionality_reduction,
+                        classification_type, id):
+    '''
+    Function for external evaluation on the test dataset
+    '''
+
+    dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
+
+    # Training data centroid
+    centroid_path = f'{dir_path}/output/data_centroid_id_{id}.csv'
+    if os.path.isfile(centroid_path):
+        centroid = pd.read_csv(centroid_path, index_col=0)
+    else:
+        feature_cols = pd.read_csv(f'{dir_path}/../data_preparation/output/input_features_id_{id}.csv',
+                                    header=None)
+        feature_cols = feature_cols.to_dict(orient='list')
+        feature_dtype = pd.read_csv(f'{dir_path}/../data_preparation/output/input_features_dtype_{id}.csv',
+                                    header=None)
+        feature_dtype = feature_dtype.to_dict(orient='list')
+        num_cols = [col for col, datatype in feature_dtype.items() if datatype != 'object']
+        centroid = centroid_cal(dimensionality_reduction_method,
+                                dimensionality_reduction,
+                                X_train, feature_cols, num_cols)
+        centroid.to_csv(centroid_path)
+
+    # Threshold distance
+    distances_train = calc_distance(dimensionality_reduction_method,
+                                    dimensionality_reduction,
+                                    X_train, centroid)
+    q1, q2, q3 = np.quantile(distances_train, [0.25, 0.5, 0.75])
+    iqr = q3 - q1
+    cut_off_threshold = q2 + 1.5*iqr
+
+    if classification_type == 'multi-label classification':
+        loss_metric = 'hamming_loss'
+    else:
+        loss_metric = 'error'
+
+    # Calculating distances for the test data to the traing data centroid
+    distances_test = calc_distance(dimensionality_reduction_method,
+                                dimensionality_reduction,
+                                X_test, centroid)
+
+    # Predictions on test set
+    start_time = time.time()
+    Y_test_hat = np.where(classifier.predict(X_test) > 0.5, 1, 0)
+    evaluation_time = round(time.time() - start_time, 2)
+
+    # Global evaluation for the model
+    global_accuracy = prediction_evaluation(Y=Y_test, Y_pred=Y_test_hat, metric='accuracy')
+    global_f1 = prediction_evaluation(Y=Y_test, Y_pred=Y_test_hat, metric='f1')
+    global_hamming_loss_or_error = prediction_evaluation(Y=Y_test, Y_pred=Y_test_hat, metric=loss_metric)
+
+    # Evaluation for the model (outside AD)
+    outside_ad_accuracy = prediction_evaluation(Y=Y_test[distances_test > cut_off_threshold],
+                                            Y_pred=Y_test_hat[distances_test > cut_off_threshold],
+                                            metric='accuracy')
+    outside_ad_f1 = prediction_evaluation(Y=Y_test[distances_test > cut_off_threshold],
+                                            Y_pred=Y_test_hat[distances_test > cut_off_threshold],
+                                            metric='f1')
+    outside_ad_hamming_loss_or_error = prediction_evaluation(Y=Y_test[distances_test > cut_off_threshold],
+                                            Y_pred=Y_test_hat[distances_test > cut_off_threshold],
+                                            metric=loss_metric)
+
+    # Evaluation for the model (inside AD)
+    inside_ad_accuracy = prediction_evaluation(Y=Y_test[distances_test <= cut_off_threshold],
+                                            Y_pred=Y_test_hat[distances_test <= cut_off_threshold],
+                                            metric='accuracy')
+    inside_ad_f1 = prediction_evaluation(Y=Y_test[distances_test <= cut_off_threshold],
+                                        Y_pred=Y_test_hat[distances_test <= cut_off_threshold],
+                                        metric='f1')
+    inside_ad_hamming_loss_or_error = prediction_evaluation(Y=Y_test[distances_test <= cut_off_threshold],
+                                        Y_pred=Y_test_hat[distances_test <= cut_off_threshold],
+                                        metric=loss_metric)
+
+    n_outside = Y_test[distances_test > cut_off_threshold].shape[0]
+    n_inside = Y_test[distances_test <= cut_off_threshold].shape[0]
+
+    external_testing_results = {
+        'global_accuracy': global_accuracy,
+        'global_f1': global_f1,
+        'global_hamming_loss_or_error': global_hamming_loss_or_error,
+        'outside_ad_accuracy': outside_ad_accuracy,
+        'outside_ad_f1': outside_ad_f1,
+        'outside_ad_hamming_loss_or_error': outside_ad_hamming_loss_or_error,
+        'inside_ad_accuracy': inside_ad_accuracy,
+        'inside_ad_f1': inside_ad_f1,
+        'inside_ad_hamming_loss_or_error': inside_ad_hamming_loss_or_error
+    }
+
+
+    return external_testing_results, evaluation_time, cut_off_threshold, n_outside, n_inside
+
