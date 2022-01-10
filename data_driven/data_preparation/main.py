@@ -11,48 +11,11 @@ import argparse
 import pandas as pd
 import numpy as np
 import os
-dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 
+dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 logging.basicConfig(level=logging.INFO)
 
-def isnot_string(val):
-    '''
-    Function to verify if it is a string
-    '''
-
-    try:
-        int(float(val))
-        return True
-    except:
-        return False
-
-
-def to_numeric(val):
-    '''
-    Function to convert string to numeric
-    '''
-
-    val = str(val)
-    try:
-        return int(val)
-    except ValueError:
-        return float(val)
-
-
-def checking_boolean(val):
-    '''
-    Function to check boolean values
-    '''
-
-    if val == 'True':
-        return True
-    elif val == 'False':
-        return False
-    else:
-        return val
-
-
-def data_preparation_pipeline(args, target_class=None):
+def data_preparation_pipeline(args):
     '''
     Function to run the data preparation pipeline
     '''
@@ -72,157 +35,32 @@ def data_preparation_pipeline(args, target_class=None):
     # Preprocessing
     logger.info(' Running data preprocessing')
 
-    x_train_path = f'{dir_path}/output/data/transformed/X_train_{args.id}_class_{target_class}.npy'
-    y_train_path = f'{dir_path}/output/data/transformed/Y_train_{args.id}_class_{target_class}.npy'
-    x_test_path = f'{dir_path}/output/data/transformed/X_test_{args.id}_class_{target_class}.npy'
-    y_test_path = f'{dir_path}/output/data/transformed/Y_test_{args.id}_class_{target_class}.npy'
+    x_train_path = f'{dir_path}/output/data/transformed/X_train_{args.id}.npy'
+    y_train_path = f'{dir_path}/output/data/transformed/Y_train_{args.id}.npy'
+    x_test_path = f'{dir_path}/output/data/transformed/X_test_{args.id}.npy'
+    y_test_path = f'{dir_path}/output/data/transformed/Y_test_{args.id}.npy'
     
     if not os.path.isfile(x_train_path):
-        data = data_preprocessing(df_ml, args, logger, target_class=target_class)
+        data = data_preprocessing(df_ml, args, logger)
         np.save(x_train_path, data['X_train'])
         np.save(y_train_path, data['Y_train'])
         np.save(x_test_path, data['X_test'])
         np.save(y_test_path, data['Y_test'])
     else:
-        data = {'X_train': np.load(x_train_path),
-            'Y_train': np.load(y_train_path),
-            'X_test': np.load(x_test_path),
-            'Y_test': np.load(y_test_path)}
-    
-    return data 
-    
-
-if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--rdbms',
-                        help='The Relational Database Management System (RDBMS) you would like to use',
-                        choices=['mysql', 'postgresql'],
-                        type=str,
-                        default='mysql')
-    parser.add_argument('--password',
-                        help='The password for using the RDBMS',
-                        required=False,
-                        type=str)
-    parser.add_argument('--username',
-                        help='The username for using the RDBMS',
-                        type=str,
-                        default='root')
-    parser.add_argument('--host',
-                        help='The computer hosting for the database',
-                        type=str,
-                        default='127.0.0.1')
-    parser.add_argument('--port',
-                        help='Port used by the database engine',
-                        type=str,
-                        default='3306')
-    parser.add_argument('--db_name',
-                        help='Database name',
-                        type=str,
-                        default='PRTR_transfers')
-    parser.add_argument('--including_groups',
-                        help='Would you like to include the chemical groups',
-                        choices=['True', 'False'],
-                        type=str,
-                        default='True')
-    parser.add_argument('--grouping_type',
-                        help='How you want to calculate descriptors for the chemical groups',
-                        choices=[1, 2, 3, 4, 5, 6, 7, 8],
-                        type=int,
-                        required=False,
-                        default=1)
-    parser.add_argument('--flow_handling',
-                        help='How you want to handle the transfer flow rates',
-                        choices=[1, 2, 3, 4],
-                        type=int,
-                        required=False,
-                        default=1)
-    parser.add_argument('--number_of_intervals',
-                        help='How many intervals would you like to use for the transfer flow rates',
-                        type=int,
-                        required=False,
-                        default=10)
-    parser.add_argument('--output_column',
-                        help='What column would you like to keep as the regressor output',
-                        choices=['generic', 'wm_hierarchy'],
-                        type=str,
-                        required=False,
-                        default='generic')
-    parser.add_argument('--outliers_removal',
-                        help='Would you like to keep the outliers',
-                        choices=['True', 'False'],
-                        type=str,
-                        required=False,
-                        default='True')
-    parser.add_argument('--balanced_dataset',
-                        help='Would you like to balance the dataset',
-                        choices=['True', 'False'],
-                        type=str,
-                        required=False,
-                        default='True')
-    parser.add_argument('--dimensionality_reduction',
-                        help='Would you like to apply dimensionality reduction?',
-                        choices=['False',  'True'],
-                        type=str,
-                        required=False,
-                        default='False')
-    parser.add_argument('--dimensionality_reduction_method',
-                        help='What method for dimensionality reduction would you like to apply?. In this point, after encoding, we only apply feature transformation by FAMD - Factor Analysis of Mixed Data or feature selection by UFS - Univariate Feature Selection with mutual infomation (filter method) or RFC - Random Forest Classifier (embedded method via feature importance)',
-                        choices=['FAMD', 'UFS', 'RFC'],
-                        type=str,
-                        required=False,
-                        default='FAMD')
-    parser.add_argument('--before_2005',
-                        help='Would you like to include data reported before 2005?',
-                        choices=['True', 'False'],
-                        type=str,
-                        required=False,
-                        default='True')
-    parser.add_argument('--intput_file',
-                        help='Do you have an input file?',
-                        choices=['Yes', 'No'],
-                        type=str,
-                        required=False,
-                        default='No')
-    parser.add_argument('--save_info',
-                        help='Would you like to save information?',
-                        choices=['Yes', 'No'],
-                        type=str,
-                        required=False,
-                        default='No')
-    parser.add_argument('--id',
-                        help='What id whould your like to use for the data preparation workflow',
-                        type=int,
-                        required=False,
-                        default=0)
-    parser.add_argument('--classification_type',
-                        help='What kind of classification problem would you like?',
-                        choices=['multi-model binary classification', 'multi-label classification', 'multi-class classification'],
-                        type=str,
-                        required=False,
-                        default='multi-class classification')
-    parser.add_argument('--balanaced_split',
-                        help='Would you like to obtain an stratified train-test split?',
-                        choices=['True', 'False'],
-                        type=str,
-                        required=False,
-                        default='True')
-
-
-    args = parser.parse_args()
-
-    args_dict = vars(args)
-    args_dict.update({par: checking_boolean(val) for par, val in args_dict.items()})
-
-    if args.classification_type == 'multi-model binary classification':
-        if args.output_column == 'generic':
-            target_classes =  ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10']
-        else:
-            target_classes = ['Disposal', 'Sewerage', 'Treatment', 'Energy recovery', 'Recycling']
-
-        for target_class in target_classes:
-            data_preparation_pipeline(args, target_class=target_class)
         
-    else:
-        data_preparation_pipeline(args)
+        X_train = np.load(x_train_path)
+        Y_train = np.load(y_train_path)
+        X_test = np.load(x_test_path)
+        Y_test = np.load(y_test_path)
+
+        if args.classification_type != 'multi-label classification':
+            Y_train = Y_train.reshape((Y_train.shape[0], 1))
+            Y_test = Y_test.reshape((Y_test.shape[0], 1))
+
+        data = {'X_train': X_train,
+            'Y_train': Y_train,
+            'X_test': X_test,
+            'Y_test': Y_test}
+    
+    return data
 
