@@ -8,8 +8,8 @@ from sqlalchemy.sql.expression import true
 warnings.filterwarnings("ignore")
 warnings.filterwarnings(action="ignore", message=r'.*Use subset.*of np.ndarray is not recommended')
 
-from data_driven.modeling.models import defining_model
-from data_driven.modeling.evaluation import prediction_evaluation
+from data_driven.modeling.scripts.models import defining_model
+from data_driven.modeling.scripts.evaluation import prediction_evaluation
 
 from skmultilearn.model_selection import IterativeStratification as KFold
 import pandas as pd

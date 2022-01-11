@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_driven.modeling.metrics import macro_soft_f1, accuracy
+from data_driven.modeling.scripts.metrics import macro_soft_f1, accuracy
 
 from sklearn.ensemble import RandomForestClassifier
 import tensorflow as tf

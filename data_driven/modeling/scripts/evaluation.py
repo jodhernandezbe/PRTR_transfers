@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_driven.modeling.models import defining_model, myCallback
-from data_driven.modeling.metrics import prediction_evaluation
+from data_driven.modeling.scripts.models import defining_model, myCallback
+from data_driven.modeling.scripts.metrics import prediction_evaluation
 
 from skmultilearn.model_selection import IterativeStratification as KFold
 from sklearn.model_selection import StratifiedKFold

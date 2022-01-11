@@ -6,6 +6,7 @@ from data_driven.data_preparation.mlsmote import get_minority_instace, MLSMOTE
 
 from skmultilearn.model_selection import iterative_train_test_split
 from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import TomekLinks
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import IsolationForest
@@ -19,9 +20,9 @@ import numpy as np
 import os
 import pickle
 from functools import partial
-from sqlalchemy.sql.expression import column
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
+
 
 def industry_sector_encoding(
                             X_train, X_test,
@@ -58,7 +59,7 @@ def industry_sector_encoding(
     X_train, X_test = df.iloc[0:n_train_idx].values, df.iloc[n_train_idx:].values
 
     if save_info == 'Yes':
-        df[[col for col in df.columns if 'sector' in col]].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/generic_sector_for_params_id_{id}.csv',
+        df[[col for col in df.columns if 'sector' in col]].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/input_features/generic_sector_for_params_id_{id}.csv',
                 index=False)
 
     del df
@@ -67,21 +68,25 @@ def industry_sector_encoding(
 
 
 def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, X_test,
-                            feature_cols, feature_dtype, save_info, id,
+                            feature_cols, feature_dtype, save_info, id, classification_type,
                             feature_cols_encoding=None):
     '''
     Function to apply dimensionality reduction
     '''
 
     if dimensionality_reduction_method == 'FAMD':
-        # Source for FAMD: https://github.com/MaxHalford/prince
+
         # Select components based on the threshold for the explained variance
         X_train = pd.DataFrame(X_train, columns=feature_cols)
         X_test = pd.DataFrame(X_test, columns=feature_cols)
         for c, t in feature_dtype.items():
             X_train[c] = X_train[c].astype(t)
             X_test[c] = X_test[c].astype(t)
-        famd = FAMD(n_components=X_train.shape[1],  n_iter=3, copy=True, check_input=True, engine='auto',  random_state=42)
+
+        famd = FAMD(
+                    n_components=X_train.shape[1], n_iter=3, copy=True,
+                    check_input=True, engine='auto', random_state=42
+                    )
         famd.fit(X_train)
         sum_explained_variance = 0
         threshold = 0.95
@@ -89,17 +94,16 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
             sum_explained_variance += variance
             if sum_explained_variance >= threshold:
                 break
-        famd = FAMD(n_components=components_idx,  n_iter=3, copy=True, check_input=True, engine='auto',  random_state=42)
-        famd.fit(X_train)
-        X_train_reduced = famd.transform(X_train).values
-        X_test_reduced = famd.transform(X_test).values
-        print(feature_dtype)
-        for i in range(X_test_reduced.shape[0]):
-            print(X_train_reduced[i])
+
+        print(f'{components_idx+1} explain {round(sum_explained_variance, 2)} of the variance for the data preprocessing {id}')
+        X_train_reduced = famd.transform(X_train).values[:, 0:components_idx+1]
+        X_test_reduced = famd.transform(X_test).values[:, 0:components_idx+1]
+
         if save_info == 'Yes':
-            pickle.dump(famd, open(f'{dir_path}/output/pca_id_{id}.pkl', 'wb'))
-            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features_id_{id}.csv')
-            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features_dtype_{id}.csv')
+            pickle.dump(famd, open(f'{dir_path}/output/transformation_models/famd_id_{id}.pkl', 'wb'))
+            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features/input_features_id_{id}.csv')
+            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features/input_features_dtype_{id}.csv')
+    
     else:
 
         # Separating flows and sectors from chemical descriptors
@@ -141,9 +145,13 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         elif dimensionality_reduction_method == 'RFC':
             sel = SelectFromModel(RandomForestClassifier(random_state=0, n_estimators=100, n_jobs=-1))
             
-        selected_features = [] 
-        for label in range(Y_train.shape[1]):
-            sel.fit(X_train_reduced, Y_train[:, label])
+        selected_features = []
+        if classification_type == 'multi-label classification':
+            for label in range(Y_train.shape[1]):
+                sel.fit(X_train_reduced, Y_train[:, label])
+                selected_features.append(list(sel.get_support()))
+        else:
+            sel.fit(X_train_reduced, Y_train)
             selected_features.append(list(sel.get_support()))
         results = np.array(selected_features).any(axis=0)
 
@@ -154,8 +162,8 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         feature_cols = feature_cols + descriptors
         feature_dtype = {f: feature_dtype[f] for f in feature_cols}
         if save_info == 'Yes':
-            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features_id_{id}.csv', header=False)
-            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features_dtype_{id}.csv')
+            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features/input_features_id_{id}.csv', header=False)
+            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features/input_features_dtype_{id}.csv')
 
         # Concatenating
         X_train_reduced = np.concatenate((X_train, X_train_reduced), axis=1)
@@ -183,10 +191,16 @@ def balancing_dataset(X, Y, data_augmentation_algorithem):
         X_balanced = pd.concat([X, X_res], axis=0, ignore_index=True).values
         Y_balanced = pd.concat([Y, Y_res], axis=0, ignore_index=True).values
 
-    else:
+    elif data_augmentation_algorithem == 'SMOTE':
 
         smote = SMOTE(random_state=42, n_jobs=-1)
         X_balanced, Y_balanced = smote.fit_resample(X, Y)
+
+    else:
+
+        tl = TomekLinks()
+        X_balanced, Y_balanced = tl.fit_resample(X, Y)
+
 
     return X_balanced, Y_balanced
 
@@ -264,7 +278,7 @@ def data_preprocessing(df, args, logger):
     '''
 
     # Converting generic_sector_code from integer to string
-    df['generic_sector_code'] = df['generic_sector_code'].astype(object)
+    df['generic_sector_code'] = df['generic_sector_code'].astype(str)
 
     # Identifying numerical data and target column
     if args.output_column == 'generic':
@@ -275,7 +289,7 @@ def data_preprocessing(df, args, logger):
     if args.flow_handling in [3, 4]:
         num_cols = list(set(num_cols) - set(['transfer_amount_kg']))
         if args.dimensionality_reduction_method == 'FAMD':
-            df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(object)
+            df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(str)
     feature_cols = [col for col in df.columns if (col != target_colum)]
     feature_dtype = df[feature_cols].dtypes.apply(lambda x: x.name).to_dict()
 
@@ -312,7 +326,7 @@ def data_preprocessing(df, args, logger):
         max_scale = scalerMinMax.data_max_
         pd.DataFrame({'feature': num_cols,
                      'min': min_scale,
-                     'max': max_scale}).to_csv(f'{dir_path}/output/input_features_scaling_id_{args.id}.csv',
+                     'max': max_scale}).to_csv(f'{dir_path}/output/input_features/input_features_scaling_id_{args.id}.csv',
                      index=False)
 
     # Removing outliers
@@ -328,21 +342,8 @@ def data_preprocessing(df, args, logger):
                                                  feature_cols,
                                                  feature_dtype,
                                                  args.save_info,
-                                                 args.id)
-
-        # Scaling after FAMD
-        logger.info(' Performing min-max scaling for features after FAMD')
-        scalerMinMax = MinMaxScaler()
-        scalerMinMax.fit(X_train)
-        X_train = scalerMinMax.transform(X_train)
-        X_test = scalerMinMax.transform(X_test)
-        if args.save_info == 'Yes':
-            min_scale = scalerMinMax.data_min_
-            max_scale = scalerMinMax.data_max_
-            pd.DataFrame({'feature': list(range(X_train.shape[1])),
-                        'min': min_scale,
-                        'max': max_scale}).to_csv(f'{dir_path}/output/famd_input_features_scaling_id_{args.id}.csv',
-                        index=False)
+                                                 args.id,
+                                                 args.classification_type)
     
     else:
 
@@ -366,6 +367,7 @@ def data_preprocessing(df, args, logger):
                                                     feature_cols,
                                                     feature_dtype,
                                                     args.save_info, args.id,
+                                                     args.classification_type,
                                                     feature_cols_encoding=feature_cols_encoding)
 
     if args.dimensionality_reduction:
@@ -379,14 +381,32 @@ def data_preprocessing(df, args, logger):
         test.drop_duplicates(keep='first', inplace=True)
         X_test = test.iloc[:, 0:X_train.shape[1]].values
         Y_test = test.iloc[:, X_train.shape[1]:].values
-        del test     
+        del test
+
+        if args.dimensionality_reduction_method == 'FAMD':
+
+            #Scaling after FAMD
+            logger.info(' Performing min-max scaling for features after FAMD')
+            scalerMinMax = MinMaxScaler()
+            scalerMinMax.fit(X_train)
+            X_train = scalerMinMax.transform(X_train)
+            X_test = scalerMinMax.transform(X_test)
+            if args.save_info == 'Yes':
+                min_scale = scalerMinMax.data_min_
+                max_scale = scalerMinMax.data_max_
+                pd.DataFrame({'feature': list(range(X_train.shape[1])),
+                            'min': min_scale,
+                            'max': max_scale}).to_csv(f'{dir_path}/output/input_features/famd_input_features_scaling_id_{args.id}.csv',
+                            index=False)
 
     # Balancing the dataset
     if args.balanced_dataset:
         if args.classification_type == 'multi-label classification':
             data_augmentation_algorithem = 'MLSMOTE'
-        else:
+        elif args.classification_type == 'multi-class classification':
             data_augmentation_algorithem = 'SMOTE'
+        else:
+            data_augmentation_algorithem = 'TomekLinks'
         logger.info(f' Balancing the dataset by {data_augmentation_algorithem}')
         X_train, Y_train = balancing_dataset(X_train, Y_train, data_augmentation_algorithem)
     else:

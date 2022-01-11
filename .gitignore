@@ -2,6 +2,7 @@ data_engineering/extract/output/*.csv
 data_engineering/extract/output/*.txt
 data_engineering/transform/output/*.csv
 *__pycache__/
+*.ipynb_checkpoints/
 data_engineering/load/output/*.sql
 /data_driven/data_preparation/output/data/raw/*.csv
 /data_driven/data_preparation/output/data/transformed/*.npy
