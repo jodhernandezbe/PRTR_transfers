@@ -83,7 +83,7 @@ def data_preparation_pipeline(args):
             logger.info(f' Running preliminary data preprocessing for data preparation id {args.id}')
 
             df_ml = initial_data_preprocessing(logger, args)
-            #df_ml.to_csv(filepath, index=False, sep=',')
+            df_ml.to_csv(filepath, index=False, sep=',')
 
         else:
             df_ml = pd.read_csv(filepath)
@@ -92,10 +92,10 @@ def data_preparation_pipeline(args):
         logger.info(f' Running data preprocessing for data preparation id {args.id}')
 
         data = data_preprocessing(df_ml, args, logger)
-        #np.save(x_train_path, data['X_train'])
-        #np.save(y_train_path, data['Y_train'])
-        #np.save(x_test_path, data['X_test'])
-        #np.save(y_test_path, data['Y_test'])
+        np.save(x_train_path, data['X_train'])
+        np.save(y_train_path, data['Y_train'])
+        np.save(x_test_path, data['X_test'])
+        np.save(y_test_path, data['Y_test'])
 
     else:
 
@@ -144,9 +144,9 @@ def main(args):
                 # Calling the data preparation pipeline
                 data_preparation_pipeline(args)
 
-                ## Saving
-                #worksheet[f'B{i + 3}'].value = 'Yes'
-                #myworkbook.save(input_file_path)
+                # Saving
+                worksheet[f'B{i + 3}'].value = 'Yes'
+                myworkbook.save(input_file_path)
 
             else:
 
