@@ -181,6 +181,7 @@ def initial_data_preprocessing(logger, args):
         fcols = None
         icols = None
         if (dataset == 'chemical') and (including_groups):
+            
             df.drop(columns=['chemical_in_category_cas'], inplace=True)
             descriptors = [col for col in df.columns if col != 'generic_substance_id']
             fcols = df[descriptors].select_dtypes('float').columns
@@ -192,7 +193,9 @@ def initial_data_preprocessing(logger, args):
                                     grouping_type=grouping_type)
                                     )
             df_chem = pd.concat([df_chem, df], ignore_index=True, axis=0)
+
         elif (dataset == 'substance'):
+
             df.drop(columns=['cas_number'], inplace=True)
             if not fcols:
                 descriptors = [col for col in df.columns if col != 'generic_substance_id']
@@ -214,6 +217,7 @@ def initial_data_preprocessing(logger, args):
             df_chem[fcols] = df_chem[fcols].apply(pd.to_numeric, downcast='float')
             df_chem[icols] = df_chem[icols].apply(pd.to_numeric, downcast='integer')
             del to_impute, fcols_i, icols_i, fcols, icols
+
         elif (dataset == 'record'):
 
             # Keeping the column selected by the user as the model output
@@ -266,7 +270,7 @@ def initial_data_preprocessing(logger, args):
 
             # Obtaining the Environmental Policy Stringency Index (EPSI)
             logger.info(f' Adding the Environmental Policy Stringency Index')
-            df_epsi = pd.read_csv(f'{dir_path}/../../ancillary/OECD_EPSI.csv', index_col=0).round(2)
+            df_epsi = pd.read_csv(f'{dir_path}/input/OECD_EPSI.csv', index_col=0).round(2)
             df_epsi.columns = [int(col) for col in df_epsi.columns]
             fun_epsi = lambda year, list_years, list_epsis: list_epsis[list_years.index(year)] if year in list_years else (list_epsis[np.argmin(list_years)] if year < 1990 else list_epsis[np.argmax(list_years)])
             df['epsi'] = df[['prtr_system', 'reporting_year']].apply(lambda row: fun_epsi(row['reporting_year'],
@@ -276,7 +280,7 @@ def initial_data_preprocessing(logger, args):
             del df_epsi
 
             # Obtaining the Gross Value Added (GVA)
-            logger.info(f' Adding the Gross Value Added')
+            logger.info(f' Adding the Gross Value Added (USD/yr)')
             df_to_search = df[['reporting_year', 'generic_sector_code', 'prtr_system']].drop_duplicates(keep='first')
             df_to_search.reset_index(drop=True, inplace=True)
             df_to_search['gva'] = df_to_search.apply(lambda row: round(getting_gva(row['reporting_year'],
@@ -288,7 +292,14 @@ def initial_data_preprocessing(logger, args):
             df = pd.merge(df, df_to_search,
                         on=['reporting_year', 'generic_sector_code', 'prtr_system'],
                         how='left')
-            del df_to_search            
+            del df_to_search
+
+            # Obtaining the chemicals price
+            logger.info(f' Adding the chemical price (USD/g)')
+            df_price = pd.read_csv(f'{dir_path}/input/prices_to_ml.csv')
+            df = pd.merge(df, df_price, on='generic_substance_id', how='left')
+            df['price_usd_g'] = df['price_usd_g'].astype('float32')
+            del df_price
 
             # Dropping columns that are not needed more
             df.drop(columns=['prtr_system', 'reporting_year'],
@@ -308,7 +319,7 @@ def getting_gva(year, sector_code, prtr_system):
     '''
 
     # Opening the GVA
-    df_gva = pd.read_csv(f'{dir_path}/../../ancillary/OECD_GVA.csv',
+    df_gva = pd.read_csv(f'{dir_path}/input/OECD_GVA.csv',
                         usecols=['prtr_system',
                                 'reporting_year',
                                 'value_usd',
@@ -333,7 +344,7 @@ def getting_gva(year, sector_code, prtr_system):
 
         if df_aux.empty:
 
-            df_isic_to_activity = pd.read_csv(f'{dir_path}/../../ancillary/isic_to_activity.csv')
+            df_isic_to_activity = pd.read_csv(f'{dir_path}/input/isic_to_activity.csv')
             activity = df_isic_to_activity[df_isic_to_activity.isic_code == int(sector_code)].activity_code.values[0]
             del df_isic_to_activity
             
