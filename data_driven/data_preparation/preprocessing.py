@@ -31,6 +31,7 @@ def industry_sector_encoding(
                             feature_dtype,
                             flow_handling,
                             number_of_intervals,
+                            classification_type,
                             save_info='No'
                             ):
     '''
@@ -59,7 +60,8 @@ def industry_sector_encoding(
     X_train, X_test = df.iloc[0:n_train_idx].values, df.iloc[n_train_idx:].values
 
     if save_info == 'Yes':
-        df[[col for col in df.columns if 'sector' in col]].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/input_features/generic_sector_for_params_id_{id}.csv',
+        classification = classification_type.replace(' ', '_')
+        df[[col for col in df.columns if 'sector' in col]].drop_duplicates(keep='first').to_csv(f'{dir_path}/output/input_features/{classification}/generic_sector_for_params_id_{id}.csv',
                 index=False)
 
     del df
@@ -95,14 +97,21 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
             if sum_explained_variance >= threshold:
                 break
 
-        print(f'{components_idx+1} components explain {round(sum_explained_variance, 2)} of the variance for the data preprocessing {id}')
         X_train_reduced = famd.transform(X_train).values[:, 0:components_idx+1]
         X_test_reduced = famd.transform(X_test).values[:, 0:components_idx+1]
 
         if save_info == 'Yes':
-            pickle.dump(famd, open(f'{dir_path}/output/transformation_models/famd_id_{id}.pkl', 'wb'))
-            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features/input_features_id_{id}.csv')
-            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features/input_features_dtype_{id}.csv')
+
+            classification = classification_type.replace(' ', '_')
+            pickle.dump(famd, open(f'{dir_path}/output/transformation_models/{classification}/famd_id_{id}.pkl', 'wb'))
+            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features/{classification}/input_features_id_{id}.csv')
+            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features/{classification}/input_features_dtype_{id}.csv')
+
+            pd.DataFrame({'data_preparation_id': [id],
+                        'n_components': [components_idx+1],
+                        'explained_variance': [round(sum_explained_variance, 2)],
+                        'classification_type': [classification_type]}).to_csv(f'{dir_path}/output/input_features/famd_inputs.csv',
+                        mode='a', header=False, index=False)
     
     else:
 
@@ -116,19 +125,26 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         X_test = np.delete(X_test, position_i, axis=1)
 
         # Removing columns that have constant values across the entire dataset
-        constant_filter = VarianceThreshold(threshold=0)
-        constant_filter.fit(X_train_d)
-        X_train_reduced = constant_filter.transform(X_train_d)
-        X_test_reduced = constant_filter.transform(X_test_d)
-        descriptors = [descriptors[idx] for idx, val in enumerate(constant_filter.get_support()) if val]
+        try:
+            constant_filter = VarianceThreshold(threshold=0)
+            constant_filter.fit(X_train_d)
+            X_train_reduced = constant_filter.transform(X_train_d)
+            X_test_reduced = constant_filter.transform(X_test_d)
+            descriptors = [descriptors[idx] for idx, val in enumerate(constant_filter.get_support()) if val]
+        except ValueError:
+            X_train_reduced = X_train_d
+            X_test_reduced = X_test_d
         del X_train_d, X_test_d
 
         # Removing columns that have quasi-constant values across the entire dataset
-        qconstant_filter = VarianceThreshold(threshold=0.01)
-        qconstant_filter.fit(X_train_reduced)
-        X_train_reduced = qconstant_filter.transform(X_train_reduced)
-        X_test_reduced = qconstant_filter.transform(X_test_reduced)
-        descriptors = [descriptors[idx] for idx, val in enumerate(qconstant_filter.get_support()) if val]
+        try:
+            qconstant_filter = VarianceThreshold(threshold=0.01)
+            qconstant_filter.fit(X_train_reduced)
+            X_train_reduced = qconstant_filter.transform(X_train_reduced)
+            X_test_reduced = qconstant_filter.transform(X_test_reduced)
+            descriptors = [descriptors[idx] for idx, val in enumerate(qconstant_filter.get_support()) if val]
+        except ValueError:
+            pass
 
         # Removing highly correlated variables
         cor_matrix = pd.DataFrame(X_train_reduced).corr().abs()
@@ -162,8 +178,9 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         feature_cols = feature_cols + descriptors
         feature_dtype = {f: feature_dtype[f] for f in feature_cols}
         if save_info == 'Yes':
-            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features/input_features_id_{id}.csv', header=False)
-            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features/input_features_dtype_{id}.csv')
+            classification = classification_type.replace(' ', '_')
+            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features/{classification}/input_features_id_{id}.csv', header=False)
+            pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features/{classification}/input_features_dtype_{id}.csv')
 
         # Concatenating
         X_train_reduced = np.concatenate((X_train, X_train_reduced), axis=1)
@@ -324,9 +341,10 @@ def data_preprocessing(df, args, logger):
     if args.save_info == 'Yes':
         min_scale = scalerMinMax.data_min_
         max_scale = scalerMinMax.data_max_
+        classification = args.classification_type.replace(' ', '_')
         pd.DataFrame({'feature': num_cols,
                      'min': min_scale,
-                     'max': max_scale}).to_csv(f'{dir_path}/output/input_features/input_features_scaling_id_{args.id}.csv',
+                     'max': max_scale}).to_csv(f'{dir_path}/output/input_features/{classification}/input_features_scaling_id_{args.id}.csv',
                      index=False)
 
     # Removing outliers
@@ -355,6 +373,7 @@ def data_preprocessing(df, args, logger):
                                 feature_dtype,
                                 args.flow_handling,
                                 args.number_of_intervals,
+                                args.classification_type,
                                 save_info=args.save_info)
 
         if args.dimensionality_reduction:
@@ -367,7 +386,7 @@ def data_preprocessing(df, args, logger):
                                                     feature_cols,
                                                     feature_dtype,
                                                     args.save_info, args.id,
-                                                     args.classification_type,
+                                                    args.classification_type,
                                                     feature_cols_encoding=feature_cols_encoding)
 
     if args.dimensionality_reduction:
@@ -392,11 +411,12 @@ def data_preprocessing(df, args, logger):
             X_train = scalerMinMax.transform(X_train)
             X_test = scalerMinMax.transform(X_test)
             if args.save_info == 'Yes':
+                classification = args.classification_type.replace(' ', '_')
                 min_scale = scalerMinMax.data_min_
                 max_scale = scalerMinMax.data_max_
                 pd.DataFrame({'feature': list(range(X_train.shape[1])),
                             'min': min_scale,
-                            'max': max_scale}).to_csv(f'{dir_path}/output/input_features/famd_input_features_scaling_id_{args.id}.csv',
+                            'max': max_scale}).to_csv(f'{dir_path}/output/input_features/{classification}/famd_input_features_scaling_id_{args.id}.csv',
                             index=False)
 
     # Balancing the dataset

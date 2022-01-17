@@ -4,13 +4,13 @@ from data_engineering.extract.nlm_scraper import looking_for_structure_details a
 from data_engineering.extract.pubchem_scraper import looking_for_structure_details as pubchem
 from data_driven.data_preparation.opening_dataset import opening_dataset
 
+from sklearn.model_selection import train_test_split
 import random
 from random import seed
 import pandas as pd
 import numpy as np
 from scipy.stats import zscore, mode
 import os
-import pickle
 import dask.dataframe as dd
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
@@ -72,14 +72,14 @@ def looking_for_smiles(cas_number):
     return smiles
 
 
-def obtaining_intervals(df, vals_for_intervals, flow_handling, save_info, id):
+def obtaining_intervals(df, vals_for_intervals, flow_handling, save_info, id, classification_type):
     '''
     Function to obtain the intervals for the flows
     '''
 
     num_different_elements = len(vals_for_intervals)
-    #if flow_handling == 3:
-    #    vals_for_intervals[-1] = vals_for_intervals[-1] + 2
+    if flow_handling == 3:
+        vals_for_intervals[-1] = vals_for_intervals[-1] + 2
     intervals = pd.DataFrame({'From': vals_for_intervals[0:num_different_elements-1],
                                 'To': vals_for_intervals[1:]})
     intervals['Value'] = pd.Series(intervals.index.tolist()) + 1
@@ -91,13 +91,14 @@ def obtaining_intervals(df, vals_for_intervals, flow_handling, save_info, id):
     intervals = intervals.reset_index()
     intervals.rename(columns={'index': 'Flow rate interval [kg]'}, inplace=True)
     if save_info == 'Yes':
-        intervals.to_csv(f'{dir_path}/output/input_features/flow_handling_discretizer_id_{id}.csv',
+        classification = classification_type.replace(' ', '_')
+        intervals.to_csv(f'{dir_path}/output/input_features/{classification}/flow_handling_discretizer_id_{id}.csv',
                         index=False)
 
     return df
 
 
-def transfer_flow_rates(df, id, flow_handling=1, number_of_intervals=10, save_info='No'):
+def transfer_flow_rates(df, id, classification_type, flow_handling=1, number_of_intervals=10, save_info='No'):
     '''
     Function to organize the transfer flow rates
 
@@ -121,7 +122,8 @@ def transfer_flow_rates(df, id, flow_handling=1, number_of_intervals=10, save_in
                                     num=number_of_intervals+1)
             quantile_values = df['transfer_amount_kg'].quantile(quantiles).astype(int).unique().tolist()
             df = obtaining_intervals(df, quantile_values,
-                                flow_handling, save_info, id)
+                                flow_handling, save_info, id,
+                                classification_type)
         else:
             df['transfer_amount_kg'] = df['transfer_amount_kg'].astype(int)
             max_value = df['transfer_amount_kg'].max()
@@ -130,7 +132,8 @@ def transfer_flow_rates(df, id, flow_handling=1, number_of_intervals=10, save_in
                                 num=number_of_intervals+1,
                                 dtype=int).tolist()
             df = obtaining_intervals(df, linear, 
-                    flow_handling, save_info, id)
+                    flow_handling, save_info, id,
+                    classification_type)
 
     return df
 
@@ -239,18 +242,27 @@ def initial_data_preprocessing(logger, args):
             # Organazing transfers flow rates
             logger.info(' Organizing transfer flows')
             df = transfer_flow_rates(df, args.id,
+                        args.classification_type,
                         flow_handling=args.flow_handling,
                         number_of_intervals=args.number_of_intervals,
                         save_info=args.save_info)
 
-            df = df.sample(10000, random_state=0)
+            if args.data_fraction_to_use != 1.0:
+                X_train, _, Y_train, _ = train_test_split(df[[col for col in df.columns if col != target_colum]],
+                                                    df[target_colum],
+                                                    test_size=1 -args.data_fraction_to_use,
+                                                    random_state=0,
+                                                    shuffle=True,
+                                                    stratify=df[target_colum])
+                df = pd.concat([X_train, Y_train], axis=1)
+                del X_train, Y_train
 
             # Grouping generic transfer classes
             if args.classification_type == 'multi-label classification':
 
                 logger.info(f' Organizing the target column {target_colum} for multi-label classification')
 
-                filepath = f'{dir_path}/output/data/raw/record_dataset_for_multi_label_classification.csv'
+                filepath = f'{dir_path}/output/data/raw/multi-label_classification/record_dataset.csv'
                 if not os.path.isfile(filepath):
                     grouping_columns = ['reporting_year',
                                         'transfer_amount_kg',
@@ -271,28 +283,19 @@ def initial_data_preprocessing(logger, args):
             # Obtaining the Environmental Policy Stringency Index (EPSI)
             logger.info(f' Adding the Environmental Policy Stringency Index')
             df_epsi = pd.read_csv(f'{dir_path}/input/OECD_EPSI.csv', index_col=0).round(2)
-            df_epsi.columns = [int(col) for col in df_epsi.columns]
-            fun_epsi = lambda year, list_years, list_epsis: list_epsis[list_years.index(year)] if year in list_years else (list_epsis[np.argmin(list_years)] if year < 1990 else list_epsis[np.argmax(list_years)])
-            df['epsi'] = df[['prtr_system', 'reporting_year']].apply(lambda row: fun_epsi(row['reporting_year'],
-                                                                                        df_epsi.columns.tolist(),
-                                                                                        df_epsi.loc[row['prtr_system']].tolist()),
-                                                                    axis=1)
+            df_epsi.epsi = df_epsi.epsi.astype('float32')
+            df = pd.merge(df, df_epsi, how='left', on=['prtr_system', 'reporting_year'])
             del df_epsi
 
             # Obtaining the Gross Value Added (GVA)
             logger.info(f' Adding the Gross Value Added (USD/yr)')
-            df_to_search = df[['reporting_year', 'generic_sector_code', 'prtr_system']].drop_duplicates(keep='first')
-            df_to_search.reset_index(drop=True, inplace=True)
-            df_to_search['gva'] = df_to_search.apply(lambda row: round(getting_gva(row['reporting_year'],
-                                                                            row['generic_sector_code'],
-                                                                            row['prtr_system']
-                                                                            ), 2),
-                                                    axis=1)
-            df_to_search['gva'] = df_to_search['gva'].astype('float32')
-            df = pd.merge(df, df_to_search,
+            df_gva = pd.read_csv(f'{dir_path}/input/gva_to_ml.csv')
+            df_gva['gva'] = df_gva['gva'].astype('float32')
+            
+            df = pd.merge(df, df_gva,
                         on=['reporting_year', 'generic_sector_code', 'prtr_system'],
                         how='left')
-            del df_to_search
+            del df_gva
 
             # Obtaining the chemicals price
             logger.info(f' Adding the chemical price (USD/g)')

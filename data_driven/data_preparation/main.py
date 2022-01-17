@@ -67,16 +67,14 @@ def data_preparation_pipeline(args):
     '''
 
     # Desired file paths
-    x_train_path = f'{dir_path}/output/data/transformed/X_train_{args.id}.npy'
-    y_train_path = f'{dir_path}/output/data/transformed/Y_train_{args.id}.npy'
-    x_test_path = f'{dir_path}/output/data/transformed/X_test_{args.id}.npy'
-    y_test_path = f'{dir_path}/output/data/transformed/Y_test_{args.id}.npy'
+    classification_type = args.classification_type.replace(' ', '_')
+    zip_path = f'{dir_path}/output/data/transformed/{classification_type}/{args.id}'
 
     logger = logging.getLogger(' Data-driven modeling --> Data preparation')
 
-    if not os.path.isfile(x_train_path):
+    if not os.path.isfile(f'{zip_path}.npz'):
 
-        filepath = f'{dir_path}/output/data/raw/initial_dataset_{args.id}.csv'    
+        filepath = f'{dir_path}/output/data/raw/{classification_type}/initial_dataset_{args.id}.csv'    
         if not os.path.isfile(filepath):
 
             # Preliminary data preprocessing
@@ -92,10 +90,18 @@ def data_preparation_pipeline(args):
         logger.info(f' Running data preprocessing for data preparation id {args.id}')
 
         data = data_preprocessing(df_ml, args, logger)
-        np.save(x_train_path, data['X_train'])
-        np.save(y_train_path, data['Y_train'])
-        np.save(x_test_path, data['X_test'])
-        np.save(y_test_path, data['Y_test'])
+
+        # Saving the data
+        logger.info(f' Saving data preparation id {args.id}')
+        np.savez_compressed(zip_path,
+                X_train=data['X_train'],
+                Y_train=data['Y_train'],
+                X_test=data['X_test'],
+                Y_test=data['Y_test'])
+
+        # Deleting the files and folders not needed
+        os.remove(filepath)
+        del data
 
     else:
 
@@ -139,13 +145,14 @@ def main(args):
                 args_dict = vars(args)
                 args_dict.update({par: int(vals[idx+2]) if isnot_string(str(vals[idx+2])) else (None if str(vals[idx+2]) == 'None' else vals[idx+2]) for 
                 idx, par in enumerate(agrs_list)})
-                args_dict.update({'id': vals[1]})
+                args_dict.update({'id': vals[1],
+                                'save_info': 'Yes'})
 
                 # Calling the data preparation pipeline
                 data_preparation_pipeline(args)
 
                 # Saving
-                worksheet[f'B{i + 3}'].value = 'Yes'
+                worksheet[f'A{i + 3}'].value = 'Yes'
                 myworkbook.save(input_file_path)
 
             else:
@@ -274,6 +281,11 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='No')
+    parser.add_argument('--data_fraction_to_use',
+                        help='What fraction of the data would you like to use?',
+                        type=float,
+                        required=False,
+                        default=1.0)
 
     args = parser.parse_args()
     main(args)
