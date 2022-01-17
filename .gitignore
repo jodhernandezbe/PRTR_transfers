@@ -7,3 +7,4 @@ data_engineering/load/output/*.sql
 /data_driven/data_preparation/output/data/raw/*.csv
 /data_driven/data_preparation/output/data/transformed/*.npy
 !/data_driven/data_preparation/output/*_for_params_id_*.csv
+*.npz
