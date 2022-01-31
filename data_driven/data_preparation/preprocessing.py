@@ -104,7 +104,7 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
 
             classification = classification_type.replace(' ', '_')
             pickle.dump(famd, open(f'{dir_path}/output/transformation_models/{classification}/famd_id_{id}.pkl', 'wb'))
-            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features/{classification}/input_features_id_{id}.csv')
+            pd.Series(feature_cols).to_csv(f'{dir_path}/output/input_features/{classification}/input_features_id_{id}.csv', header=False)
             pd.Series(feature_dtype).to_csv(f'{dir_path}/output/input_features/{classification}/input_features_dtype_{id}.csv')
 
             pd.DataFrame({'data_preparation_id': [id],
@@ -118,7 +118,7 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         # Separating flows and sectors from chemical descriptors
         position_i = [i for i, val in enumerate(feature_cols_encoding) if ('transfer' not in val) and ('sector' not in val) and ('epsi' not in val) and ('gva' not in val) and ('price_usd_g' not in val)]
         descriptors = [val for val in feature_cols_encoding if ('transfer' not in val) and ('sector' not in val) and ('epsi' not in val) and ('gva' not in val) and ('price_usd_g' not in val)]
-        feature_cols_encoding = [val for val in feature_cols_encoding if ('transfer' in val) or ('sector' in val) or ('epsi' in val) and ('gva' in val) and ('price_usd_g' in val)]
+        feature_cols = [val for val in feature_cols if ('transfer' in val) or ('sector' in val) or ('epsi' in val) and ('gva' in val) and ('price_usd_g' in val)]
         X_train_d = X_train[:, position_i]
         X_test_d = X_test[:, position_i]
         X_train = np.delete(X_train, position_i, axis=1)
@@ -156,7 +156,7 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
 
         if dimensionality_reduction_method == 'UFS':
             # Select half of the features
-            n_features = X_train_reduced.shape[1] // 3
+            n_features = int(X_train_reduced.shape[1]*0.2)
             sel = SelectKBest(partial(mutual_info_classif, random_state=0), k=n_features)
         elif dimensionality_reduction_method == 'RFC':
             sel = SelectFromModel(RandomForestClassifier(random_state=0, n_estimators=100, n_jobs=-1))
@@ -302,7 +302,7 @@ def data_preprocessing(df, args, logger):
         target_colum = 'generic_transfer_class_id'
     else:
         target_colum = 'transfer_class_wm_hierarchy_name'
-    num_cols = df._get_numeric_data().columns
+    num_cols = df._get_numeric_data().columns.tolist()
     if args.flow_handling in [3, 4]:
         num_cols = list(set(num_cols) - set(['transfer_amount_kg']))
         if args.dimensionality_reduction_method == 'FAMD':

@@ -9,7 +9,7 @@ import numpy as np
 
 def accuracy(y_true, y_pred, thresh=0.5):
     '''
-    Function to calculate the accuracy/hamming score score for multilabel classification
+    Function to calculate the accuracy/hamming score for multilabel classification
     '''
 
     y_true = tf.cast(y_true, tf.float32)
@@ -23,22 +23,19 @@ def accuracy(y_true, y_pred, thresh=0.5):
     return result
 
 
-def prediction_evaluation(classifier=None, X=None, Y=None, Y_pred=None, metric='accuracy'):
+def prediction_evaluation(X=None, Y=None, Y_pred=None, metric='accuracy'):
     '''
     Function to assess the final model
     '''
-    
-    if classifier:
-        Y_pred = np.where(classifier.predict(X) > 0.5, 1, 0)
 
     if metric == 'accuracy':
-        if Y.shape[1] == 1:
+        if len(Y.shape) == 1:
             return round(accuracy_score(Y, Y_pred), 2)
         else:
             return round(accuracy(Y, Y_pred), 2)
     elif metric == 'f1':
-        if Y.shape[1] == 1:
-            if len(np.unique(Y[:, 0])) == 2:
+        if len(Y.shape) == 1:
+            if len(np.unique(Y)) == 2:
                 return round(f1_score(Y, Y_pred, average='binary'), 2)
             else:
                 return round(f1_score(Y, Y_pred, average='micro'), 2)
