@@ -145,8 +145,7 @@ def main(args):
                 args_dict = vars(args)
                 args_dict.update({par: int(vals[idx+2]) if isnot_string(str(vals[idx+2])) else (None if str(vals[idx+2]) == 'None' else vals[idx+2]) for 
                 idx, par in enumerate(agrs_list)})
-                args_dict.update({'id': vals[1],
-                                'save_info': 'Yes'})
+                args_dict.update({'id': vals[1]})
 
                 # Calling the data preparation pipeline
                 data_preparation_pipeline(args)

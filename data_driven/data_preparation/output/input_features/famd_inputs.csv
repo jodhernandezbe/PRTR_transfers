@@ -1,6 +1,5 @@
-data_preparation_id,n_components,explained_variance,classification_type,
-1,82,0.95,multi-class classification
-4,87,0.95,multi-label classification
+data_preparation_id,n_components,explained_variance,classification_type
+1,62,0.95,multi-class classification
 7,84,0.95,multi-model binary classification
 10,83,0.95,multi-model binary classification
 13,85,0.95,multi-model binary classification
@@ -9,5 +8,7 @@ data_preparation_id,n_components,explained_variance,classification_type,
 22,87,0.95,multi-model binary classification
 25,85,0.95,multi-model binary classification
 28,87,0.95,multi-model binary classification
+31,88,0.95,multi-model binary classification
+4,87,0.95,multi-label classification
 31,88,0.95,multi-model binary classification
 34,86,0.95,multi-model binary classification

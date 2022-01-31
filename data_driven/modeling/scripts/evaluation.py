@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
+from click import pass_context
 from data_driven.modeling.scripts.models import defining_model, myCallback
 from data_driven.modeling.scripts.metrics import prediction_evaluation
 
+from skmultilearn.model_selection import iterative_train_test_split
 from skmultilearn.model_selection import IterativeStratification as KFold
+from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
 import numpy as np
 import pandas as pd
@@ -13,7 +16,6 @@ from scipy.stats import mannwhitneyu
 from scipy import stats
 from tqdm import tqdm
 import time
-import tensorflow as tf
 import os
 
 
@@ -47,6 +49,8 @@ def performing_cross_validation(model, model_params, X, Y, classification_type):
         # Fitting the model
         if model == 'RFC':
             classifier.fit(X_train, Y_train)
+            Y_train_hat = classifier.predict(X_train)
+            Y_validation_hat = classifier.predict(X_validation)
         else:
             classifier.fit(X_train, Y_train,
                       batch_size=model_params['batch_size'],
@@ -55,8 +59,15 @@ def performing_cross_validation(model, model_params, X, Y, classification_type):
                       shuffle=model_params['shuffle'],
                       callbacks=[myCallback()])
 
+            # Predicting the validation set and evaluating the model
+            if classification_type == 'multi-class classification':
+                Y_train_hat = np.argmax(classifier.predict(X_train), axis=1)
+                Y_validation_hat = np.argmax(classifier.predict(X_validation), axis=1)
+            else:
+                Y_train_hat = np.where(classifier.predict(X_train) > 0.5, 1, 0)
+                Y_validation_hat = np.where(classifier.predict(X_validation) > 0.5, 1, 0)
+
         # Train set evaluation
-        Y_train_hat = np.where(classifier.predict(X_train) > 0.5, 1, 0)
         train_acc.append(
             prediction_evaluation(Y=Y_train, Y_pred=Y_train_hat)
         )
@@ -64,9 +75,7 @@ def performing_cross_validation(model, model_params, X, Y, classification_type):
             prediction_evaluation(Y=Y_train, Y_pred=Y_train_hat, metric='f1')
         )
         
-
         # Validation set evaluation
-        Y_validation_hat = np.where(classifier.predict(X_validation) > 0.5, 1, 0)
         validation_acc.append(
             prediction_evaluation(Y=Y_validation, Y_pred=Y_validation_hat)
         )
@@ -93,7 +102,7 @@ def performing_cross_validation(model, model_params, X, Y, classification_type):
                                         )
     mean_validation_f1 = round(np.mean(np.array(validation_f1)), 2)
     mean_train_f1 = round(np.mean(np.array(train_f1)), 2)
-    mean_validation_0_1_loss_or_error = round(np.std(np.array(validation_0_1_loss_or_error)), 6)
+    mean_validation_0_1_loss_or_error = round(np.mean(np.array(validation_0_1_loss_or_error)), 2)
     std_validation_0_1_loss_or_error = round(np.std(np.array(validation_0_1_loss_or_error)), 6)
 
     cv_result = {'mean_validation_accuracy': mean_validation_acc,
@@ -153,14 +162,51 @@ def y_randomization(model, model_params, X, Y, classification_type):
         loss_metric = 'error'
 
     shuffled_losses = []
-    indexes = list(range(Y.shape[0]))
 
-    for i in tqdm(range(0, 30), initial=0,  desc="Y-Randomization"):
-        np.random.shuffle(indexes)
+    # Splitting the data
+    if classification_type == 'multi-label classification':
+        Y = np.array([[int(element) for element in row.split(' ')] for row in Y])
+        X_train, Y_train, X_validation, Y_validation = iterative_train_test_split(X,
+                                                                                Y,
+                                                                                test_size=0.2)
+    else:
+        X_train, X_validation, Y_train, Y_validation = train_test_split(X,
+                                                Y,
+                                                test_size=0.2,
+                                                random_state=0,
+                                                shuffle=True,
+                                                stratify=Y)
+
+    indexes_train = list(range(Y_train.shape[0]))
+    indexes_validation = list(range(Y_validation.shape[0]))
+
+    for i in tqdm(range(0, 10), initial=0,  desc="Y-Randomization"):
+
+        # Shuffling the labels
+        np.random.shuffle(indexes_train)
+        np.random.shuffle(indexes_validation)
+
         classifier = defining_model(model, model_params)
-        classifier.fit(X,Y[indexes])
-        Ypred = np.where(classifier.predict(X) > 0.5, 1, 0)
-        shuffled_losses.append(prediction_evaluation(Y=Y[indexes], Y_pred=Ypred, metric=loss_metric))
+
+        # Fitting the model
+        if model == 'RFC':
+            classifier.fit(X_train, Y_train[indexes_train])
+            Ypred = classifier.predict(X_validation)
+        else:
+            classifier.fit(X_train, Y_train[indexes_train],
+                      batch_size=model_params['batch_size'],
+                      verbose=model_params['verbose'],
+                      epochs=model_params['epochs'],
+                      shuffle=model_params['shuffle'],
+                      callbacks=[myCallback()])
+            if classification_type == 'multi-class classification':
+                Ypred = np.argmax(classifier.predict(X_validation), axis=1)
+            else:
+                Ypred = np.where(classifier.predict(X_validation) > 0.5, 1, 0)
+
+        shuffled_losses.append(prediction_evaluation(Y=Y_validation[indexes_validation],
+                                                    Y_pred=Ypred,
+                                                    metric=loss_metric))
     
     y_randomization_error = {'y_randomization_mean_0_1_loss_or_error': round(np.mean(np.array(shuffled_losses)), 2),
                             'y_randomization_std_0_1_loss_or_error': round(np.std(np.array(shuffled_losses)), 6)}
