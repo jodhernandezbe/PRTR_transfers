@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from click import pass_context
 from data_driven.modeling.scripts.models import defining_model, myCallback
 from data_driven.modeling.scripts.metrics import prediction_evaluation
 
@@ -19,12 +18,12 @@ import time
 import os
 
 
-def performing_cross_validation(model, model_params, X, Y, classification_type):
+def performing_cross_validation(model, model_params, X, Y, classification_type, loss=True):
     '''
     Function to apply k-fold cross validation
     '''
-
-    pbar = tqdm(desc='5-fold cross validation', total=5, initial=0)
+    if loss:
+        pbar = tqdm(desc='5-fold cross validation', total=5, initial=0)
 
     if classification_type == 'multi-label classification':
         loss_metric = '0_1_loss'
@@ -69,29 +68,31 @@ def performing_cross_validation(model, model_params, X, Y, classification_type):
 
         # Train set evaluation
         train_acc.append(
-            prediction_evaluation(Y=Y_train, Y_pred=Y_train_hat)
+            prediction_evaluation(Y_train, Y_train_hat)
         )
         train_f1.append(
-            prediction_evaluation(Y=Y_train, Y_pred=Y_train_hat, metric='f1')
+            prediction_evaluation(Y_train, Y_train_hat, metric='f1')
         )
         
         # Validation set evaluation
         validation_acc.append(
-            prediction_evaluation(Y=Y_validation, Y_pred=Y_validation_hat)
+            prediction_evaluation(Y_validation, Y_validation_hat)
         )
         validation_0_1_loss_or_error.append(
-            prediction_evaluation(Y=Y_validation, Y_pred=Y_validation_hat, metric=loss_metric)
+            prediction_evaluation(Y_validation, Y_validation_hat, metric=loss_metric)
         )
         validation_f1.append(
-            prediction_evaluation(Y=Y_validation, Y_pred=Y_validation_hat, metric='f1')
+            prediction_evaluation(Y_validation, Y_validation_hat, metric='f1')
         )
 
         del Y_validation_hat, Y_train_hat
 
-        time.sleep(0.1)
-        pbar.update(1)
+        if loss:
+            time.sleep(0.1)
+            pbar.update(1)
 
-    pbar.close()
+    if loss:
+        pbar.close()
 
     # Summaries
     mean_validation_acc = round(np.mean(np.array(validation_acc)), 2)
@@ -105,13 +106,21 @@ def performing_cross_validation(model, model_params, X, Y, classification_type):
     mean_validation_0_1_loss_or_error = round(np.mean(np.array(validation_0_1_loss_or_error)), 2)
     std_validation_0_1_loss_or_error = round(np.std(np.array(validation_0_1_loss_or_error)), 6)
 
-    cv_result = {'mean_validation_accuracy': mean_validation_acc,
-            'mean_train_accuracy': mean_train_acc,
-            'accuracy_analysis': accuracy_analysis,
-            'mean_validation_f1': mean_validation_f1,
-            'mean_train_f1': mean_train_f1,
-            'mean_validation_0_1_loss_or_error': mean_validation_0_1_loss_or_error,
-            'std_validation_0_1_loss_or_error': std_validation_0_1_loss_or_error}
+    if loss:
+        cv_result = {'mean_validation_accuracy': mean_validation_acc,
+                'mean_train_accuracy': mean_train_acc,
+                'accuracy_analysis': accuracy_analysis,
+                'mean_validation_f1': mean_validation_f1,
+                'mean_train_f1': mean_train_f1,
+                'mean_validation_0_1_loss_or_error': mean_validation_0_1_loss_or_error,
+                'std_validation_0_1_loss_or_error': std_validation_0_1_loss_or_error}
+    else:
+
+        cv_result = {'mean_validation_accuracy': mean_validation_acc,
+                'mean_train_accuracy': mean_train_acc,
+                'accuracy_analysis': accuracy_analysis,
+                'mean_validation_f1': mean_validation_f1,
+                'mean_train_f1': mean_train_f1}
 
     return cv_result
 
@@ -204,8 +213,8 @@ def y_randomization(model, model_params, X, Y, classification_type):
             else:
                 Ypred = np.where(classifier.predict(X_validation) > 0.5, 1, 0)
 
-        shuffled_losses.append(prediction_evaluation(Y=Y_validation[indexes_validation],
-                                                    Y_pred=Ypred,
+        shuffled_losses.append(prediction_evaluation(Y_validation[indexes_validation],
+                                                    Ypred,
                                                     metric=loss_metric))
     
     y_randomization_error = {'y_randomization_mean_0_1_loss_or_error': round(np.mean(np.array(shuffled_losses)), 2),
@@ -484,30 +493,30 @@ def external_evaluation(X_test, Y_test, X_train, classifier,
     evaluation_time = round(time.time() - start_time, 2)
 
     # Global evaluation for the model
-    global_accuracy = prediction_evaluation(Y=Y_test, Y_pred=Y_test_hat, metric='accuracy')
-    global_f1 = prediction_evaluation(Y=Y_test, Y_pred=Y_test_hat, metric='f1')
-    global_hamming_loss_or_error = prediction_evaluation(Y=Y_test, Y_pred=Y_test_hat, metric=loss_metric)
+    global_accuracy = prediction_evaluation(Y_test, Y_test_hat, metric='accuracy')
+    global_f1 = prediction_evaluation(Y_test, Y_test_hat, metric='f1')
+    global_hamming_loss_or_error = prediction_evaluation(Y_test, Y_test_hat, metric=loss_metric)
 
     # Evaluation for the model (outside AD)
-    outside_ad_accuracy = prediction_evaluation(Y=Y_test[distances_test > cut_off_threshold],
-                                            Y_pred=Y_test_hat[distances_test > cut_off_threshold],
+    outside_ad_accuracy = prediction_evaluation(Y_test[distances_test > cut_off_threshold],
+                                            Y_test_hat[distances_test > cut_off_threshold],
                                             metric='accuracy')
-    outside_ad_f1 = prediction_evaluation(Y=Y_test[distances_test > cut_off_threshold],
-                                            Y_pred=Y_test_hat[distances_test > cut_off_threshold],
+    outside_ad_f1 = prediction_evaluation(Y_test[distances_test > cut_off_threshold],
+                                            Y_test_hat[distances_test > cut_off_threshold],
                                             metric='f1')
-    outside_ad_hamming_loss_or_error = prediction_evaluation(Y=Y_test[distances_test > cut_off_threshold],
-                                            Y_pred=Y_test_hat[distances_test > cut_off_threshold],
+    outside_ad_hamming_loss_or_error = prediction_evaluation(Y_test[distances_test > cut_off_threshold],
+                                            Y_test_hat[distances_test > cut_off_threshold],
                                             metric=loss_metric)
 
     # Evaluation for the model (inside AD)
-    inside_ad_accuracy = prediction_evaluation(Y=Y_test[distances_test <= cut_off_threshold],
-                                            Y_pred=Y_test_hat[distances_test <= cut_off_threshold],
+    inside_ad_accuracy = prediction_evaluation(Y_test[distances_test <= cut_off_threshold],
+                                            Y_test_hat[distances_test <= cut_off_threshold],
                                             metric='accuracy')
-    inside_ad_f1 = prediction_evaluation(Y=Y_test[distances_test <= cut_off_threshold],
-                                        Y_pred=Y_test_hat[distances_test <= cut_off_threshold],
+    inside_ad_f1 = prediction_evaluation(Y_test[distances_test <= cut_off_threshold],
+                                        Y_test_hat[distances_test <= cut_off_threshold],
                                         metric='f1')
-    inside_ad_hamming_loss_or_error = prediction_evaluation(Y=Y_test[distances_test <= cut_off_threshold],
-                                        Y_pred=Y_test_hat[distances_test <= cut_off_threshold],
+    inside_ad_hamming_loss_or_error = prediction_evaluation(Y_test[distances_test <= cut_off_threshold],
+                                        Y_test_hat[distances_test <= cut_off_threshold],
                                         metric=loss_metric)
 
     n_outside = Y_test[distances_test > cut_off_threshold].shape[0]
