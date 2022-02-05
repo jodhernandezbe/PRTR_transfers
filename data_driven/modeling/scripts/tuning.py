@@ -3,93 +3,75 @@
 
 # Importing libraries
 import warnings
-
-from sqlalchemy.sql.expression import true
 warnings.filterwarnings("ignore")
 warnings.filterwarnings(action="ignore", message=r'.*Use subset.*of np.ndarray is not recommended')
 
 from data_driven.modeling.scripts.models import defining_model
-from data_driven.modeling.scripts.evaluation import prediction_evaluation
+from data_driven.modeling.scripts.metrics import prediction_evaluation
 
+import itertools
 from skmultilearn.model_selection import IterativeStratification as KFold
-import pandas as pd
-import numpy as np
-from tqdm import tqdm
-import time
+from tune_sklearn import TuneSearchCV
+from ray.tune.stopper import TrialPlateauStopper
+from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import make_scorer
 
 
-def parameter_tuning(X, Y, model, model_params, params_for_tuning):
+def parameter_tuning(X, Y, model, model_params, params_for_tuning,
+                    classification_type):
     '''
-    Function to search parameters based on grid search
+    Function to search parameters based on random grid search
+
+    The Stops the entire experiment when the metric has plateaued for more than the given amount of iterations specified in the patience parameter.
     '''
 
-    ncycles = sum([len(val) for val in params_for_tuning.values()]) * 5
-    pbar = tqdm(desc='Parameter tuning', total=ncycles, initial=0)
-    df_tuning = pd.DataFrame(columns=['tuning step', 'param for tuning', 'param value',
-                                    'mean validation accuracy', 'mean train accuracy',
-                                    'std validation accuracy', 'std train accuracy'])
+    #n_total = len(list(itertools.product(*params_for_tuning.values())))
+    #n_iterations = int(0.05*n_total)
 
-    step = 0
+    if classification_type == 'multi-label classification':
+        kf = KFold(n_splits=5, random_state=0, order=1)
+    else:
+        kf = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
 
-    for params_key, params_val in params_for_tuning.items():
+    if model =='RFC':
 
-        step += 1
+        search = TuneSearchCV(
+                        defining_model('RFC', model_params),
+                        params_for_tuning,
+                        early_stopping=True,
+                        random_state=32,
+                        cv=kf,
+                        refit='f1',
+                        return_train_score=True,
+                        n_trials=20,#n_iterations,
+                        verbose=0,
+                        scoring={'f1': make_scorer(prediction_evaluation, metric='f1'),
+                                'accuracy': make_scorer(prediction_evaluation, metric='accuracy')},
+                        n_jobs=4,
+                        mode='max',
+                        search_optimization='bayesian',
+                        max_iters=500,
+                        stopper=TrialPlateauStopper('f1',
+                                                    std=0.01,
+                                                    num_results=10,
+                                                    grace_period=10,
+                                                    mode='max')
+        )
 
-        for val in params_val:
+        search.fit(X, Y)
 
-            kf = KFold(n_splits=5, random_state=None, order=1)
-            validation_acc = []
-            train_acc = []
+        best_params = search.best_params_
+        best_estimator = search.best_estimator_
+        best_score = search.best_score_
 
-            for train_index , validation_index in kf.split(X, Y):
+        return {'best_params': best_params,
+                'best_estimator': best_estimator,
+                'best_score': best_score}
 
-                X_train , X_validation = X[train_index,:], X[validation_index,:]
-                Y_train , Y_validation = Y[train_index, :] , Y[validation_index, :]
+    else:
 
-                model_params.update({params_key: val})
-                classifier = defining_model(model, model_params)
-                classifier.fit(X_train, Y_train)
+        pass
 
-                Y_train_hat = classifier.predict(X_train)
-                train_acc.append(
-                    prediction_evaluation(Y=Y_train, Y_pred=Y_train_hat)
-                )
-
-                Y_validation_hat = classifier.predict(X_validation)
-                validation_acc.append(
-                    prediction_evaluation(Y=Y_validation, Y_pred=Y_validation_hat)
-                )
-
-                time.sleep(0.1)
-                pbar.update(1)
-
-            mean_train_acc = round(np.mean(np.array(train_acc)), 2)
-            mean_validation_acc = round(np.mean(np.array(validation_acc)), 2)
-            std_train_acc = round(np.std(np.array(train_acc)), 6)
-            std_validation_acc = round(np.std(np.array(validation_acc)), 6)
-
-            df_tuning = pd.concat([df_tuning,
-                                    pd.DataFrame({'tuning step': [step],
-                                                'param for tuning': [params_key],
-                                                'param value': [val],
-                                                'mean validation accuracy': [mean_validation_acc],
-                                                'mean train accuracy': [mean_train_acc],
-                                                'std validation accuracy': [std_validation_acc],
-                                                'std train accuracy': [std_train_acc]})
-                                ], axis=0, ignore_index=True)
-
-        val_max = df_tuning.loc[df_tuning.loc[df_tuning['param for tuning'] == params_key,
-                                              'mean validation accuracy'].idxmax(),
-                                'param value']
-        model_params.update({params_key: val_max})
-
-    pbar.close()
-
-    classifier = defining_model(model, model_params)
-    classifier.fit(X, Y)
-    
-    model_params = pd.Series(data=model_params.values(), index=model_params.keys())
-            
-
-    return classifier, df_tuning, model_params
+        
 

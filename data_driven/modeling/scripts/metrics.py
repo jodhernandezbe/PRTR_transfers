@@ -23,30 +23,30 @@ def accuracy(y_true, y_pred, thresh=0.5):
     return result
 
 
-def prediction_evaluation(X=None, Y=None, Y_pred=None, metric='accuracy'):
+def prediction_evaluation(Y_true, Y_pred, metric='accuracy'):
     '''
     Function to assess the final model
     '''
 
     if metric == 'accuracy':
-        if len(Y.shape) == 1:
-            return round(accuracy_score(Y, Y_pred), 2)
+        if len(Y_true.shape) == 1:
+            return accuracy_score(Y_true, Y_pred)
         else:
-            return round(accuracy(Y, Y_pred), 2)
+            return accuracy(Y_true, Y_pred)
     elif metric == 'f1':
-        if len(Y.shape) == 1:
-            if len(np.unique(Y)) == 2:
-                return round(f1_score(Y, Y_pred, average='binary'), 2)
+        if len(Y_true.shape) == 1:
+            if len(np.unique(Y_true)) == 2:
+                return f1_score(Y_true, Y_pred, average='binary')
             else:
-                return round(f1_score(Y, Y_pred, average='micro'), 2)
+                return f1_score(Y_true, Y_pred, average='micro')
         else:
-            return round(f1_score(Y, Y_pred, average='samples'), 2)
+            return f1_score(Y_true, Y_pred, average='samples')
     elif metric == '0_1_loss':
-        return round(1 - accuracy_score(Y, Y_pred, normalize=True, sample_weight=None), 2)
+        return 1 - accuracy_score(Y_true, Y_pred, normalize=True, sample_weight=None)
     elif metric == 'hamming_loss':
-        return round(hamming_loss(Y, Y_pred), 2)
+        return hamming_loss(Y_true, Y_pred)
     elif metric == 'error':
-        return round(1 - accuracy_score(Y, Y_pred), 2)
+        return 1 - accuracy_score(Y_true, Y_pred)
 
 
 def macro_soft_f1(y, y_hat):
