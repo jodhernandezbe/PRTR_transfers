@@ -1,7 +1,7 @@
 # PRTR transfers
 
 <p align="center">
-  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/main/logo.svg width="50%">
+  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/data-driven/logo.svg width="50%">
 </p>
 
 <hr/>
@@ -16,7 +16,7 @@ The following is the project tree considering only its most important files for 
 
 PRTR_transfers
 ├── ancillary
-├── application
+|
 ├── data_driven
 │   ├── __init__.py
 │   ├── main.py
