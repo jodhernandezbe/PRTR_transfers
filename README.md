@@ -66,7 +66,7 @@ PRTR_transfers
 The EERD model in the following figure represents the PRTR_transfers database schema created after data engineering. The prtr_system table is shown without any explicit relationship between the other tables in the database. The reason is that the columns of the prtr_system table were not set as foreign key; however, its columns could be used to connect to other tables like the national_substance table to know the PRTR system the report comes from. 
 
 <p align="center">
-  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/main/data_engineering/load/PRTR_transfers_EER_Diagram.svg width="100%">
+  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/data-engineering/data_engineering/load/PRTR_transfers_EER_Diagram.svg width="100%">
 </p>
 
 <hr/>
