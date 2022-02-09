@@ -1,7 +1,7 @@
 # PRTR transfers
 
 <p align="center">
-  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/main/logo.svg width="50%">
+  <img src=https://github.com/jodhernandezbe/PRTR_transfers/blob/data-engineering/logo.svg width="50%">
 </p>
 
 <hr/>
