@@ -16,27 +16,6 @@ The following is the project tree considering only its most important files for 
 
 PRTR_transfers
 ├── ancillary
-├── application
-├── data_driven
-│   ├── __init__.py
-│   ├── main.py
-│   ├── data_preparation
-│   │   ├── __init__.py
-│   │   ├── main.py
-│   │   ├── initial_preprocessing.py
-│   │   ├── mlsmote.py
-│   │   ├── opening_dataset.py
-│   │   ├── rdkit_descriptors.py
-│   │   ├── preprocessing.py
-│   │   └── output
-│   │
-│   └── modeling
-│       ├── __init__.py
-│       ├── main.py
-│       ├── evaluation.py
-│       ├── models.py
-│       ├── tuning.py
-│       └── output
 │    
 └── data_engineering
     ├── __init__.py
