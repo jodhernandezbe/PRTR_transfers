@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_driven.modeling.scripts.models import defining_model, myCallback
+from data_driven.modeling.scripts.models import defining_model, StoppingDesiredANN
 from data_driven.modeling.scripts.metrics import prediction_evaluation
 
 from skmultilearn.model_selection import iterative_train_test_split
 from skmultilearn.model_selection import IterativeStratification as KFold
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu
@@ -18,11 +19,11 @@ import time
 import os
 
 
-def performing_cross_validation(model, model_params, X, Y, classification_type, loss=True):
+def performing_cross_validation(model, model_params, X, Y, classification_type, for_tuning=False, threshold_ann=0.75, stopping_metric='val_f1'):
     '''
     Function to apply k-fold cross validation
     '''
-    if loss:
+    if not for_tuning:
         pbar = tqdm(desc='5-fold cross validation', total=5, initial=0)
 
     if classification_type == 'multi-label classification':
@@ -56,7 +57,19 @@ def performing_cross_validation(model, model_params, X, Y, classification_type, 
                       verbose=model_params['verbose'],
                       epochs=model_params['epochs'],
                       shuffle=model_params['shuffle'],
-                      callbacks=[myCallback()])
+                      callbacks=[StoppingDesiredANN(threshold=threshold_ann,
+                                                metric=stopping_metric),
+                        EarlyStopping(monitor='val_loss',
+                                        min_delta=1e-4,
+                                        patience=10,
+                                        verbose=0,
+                                        mode='auto'),
+                        ReduceLROnPlateau(monitor='val_loss',
+                                        factor=0.1,                 
+                                        patience=5,
+                                        verbose=0,
+                                        mode='auto',
+                                        min_delta=1e-4)])
 
             # Predicting the validation set and evaluating the model
             if classification_type == 'multi-class classification':
@@ -66,47 +79,52 @@ def performing_cross_validation(model, model_params, X, Y, classification_type, 
                 Y_train_hat = np.where(classifier.predict(X_train) > 0.5, 1, 0)
                 Y_validation_hat = np.where(classifier.predict(X_validation) > 0.5, 1, 0)
 
-        # Train set evaluation
-        train_acc.append(
-            prediction_evaluation(Y_train, Y_train_hat)
-        )
-        train_f1.append(
-            prediction_evaluation(Y_train, Y_train_hat, metric='f1')
-        )
-        
         # Validation set evaluation
-        validation_acc.append(
-            prediction_evaluation(Y_validation, Y_validation_hat)
-        )
-        validation_0_1_loss_or_error.append(
-            prediction_evaluation(Y_validation, Y_validation_hat, metric=loss_metric)
-        )
         validation_f1.append(
             prediction_evaluation(Y_validation, Y_validation_hat, metric='f1')
         )
 
+        if for_tuning:
+            pass
+        else:
+            validation_acc.append(
+                prediction_evaluation(Y_validation, Y_validation_hat)
+            )
+            validation_0_1_loss_or_error.append(
+                prediction_evaluation(Y_validation, Y_validation_hat, metric=loss_metric)
+            )
+
+            # Train set evaluation
+            train_f1.append(
+                prediction_evaluation(Y_train, Y_train_hat, metric='f1')
+            )
+            train_acc.append(
+                prediction_evaluation(Y_train, Y_train_hat)
+            )
+    
         del Y_validation_hat, Y_train_hat
 
-        if loss:
+        if not for_tuning:
             time.sleep(0.1)
             pbar.update(1)
 
-    if loss:
+    if not for_tuning:
         pbar.close()
 
     # Summaries
-    mean_validation_acc = round(np.mean(np.array(validation_acc)), 2)
-    mean_train_acc = round(np.mean(np.array(train_acc)), 2)
-    accuracy_analysis = overfitting_underfitting(
-                                        np.array(train_acc),
-                                        np.array(validation_acc)
-                                        )
-    mean_validation_f1 = round(np.mean(np.array(validation_f1)), 2)
-    mean_train_f1 = round(np.mean(np.array(train_f1)), 2)
-    mean_validation_0_1_loss_or_error = round(np.mean(np.array(validation_0_1_loss_or_error)), 2)
-    std_validation_0_1_loss_or_error = round(np.std(np.array(validation_0_1_loss_or_error)), 6)
+    if not for_tuning:
 
-    if loss:
+        mean_validation_acc = round(np.mean(np.array(validation_acc)), 2)
+        mean_train_acc = round(np.mean(np.array(train_acc)), 2)
+        accuracy_analysis = overfitting_underfitting(
+                                            np.array(train_acc),
+                                            np.array(validation_acc)
+                                            )
+        mean_validation_f1 = round(np.mean(np.array(validation_f1)), 2)
+        mean_train_f1 = round(np.mean(np.array(train_f1)), 2)
+        mean_validation_0_1_loss_or_error = round(np.mean(np.array(validation_0_1_loss_or_error)), 2)
+        std_validation_0_1_loss_or_error = round(np.std(np.array(validation_0_1_loss_or_error)), 6)
+
         cv_result = {'mean_validation_accuracy': mean_validation_acc,
                 'mean_train_accuracy': mean_train_acc,
                 'accuracy_analysis': accuracy_analysis,
@@ -116,11 +134,7 @@ def performing_cross_validation(model, model_params, X, Y, classification_type, 
                 'std_validation_0_1_loss_or_error': std_validation_0_1_loss_or_error}
     else:
 
-        cv_result = {'mean_validation_accuracy': mean_validation_acc,
-                'mean_train_accuracy': mean_train_acc,
-                'accuracy_analysis': accuracy_analysis,
-                'mean_validation_f1': mean_validation_f1,
-                'mean_train_f1': mean_train_f1}
+        cv_result = round(np.mean(np.array(validation_f1)), 2)
 
     return cv_result
 
@@ -159,7 +173,7 @@ def overfitting_underfitting(score_train, score_test):
             return 'optimal-fitting'
 
 
-def y_randomization(model, model_params, X, Y, classification_type):
+def y_randomization(model, model_params, X, Y, classification_type, threshold_ann=0.75, stopping_metric='val_f1'):
     '''
     Function to apply Y-Randomization
     '''
@@ -207,7 +221,19 @@ def y_randomization(model, model_params, X, Y, classification_type):
                       verbose=model_params['verbose'],
                       epochs=model_params['epochs'],
                       shuffle=model_params['shuffle'],
-                      callbacks=[myCallback()])
+                      callbacks=[StoppingDesiredANN(threshold=threshold_ann,
+                                                metric=stopping_metric),
+                        EarlyStopping(monitor='val_loss',
+                                        min_delta=1e-4,
+                                        patience=10,
+                                        verbose=0,
+                                        mode='auto'),
+                        ReduceLROnPlateau(monitor='val_loss',
+                                        factor=0.1,                 
+                                        patience=5,
+                                        verbose=0,
+                                        mode='auto',
+                                        min_delta=1e-4)])
             if classification_type == 'multi-class classification':
                 Ypred = np.argmax(classifier.predict(X_validation), axis=1)
             else:

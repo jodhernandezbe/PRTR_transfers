@@ -7,67 +7,69 @@ warnings.filterwarnings("ignore")
 warnings.filterwarnings(action="ignore", message=r'.*Use subset.*of np.ndarray is not recommended')
 
 from data_driven.modeling.scripts.models import defining_model
-from data_driven.modeling.scripts.metrics import prediction_evaluation
+from data_driven.modeling.scripts.evaluation import performing_cross_validation
 
-import itertools
-from skmultilearn.model_selection import IterativeStratification as KFold
-from tune_sklearn import TuneSearchCV
-from ray.tune.stopper import TrialPlateauStopper
-from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.metrics import make_scorer
+from skopt.utils import use_named_args
+from skopt import gp_minimize
+from skopt.callbacks import DeltaYStopper, DeadlineStopper, EarlyStopper
 
 
-def parameter_tuning(X, Y, model, model_params, params_for_tuning,
-                    classification_type):
+class StoppingDesired(EarlyStopper):
+    
+    def __init__(self, threshold=0.70, n_best=3):
+        super(EarlyStopper, self).__init__()
+        self.threshold = threshold
+        self.n_best = n_best
+
+    def _criterion(self, result):
+        if len(result.func_vals) >= self.n_best:
+            return result.func_vals[-1] <= -self.threshold
+        else:
+            return None
+
+
+def parameter_tuning(X, Y, model, model_params, search_space,
+                    classification_type, time_to_optimize, n_iter_search,
+                    threshold, verbose):
     '''
-    Function to search parameters based on random grid search
-
-    The Stops the entire experiment when the metric has plateaued for more than the given amount of iterations specified in the patience parameter.
+    Function to search parameters based on Bayesian optimization with Gaussian Processes
     '''
-
-    #n_total = len(list(itertools.product(*params_for_tuning.values())))
-    #n_iterations = int(0.05*n_total)
-
-    if classification_type == 'multi-label classification':
-        kf = KFold(n_splits=5, random_state=0, order=1)
-    else:
-        kf = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
 
     if model =='RFC':
 
-        search = TuneSearchCV(
-                        defining_model('RFC', model_params),
-                        params_for_tuning,
-                        early_stopping=True,
-                        random_state=32,
-                        cv=kf,
-                        refit='f1',
-                        return_train_score=True,
-                        n_trials=20,#n_iterations,
-                        verbose=0,
-                        scoring={'f1': make_scorer(prediction_evaluation, metric='f1'),
-                                'accuracy': make_scorer(prediction_evaluation, metric='accuracy')},
-                        n_jobs=4,
-                        mode='max',
-                        search_optimization='bayesian',
-                        max_iters=500,
-                        stopper=TrialPlateauStopper('f1',
-                                                    std=0.01,
-                                                    num_results=10,
-                                                    grace_period=10,
-                                                    mode='max')
-        )
+        @use_named_args(search_space)
+        def objective_func(**params):
+            '''
+            Function to optimize parameters
+            '''
 
-        search.fit(X, Y)
+            model_params.update(**params)
+            mean_validation_f1 = performing_cross_validation('RFC', model_params, X, Y, 
+                                                        classification_type, for_tuning=True)
 
-        best_params = search.best_params_
-        best_estimator = search.best_estimator_
-        best_score = search.best_score_
+            return - mean_validation_f1
+
+
+        callback1 = DeltaYStopper(delta=1e-4, n_best=3) # PlateuStopper
+        callback2 = DeadlineStopper(total_time=time_to_optimize) # For time budget
+        callback3 = StoppingDesired(threshold=threshold, n_best=3) # For desired F1 score
+        
+        search = gp_minimize(objective_func,
+                            search_space,
+                            n_calls=n_iter_search,
+                            callback=[callback1, callback2, callback3],
+                            random_state=42,
+                            n_jobs=10,
+                            verbose=verbose,
+                            initial_point_generator='lhs',
+                            n_initial_points=4)
+
+        best_params = {search_space[i].name: search.x[i] for i in range(len(search.x))}
+        best_mean_validation_f1 = - search.fun
 
         return {'best_params': best_params,
-                'best_estimator': best_estimator,
-                'best_score': best_score}
+                'best_mean_validation_f1': best_mean_validation_f1,
+                'search': search}
 
     else:
 
