@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Importing libraries
-from data_driven.modeling.scripts.metrics import macro_soft_f1, accuracy
+from data_driven.modeling.scripts.metrics import macro_soft_f1
 
 from sklearn.ensemble import RandomForestClassifier
 from tensorflow.keras.callbacks import Callback
@@ -104,7 +104,8 @@ def annclassifier(hp, units_per_layer, dropout, dropout_rate,
         model.add(
             tf.keras.layers.Dense(units=units,
                                 activation=hl_act,
-                                kernel_initializer=initializer)
+                                kernel_initializer=initializer,
+                                kernel_regularizer=tf.keras.regularizers.l2(1e-5))
         )
 
     # Output layer
