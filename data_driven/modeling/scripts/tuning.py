@@ -6,13 +6,17 @@ import warnings
 warnings.filterwarnings("ignore")
 warnings.filterwarnings(action="ignore", message=r'.*Use subset.*of np.ndarray is not recommended')
 
-from data_driven.modeling.scripts.models import defining_model
 from data_driven.modeling.scripts.evaluation import performing_cross_validation
 
-from skopt.utils import use_named_args
 from skopt import gp_minimize
-from skopt.callbacks import DeltaYStopper, DeadlineStopper, EarlyStopper
+from skopt import load
+from skopt.callbacks import DeltaYStopper, DeadlineStopper, EarlyStopper, CheckpointSaver
+import os
+from functools import partial
 
+'''
+Random Forest Classifier
+'''
 
 class StoppingDesired(EarlyStopper):
     
@@ -27,53 +31,80 @@ class StoppingDesired(EarlyStopper):
         else:
             return None
 
-
-def parameter_tuning(X, Y, model, model_params, search_space,
-                    classification_type, time_to_optimize, n_iter_search,
-                    threshold, verbose):
+# Defining callbacks
+def rfc_parameter_tuning(X, Y, classification_type, model_params,
+                    search_space, time_to_optimize, threshold,
+                    x_initial, y_initial, n_calls, verbose, n_initial_points):
     '''
-    Function to search parameters based on Bayesian optimization with Gaussian Processes
+    Function to run Bayesian Optimization with Gaussian Processes for RFC
     '''
+    checkpoint_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                    os.pardir,
+                                    'output',
+                                    'models',
+                                    classification_type.replace(' ', '_'),
+                                    'RFC_tuning.pkl'
+                                    )
+    callback1 = DeltaYStopper(delta=1e-4, n_best=5) # PlateuStopper
+    callback2 = DeadlineStopper(total_time=time_to_optimize) # For time budget
+    callback3 = StoppingDesired(threshold=threshold, n_best=5) # For desired F1 score
+    callback4 = CheckpointSaver(checkpoint_path, compress=9) # For saving checkpoints
 
-    if model =='RFC':
-
-        @use_named_args(search_space)
-        def objective_func(**params):
-            '''
-            Function to optimize parameters
-            '''
-
-            model_params.update(**params)
-            mean_validation_f1 = performing_cross_validation('RFC', model_params, X, Y, 
-                                                        classification_type, for_tuning=True)
-
-            return - mean_validation_f1
-
-
-        callback1 = DeltaYStopper(delta=1e-4, n_best=3) # PlateuStopper
-        callback2 = DeadlineStopper(total_time=time_to_optimize) # For time budget
-        callback3 = StoppingDesired(threshold=threshold, n_best=3) # For desired F1 score
-        
-        search = gp_minimize(objective_func,
-                            search_space,
-                            n_calls=n_iter_search,
-                            callback=[callback1, callback2, callback3],
-                            random_state=42,
-                            n_jobs=10,
-                            verbose=verbose,
-                            initial_point_generator='lhs',
-                            n_initial_points=4)
-
-        best_params = {search_space[i].name: search.x[i] for i in range(len(search.x))}
-        best_mean_validation_f1 = - search.fun
-
-        return {'best_params': best_params,
-                'best_mean_validation_f1': best_mean_validation_f1,
-                'search': search}
-
+    if os.path.isfile(checkpoint_path):
+        res = load(checkpoint_path)
+        x0 = res.x_iters
+        y0 = res.func_vals
     else:
+        x0 = [x_initial[search_space[i].name] for i in range(len(search_space))]
+        y0 = y_initial
 
-        pass
+    search = gp_minimize(partial(objective_func, model_params=model_params,
+                                classification_type=classification_type,
+                                X=X, Y=Y,
+                                order_keys=[search_space[i].name for i in range(len(search_space))]),
+                        search_space,
+                        x0=x0,
+                        y0=y0,        
+                        n_calls=n_calls,
+                        callback=[callback1, callback2,
+                                    callback3, callback4],
+                        random_state=42,
+                        verbose=verbose,
+                        n_jobs=10,
+                        n_initial_points=n_initial_points)
+
+    best_params = {search_space[i].name: search.x[i] for i in range(len(search.x))}
+    best_objective = - search.fun
+
+    return {'best_params': best_params,
+            'best_objective': best_objective,
+            'search': search}
+
+
+#@use_named_args(search_space)
+def objective_func(params, model_params, classification_type, X, Y, order_keys):
+    '''
+    Function to optimize parameters
+    '''
+
+    model_params.update({order_keys[i]: params[i] for i in range(len(params))})
+    cv_result = performing_cross_validation('RFC', model_params, X, Y, 
+                                                classification_type, for_tuning=True)
+
+    mean_validation_f1 = cv_result['mean_validation_f1']
+
+    return - mean_validation_f1
+
+
+'''
+Artificial Neural Network Classifier
+'''
+
+
+
+
+
+
 
         
 

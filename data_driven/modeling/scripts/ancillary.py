@@ -8,7 +8,10 @@ import os
 import re
 import numpy as np
 import pandas as pd
-import json 
+import pickle
+import matplotlib.pyplot as plt
+from skopt.plots import plot_convergence
+
 
 def drive_authentication():
     '''
@@ -18,8 +21,8 @@ def drive_authentication():
      - drive: GoogleDrive instance
     '''
 
-    credentials_file = os.path.join(os.getcwd(),
-                                os.pardir,
+    credentials_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                os.pardir, 'notebooks',
                                'client_secrets.json')
     GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = credentials_file
     GoogleAuth.DEFAULT_SETTINGS['oauth_scope'] = ['https://www.googleapis.com/auth/drive']
@@ -107,9 +110,9 @@ def open_dataset(id, key, drive, test=False):
         return X_train, Y_train
 
 
-def build_base_model(id, X_train, Y_train, model_params, model, classification_type):
+def cv_and_y_random(id, X_train, Y_train, model_params, model, classification_type, threshold=0.75, stopping_metric='val_f1'):
     '''
-    Function to test the RFC with default params
+    Function to test the RFC with defined params
     
     Input:
         - id: string = data processing id
@@ -118,43 +121,25 @@ def build_base_model(id, X_train, Y_train, model_params, model, classification_t
     Output:
         - df_result: dataframe = model evaluation under Y-randomization and cross-validation
     '''
-                               
-    # Default parameters
-    model_params = {
-        'bootstrap': True,
-        'ccp_alpha': 0.0,
-        'class_weight': 'balanced',
-        'criterion': 'gini',
-        'max_depth': None,
-        'max_features': 'sqrt',
-        'max_leaf_nodes': None,
-        'max_samples': None,
-        'min_impurity_decrease': 0.0,
-        'min_samples_leaf': 1,
-        'min_samples_split': 2,
-        'min_weight_fraction_leaf': 0.0,
-        'n_estimators': 100,
-        'n_jobs': 4,
-        'oob_score': False,
-        'random_state': 0,
-        'verbose': 0,
-        'warm_start': False,
-    }
-                               
+                                                       
     # 5-fold cross-validation
     cv_result = performing_cross_validation(model,
                                            model_params,
                                            X_train,
-                                           Y_train.reshape(Y_train.shape[0],),
-                                           classification_type)
+                                           Y_train,
+                                           classification_type,
+                                           threshold=threshold,
+                                           stopping_metric=stopping_metric)
     df_cv = pd.DataFrame({key: [val] for key, val in cv_result.items()})
                                
     # Y-randomization
-    y_randomization_error = y_randomization('RFC',
+    y_randomization_error = y_randomization(model,
                                        model_params,
                                        X_train,
-                                       Y_train.reshape(Y_train.shape[0],),
-                                       'multi-class classification')
+                                       Y_train,
+                                       classification_type,
+                                       threshold=threshold,
+                                       stopping_metric=stopping_metric)
     df_yr = pd.DataFrame({key: [val] for key, val in y_randomization_error.items()})
                                
     
@@ -173,27 +158,70 @@ def save_best_params(classification_type, best_params):
         - best_params: dictionary
     '''
 
-    path_json = os.path.join(os.getcwd(),
-                        os.pardir, os.pardir,
-                        'output', 'models', classification_type,
-                        'best_params.json')
+    path_pickle = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                        os.pardir,
+                        'output', 'models',
+                        classification_type.replace(' ', '_'),
+                        'RFC_best_params.pkl')
 
-    if os.path.isfile(path_json):
-        mode = 'a'
+    if os.path.isfile(path_pickle):
+        mode = 'ab'
     else:
-        mode = 'w'
+        mode = 'wb'
 
-    with open(path_json, mode) as outfile:
-        json.dump(best_params, outfile, cls=NpEncoder)
+    with open(path_pickle, mode) as outfile:
+        pickle.dump(best_params, outfile, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def rfc_draw_convergence(tuning_result, classification_type):
+    '''
+    Function to plot the convergence of the hyperparameters tuning for RFC
+
+    Input:
+        - tuning_result: dictionary
+        - path_plot: string
+
+    Output:
+        - None
+    '''
+
+    fig, ax = plt.subplots(figsize=(14,5))
+
+    # Convergence plot
+    plot_convergence(tuning_result['search'], ax=ax)
+
+    # Title
+    ax.set_title(f'Convergence of Bayesian Optimization for RFC model and {classification_type}\n',
+                fontsize=18, fontweight='bold')
+
+    # Organize horizontal grid
+    ax.grid(axis='y') 
+    ax.set_axisbelow(True)
+
+    # Remove top and right boders
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+
+    # axis labels
+    ax.set_ylabel('- Mean F1 score', fontsize=16, fontweight='bold', labelpad=20)
+    ax.set_xlabel('# Interations', fontsize=16, fontweight='bold', labelpad=20)
+
+    # Y ticks fontsize
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(14)
+
+    # X ticks fontsize
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(14)
+
+    # Set the x-axis limit
+    plt.xlim(1,len(tuning_result['search'].func_vals))
     
-
-class NpEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        elif isinstance(obj, np.floating):
-            return float(obj)
-        elif isinstance(obj, np.ndarray):
-            return obj.tolist()
-        else:
-            return super(NpEncoder, self).default(obj)
+    # Save the plot
+    path_plot = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                        os.pardir,
+                        'output', 'figures',
+                        classification_type.replace(' ', '_'),
+                        'RFC_convergence.pdf')
+    plt.savefig(path_plot, dpi=fig.dpi, bbox_inches='tight')
+    

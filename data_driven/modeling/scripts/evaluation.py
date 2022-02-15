@@ -19,7 +19,9 @@ import time
 import os
 
 
-def performing_cross_validation(model, model_params, X, Y, classification_type, for_tuning=False, threshold_ann=0.75, stopping_metric='val_f1'):
+def performing_cross_validation(model, model_params, X, Y, classification_type,
+                                for_tuning=False, threshold=0.75, stopping_metric='val_f1',
+                                return_model=False):
     '''
     Function to apply k-fold cross validation
     '''
@@ -57,7 +59,7 @@ def performing_cross_validation(model, model_params, X, Y, classification_type, 
                       verbose=model_params['verbose'],
                       epochs=model_params['epochs'],
                       shuffle=model_params['shuffle'],
-                      callbacks=[StoppingDesiredANN(threshold=threshold_ann,
+                      callbacks=[StoppingDesiredANN(threshold=threshold,
                                                 metric=stopping_metric),
                         EarlyStopping(monitor='val_loss',
                                         min_delta=1e-4,
@@ -118,7 +120,8 @@ def performing_cross_validation(model, model_params, X, Y, classification_type, 
         mean_train_acc = round(np.mean(np.array(train_acc)), 2)
         accuracy_analysis = overfitting_underfitting(
                                             np.array(train_acc),
-                                            np.array(validation_acc)
+                                            np.array(validation_acc),
+                                            threshold=threshold
                                             )
         mean_validation_f1 = round(np.mean(np.array(validation_f1)), 2)
         mean_train_f1 = round(np.mean(np.array(train_f1)), 2)
@@ -134,19 +137,25 @@ def performing_cross_validation(model, model_params, X, Y, classification_type, 
                 'std_validation_0_1_loss_or_error': std_validation_0_1_loss_or_error}
     else:
 
-        cv_result = round(np.mean(np.array(validation_f1)), 2)
+        cv_result = {
+                'mean_validation_f1': round(np.mean(np.array(validation_f1)), 2),
+                }
 
+    if return_model:
+        
+        return cv_result, classifier
+    
     return cv_result
 
 
-def overfitting_underfitting(score_train, score_test):
+def overfitting_underfitting(score_train, score_test, threshold=0.75):
     '''
     Funtion to determine overfitting and underfitting
 
     Conditions:
     
-    1. High training accurracy (>= 0.75)
-    2. Small gap between accucaries
+    1. High training metric (>= 0.75)
+    2. Small gap between metrics
 
     The non-parametric hypothesis test: Mann Whitney U Test (Wilcoxon Rank Sum Test)
 
@@ -161,7 +170,7 @@ def overfitting_underfitting(score_train, score_test):
                         score_test,
                         method="exact")
 
-    if mean_score_train < 0.75:
+    if mean_score_train < threshold:
         if p < 0.05:
             return 'under-fitting (high bias and high variance)'
         else:
@@ -173,7 +182,7 @@ def overfitting_underfitting(score_train, score_test):
             return 'optimal-fitting'
 
 
-def y_randomization(model, model_params, X, Y, classification_type, threshold_ann=0.75, stopping_metric='val_f1'):
+def y_randomization(model, model_params, X, Y, classification_type, threshold=0.75, stopping_metric='val_f1'):
     '''
     Function to apply Y-Randomization
     '''
@@ -188,7 +197,7 @@ def y_randomization(model, model_params, X, Y, classification_type, threshold_an
 
     # Splitting the data
     if classification_type == 'multi-label classification':
-        Y = np.array([[int(element) for element in row.split(' ')] for row in Y])
+
         X_train, Y_train, X_validation, Y_validation = iterative_train_test_split(X,
                                                                                 Y,
                                                                                 test_size=0.2)
@@ -221,7 +230,7 @@ def y_randomization(model, model_params, X, Y, classification_type, threshold_an
                       verbose=model_params['verbose'],
                       epochs=model_params['epochs'],
                       shuffle=model_params['shuffle'],
-                      callbacks=[StoppingDesiredANN(threshold=threshold_ann,
+                      callbacks=[StoppingDesiredANN(threshold=threshold,
                                                 metric=stopping_metric),
                         EarlyStopping(monitor='val_loss',
                                         min_delta=1e-4,

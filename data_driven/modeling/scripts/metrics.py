@@ -36,11 +36,11 @@ def prediction_evaluation(Y_true, Y_pred, metric='accuracy'):
     elif metric == 'f1':
         if len(Y_true.shape) == 1:
             if len(np.unique(Y_true)) == 2:
-                return f1_score(Y_true, Y_pred, average='binary')
+                return f1_score(Y_true, Y_pred, average='binary', zero_division=0)
             else:
-                return f1_score(Y_true, Y_pred, average='micro')
+                return f1_score(Y_true, Y_pred, average='macro', zero_division=0)
         else:
-            return f1_score(Y_true, Y_pred, average='samples')
+            return f1_score(Y_true, Y_pred, average='samples', zero_division=0)
     elif metric == '0_1_loss':
         return 1 - accuracy_score(Y_true, Y_pred, normalize=True, sample_weight=None)
     elif metric == 'hamming_loss':
