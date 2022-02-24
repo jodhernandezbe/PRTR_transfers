@@ -35,10 +35,7 @@ def prediction_evaluation(Y_true, Y_pred, metric='accuracy'):
             return accuracy(Y_true, Y_pred)
     elif metric == 'f1':
         if len(Y_true.shape) == 1:
-            if len(np.unique(Y_true)) == 2:
-                return f1_score(Y_true, Y_pred, average='binary', zero_division=0)
-            else:
-                return f1_score(Y_true, Y_pred, average='macro', zero_division=0)
+            return f1_score(Y_true, Y_pred, average='weighted', zero_division=0)
         else:
             return f1_score(Y_true, Y_pred, average='samples', zero_division=0)
     elif metric == '0_1_loss':

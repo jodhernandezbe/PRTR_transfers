@@ -57,7 +57,7 @@ def npz_files(parent_id, drive):
         else:
             filelist.append({"title":f['title'],"title1":f['alternateLink']})
 
-    ids = {re.search(r'([1-9]{1,2}).npz', file['title']).group(1):
+    ids = {re.search(r'([0-9]{1,2}).npz', file['title']).group(1):
        re.search(r'https://.*/d/(.*)/view?.*', file['title1']).group(1)
        for file in filelist
        if file['title'].endswith('.npz')}

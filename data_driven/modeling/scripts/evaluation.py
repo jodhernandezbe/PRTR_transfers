@@ -12,7 +12,7 @@ from sklearn.model_selection import StratifiedKFold
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 import numpy as np
 import pandas as pd
-from scipy.stats import mannwhitneyu
+from scipy.stats import wilcoxon
 from scipy import stats
 from tqdm import tqdm
 import time
@@ -154,10 +154,10 @@ def overfitting_underfitting(score_train, score_test, threshold=0.75):
 
     Conditions:
     
-    1. High training metric (>= 0.75)
+    1. High training metric (>= threshold)
     2. Small gap between metrics
 
-    The non-parametric hypothesis test: Mann Whitney U Test (Wilcoxon Rank Sum Test)
+    The non-parametric hypothesis test: Wilcoxon Signed-Rank Test
 
     H0: The score_train and  score_test are equal
     H1: The score_train and  score_test are not equal
@@ -165,18 +165,17 @@ def overfitting_underfitting(score_train, score_test, threshold=0.75):
     5% level of significance (i.e., α=0.05)
     '''
 
-    mean_score_train = round(np.mean(score_train), 2)
-    U1, p = mannwhitneyu(score_train,
-                        score_test,
-                        method="exact")
+    mean_score_train = np.mean(score_train)
+    stat, p_value = wilcoxon(score_train, score_test, mode='approx')
+    alpha = 0.05
 
     if mean_score_train < threshold:
-        if p < 0.05:
+        if p_value <= alpha:
             return 'under-fitting (high bias and high variance)'
         else:
             return 'under-fitting (high bias)'
     else:
-        if p < 0.05:
+        if p_value <= alpha:
             return 'over-fitting (high variance)'
         else:
             return 'optimal-fitting'
@@ -258,7 +257,15 @@ def y_randomization(model, model_params, X, Y, classification_type, threshold=0.
     return y_randomization_error
 
 
-def data_driven_models_ranking(df):
+def data_driven_models_ranking(df, metric_analysis='accuracy_analysis',
+                               metric_score='mean_validation_f1',
+                               sample_size='n_bytes',
+                               time_measure='time_sec',
+                               mean_y_error='y_randomization_mean_0_1_loss_or_error',
+                               std_y_error='y_randomization_std_0_1_loss_or_error',
+                               mean_cv_error='mean_validation_0_1_loss_or_error',
+                               model_explainability='model_explainability',
+                               dimensionality_reduction_explainability='dimensionality_reduction_explainability'):
     '''
     Function to select the data driven model
 
@@ -273,29 +280,33 @@ def data_driven_models_ranking(df):
                     }
 
     # Criterion 1
-    df['criterion_1'] = df[18].apply(lambda x: dict_for_acc[x])
+    df['criterion_1'] = df[metric_analysis].apply(lambda x: dict_for_acc[x])
     df['criterion_1'] = (df['criterion_1'] - 1)/(4 - 1)
 
     # Criterion 2
-    df['criterion_2'] = df[16]
+    df['criterion_2'] = df[metric_score]
     df['criterion_2'] = (df['criterion_2'] - 0)/(1 - 0)
 
     # Criterion 3
-    df.loc[df[26] == 0, 26] = 10 ** -4
-    df['criterion_3'] = df[25]/df[26]
+    df.loc[df[sample_size] == 0, sample_size] = 10 ** -4
+    df['criterion_3'] = df[time_measure]/df[sample_size]
     df['criterion_3'] = (df['criterion_3'] - df['criterion_3'].max())/(df['criterion_3'].min() - df['criterion_3'].max())
     
     # Criterion 4
-    df['criterion_4'] = df[19]/(df[23] - df[24])
-    df['criterion_4'] = (df['criterion_4'] - df['criterion_4'].max())/(0 - df['criterion_4'].max())
+    df['criterion_4'] = df[mean_cv_error]/(df[mean_y_error] - df[std_y_error])
+    df['criterion_4'] = (df['criterion_4'] - df['criterion_4'].max())/(df['criterion_4'].min() - df['criterion_4'].max())
+
+    # Criterion 5
+    df['criterion_5'] = df[model_explainability]
+
+    # Criterion 6
+    df['criterion_6'] = df[dimensionality_reduction_explainability]
 
     # FAHP
-    df =  df[[f'criterion_{i}' for i in range(1,5)]]
+    df =  df[[f'criterion_{i}' for i in range(1,7)]]
     df = fahp(df)
 
-    df['rank'] = df['weight'].rank(method='dense', ascending=False).astype(int)
-
-    return df['rank']
+    return df['weight']
 
 
 def comparison_matrix(df):

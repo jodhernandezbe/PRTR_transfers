@@ -1,0 +1,4 @@
+mean_validation_accuracy,mean_train_accuracy,accuracy_analysis,mean_validation_f1,mean_train_f1,mean_validation_0_1_loss_or_error,std_validation_0_1_loss_or_error,y_randomization_mean_0_1_loss_or_error,y_randomization_std_0_1_loss_or_error,id,time_sec,n_samples,n_bytes
+0.6800000071525574,0.9800000190734863,over-fitting (high variance),0.72,0.98,0.45,0.001664,1.0,0.000266,4,5938.61440205574,285888,198978048
+0.6700000166893005,0.9800000190734863,over-fitting (high variance),0.71,0.98,0.46,0.001416,1.0,0.000245,5,3926.824422597885,285578,198762288
+0.6700000166893005,0.9800000190734863,over-fitting (high variance),0.71,0.98,0.46,0.001924,1.0,0.000323,6,3902.7831239700317,286112,222022912
