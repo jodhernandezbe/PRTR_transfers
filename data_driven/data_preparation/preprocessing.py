@@ -6,7 +6,6 @@ from data_driven.data_preparation.mlsmote import get_minority_instace, MLSMOTE
 
 from skmultilearn.model_selection import iterative_train_test_split
 from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import TomekLinks
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import IsolationForest
@@ -189,12 +188,12 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
     return X_train_reduced, X_test_reduced, feature_cols, feature_dtype
 
 
-def balancing_dataset(X, Y, data_augmentation_algorithem):
+def balancing_dataset(X, Y, data_augmentation_algorithm):
     '''
     Function to balance the dataset based on the output clasess
     '''
 
-    if data_augmentation_algorithem == 'MLSMOTE':
+    if data_augmentation_algorithm == 'MLSMOTE':
 
         X = pd.DataFrame(data=X)
         Y = pd.DataFrame(data=Y)
@@ -208,15 +207,10 @@ def balancing_dataset(X, Y, data_augmentation_algorithem):
         X_balanced = pd.concat([X, X_res], axis=0, ignore_index=True).values
         Y_balanced = pd.concat([Y, Y_res], axis=0, ignore_index=True).values
 
-    elif data_augmentation_algorithem == 'SMOTE':
+    elif data_augmentation_algorithm == 'SMOTE':
 
         smote = SMOTE(random_state=42, n_jobs=-1)
         X_balanced, Y_balanced = smote.fit_resample(X, Y)
-
-    else:
-
-        tl = TomekLinks()
-        X_balanced, Y_balanced = tl.fit_resample(X, Y)
 
 
     return X_balanced, Y_balanced
@@ -422,13 +416,13 @@ def data_preprocessing(df, args, logger):
     # Balancing the dataset
     if args.balanced_dataset:
         if args.classification_type == 'multi-label classification':
-            data_augmentation_algorithem = 'MLSMOTE'
+            data_augmentation_algorithm = 'MLSMOTE'
         elif args.classification_type == 'multi-class classification':
-            data_augmentation_algorithem = 'SMOTE'
+            data_augmentation_algorithm = 'SMOTE'
         else:
-            data_augmentation_algorithem = 'TomekLinks'
-        logger.info(f' Balancing the dataset by {data_augmentation_algorithem}')
-        X_train, Y_train = balancing_dataset(X_train, Y_train, data_augmentation_algorithem)
+            data_augmentation_algorithm = 'SMOTE'
+        logger.info(f' Balancing the dataset by {data_augmentation_algorithm}')
+        X_train, Y_train = balancing_dataset(X_train, Y_train, data_augmentation_algorithm)
     else:
         pass
 
