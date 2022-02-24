@@ -28,14 +28,24 @@ PRTR_transfers
 │   │   ├── opening_dataset.py
 │   │   ├── rdkit_descriptors.py
 │   │   ├── preprocessing.py
+│   │   ├── input
 │   │   └── output
 │   │
 │   └── modeling
-│       ├── __init__.py
-│       ├── main.py
-│       ├── evaluation.py
-│       ├── models.py
-│       ├── tuning.py
+│       ├── scripts
+|       |   ├── __init__.py
+|       |   ├── ancillary.py
+|       |   ├── evaluation.py
+|       |   ├── metrics.py
+|       |   ├── models.py
+│       |   └── tuning.py
+│       |
+│       ├── notebooks
+|       |   ├── multi-class_classification
+|       |   ├── multi-label_classification
+│       |   └── multi-model_binary_classification
+│       |
+│       ├── input
 │       └── output
 │    
 └── data_engineering
