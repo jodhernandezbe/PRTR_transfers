@@ -34,16 +34,23 @@ class StoppingDesired(EarlyStopper):
 # Defining callbacks
 def rfc_parameter_tuning(X, Y, classification_type, model_params,
                     search_space, time_to_optimize, threshold,
-                    x_initial, y_initial, n_calls, verbose, n_initial_points):
+                    x_initial, y_initial, n_calls, verbose, n_initial_points,
+                    target_class=None):
     '''
     Function to run Bayesian Optimization with Gaussian Processes for RFC
     '''
+
+    if target_class:
+        file = f'RFC_class_{target_class}_tuning.pkl'
+    else:
+        file = 'RFC_tuning.pkl'
+
     checkpoint_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                     os.pardir,
                                     'output',
                                     'models',
                                     classification_type.replace(' ', '_'),
-                                    'RFC_tuning.pkl'
+                                    file
                                     )
     callback1 = DeltaYStopper(delta=1e-4, n_best=5) # PlateuStopper
     callback2 = DeadlineStopper(total_time=time_to_optimize) # For time budget

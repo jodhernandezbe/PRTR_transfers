@@ -169,30 +169,36 @@ def save_best_params(classification_type, best_params):
     else:
         mode = 'wb'
 
-    with open(path_pickle, mode) as outfile:
+    with open(path_pickle, mode=mode) as outfile:
         pickle.dump(best_params, outfile, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-def rfc_draw_convergence(tuning_result, classification_type):
+def rfc_draw_convergence(tuning_result, classification_type, target_class=None):
     '''
     Function to plot the convergence of the hyperparameters tuning for RFC
 
     Input:
         - tuning_result: dictionary
         - path_plot: string
+        - target_class: string
 
     Output:
         - None
     '''
 
+    if target_class:
+        title = f'Convergence of Bayesian Optimization for class {target_class} RFC model\n'
+        pic_file = f'RFC__class_{target_class}_convergence.pdf'
+    else:
+        title = f'Convergence of Bayesian Optimization for RFC model and {classification_type}\n'
+        pic_file = 'RFC_convergence.pdf'
     fig, ax = plt.subplots(figsize=(14,5))
 
     # Convergence plot
     plot_convergence(tuning_result['search'], ax=ax)
 
     # Title
-    ax.set_title(f'Convergence of Bayesian Optimization for RFC model and {classification_type}\n',
-                fontsize=18, fontweight='bold')
+    ax.set_title(title, fontsize=18, fontweight='bold')
 
     # Organize horizontal grid
     ax.grid(axis='y') 
@@ -222,6 +228,6 @@ def rfc_draw_convergence(tuning_result, classification_type):
                         os.pardir,
                         'output', 'figures',
                         classification_type.replace(' ', '_'),
-                        'RFC_convergence.pdf')
+                        pic_file)
     plt.savefig(path_plot, dpi=fig.dpi, bbox_inches='tight')
     
