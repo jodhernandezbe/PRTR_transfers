@@ -9,3 +9,4 @@ data_engineering/load/output/*.sql
 !/data_driven/data_preparation/output/*_for_params_id_*.csv
 *.npz
 *client_secrets.json
+*/model/*/*.pkl
