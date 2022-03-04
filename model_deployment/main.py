@@ -1,5 +1,4 @@
-from fastapi import FastAPI
-import uvicorn
+from fastapi import FastAPI, Query
 
 app = FastAPI(title='PRTR Transfers Model Deployment',
             version='1',
@@ -18,13 +17,16 @@ app = FastAPI(title='PRTR Transfers Model Deployment',
             This is an API service containing the model deployment for the PRTR transfers. The models provided are Random Forest Classifiers, using both a multi-label classification strategy and a multi-model binary classification strategy (or one-vs-all). The target variable values are the 10 transfer classes presented in the following <a href="https://prtr-transfers-summary.herokuapp.com/transfer_classes/" rel="noopener noreferrer" target="_blank">link</a>.
             ''')
 
+
 '''
 Multi-label classification
 '''
-@app.get('/v1/mlc_classification/')
+@app.post('/v1/mlc_classification/',
+        summary='Multi-label classification predictions',
+        tags=['Multi-label classification'])
 async def mlc_classification(
-    
-):
+                prob: bool = Query(False)
+                          ):     
     return {
         'mlc_classification': 'mlc_classification'
     }
@@ -32,8 +34,3 @@ async def mlc_classification(
 '''
 Multi-model binary classification
 '''
-
-if __name__ == "__main__":
-    uvicorn.run("main:app",
-                log_level="info",
-                reload=True)
