@@ -117,7 +117,7 @@ def dimensionality_reduction(X_train, Y_train, dimensionality_reduction_method, 
         # Separating flows and sectors from chemical descriptors
         position_i = [i for i, val in enumerate(feature_cols_encoding) if ('transfer' not in val) and ('sector' not in val) and ('epsi' not in val) and ('gva' not in val) and ('price_usd_g' not in val)]
         descriptors = [val for val in feature_cols_encoding if ('transfer' not in val) and ('sector' not in val) and ('epsi' not in val) and ('gva' not in val) and ('price_usd_g' not in val)]
-        feature_cols = [val for val in feature_cols if ('transfer' in val) or ('sector' in val) or ('epsi' in val) and ('gva' in val) and ('price_usd_g' in val)]
+        feature_cols = [val for val in feature_cols if ('transfer' in val) or ('sector' in val) or ('epsi' in val) or ('gva' in val) or ('price_usd_g' in val)]
         X_train_d = X_train[:, position_i]
         X_test_d = X_test[:, position_i]
         X_train = np.delete(X_train, position_i, axis=1)
