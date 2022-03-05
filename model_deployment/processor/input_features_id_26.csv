@@ -1,8 +1,11 @@
 0,transfer_amount_kg
 1,generic_sector_code
-2,BCUT2D_CHGHI
-3,BCUT2D_MRLOW
-4,Kappa1
-5,MaxAbsEStateIndex
-6,MaxAbsPartialCharge
-7,MinEStateIndex
+2,epsi
+3,gva
+4,price_usd_g
+5,BCUT2D_CHGHI
+6,BCUT2D_MRLOW
+7,Kappa1
+8,MaxAbsEStateIndex
+9,MaxAbsPartialCharge
+10,MinEStateIndex
