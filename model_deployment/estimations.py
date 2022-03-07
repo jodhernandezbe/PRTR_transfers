@@ -8,10 +8,11 @@ import os
 import pandas as pd
 import numpy as np
 import ast
+import pickle
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory path
 processor_path = os.path.join(dir_path, 'processor') # processor path
-classifier_path = os.path.join(processor_path, 'classifiers') # classifier path
+classifier_path = os.path.join(dir_path, 'classifiers') # classifier path
 dict_to_process = {'mlc': 6,
                    'M1': 8,
                    'M2': 11,
@@ -91,11 +92,26 @@ def organizing_features(input_features_dict, id_number):
         # Organizing
         order_features = [val for key, val in input_features_dict.items() if ('transfer' in key) or ('sector' in key) or ('epsi' in key) or ('gva' in key) or ('price_usd_g' in key)]
         order_features = order_features + [val for key, val in input_features_dict.items() if ('transfer' not in key) and ('sector' not in key) and ('epsi' not in key) and ('gva' not in key) and ('price_usd_g' not in key)]
+        order_features = np.array(order_features).reshape(1, -1)
 
-        return np.array(order_features)
+        return order_features
 
     else:
         return None
+
+
+def opening_model(modelfile):
+    '''
+    Function to open the model
+    '''
+    
+    path_model = os.path.join(classifier_path, modelfile)
+
+    with open(path_model, 'rb') as f:
+        model = pickle.load(f)
+
+    return model
+
 
 def get_estimations(input_features_dict, prob: bool = False, transfer_class='mlc'):
     '''
@@ -109,14 +125,41 @@ def get_estimations(input_features_dict, prob: bool = False, transfer_class='mlc
         # Processing input features
         processed_features = organizing_features(input_features_dict, id_number)
 
+        # Opening model
+        model = opening_model('RFC_model.pkl')
+
+        # Predicting
+        t_classes = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10']
+        predict_result = {}
+        if prob:
+            prediction = model.predict_proba(processed_features)
+            for i, val in enumerate(t_classes):
+                predict_result.update({val: round(prediction[i][0][1], 2)})
+        else:
+            prediction = model.predict(processed_features)
+            predict_result = {val: True if prediction[0][i] == 1 else False for i, val in enumerate(t_classes)}
+        
+        return predict_result
+    
     else:
 
         for t_class in transfer_class:
-            
+
             id_number = dict_to_process[t_class]
 
             # Processing input features
             processed_features = organizing_features(input_features_dict, id_number)
+
+            # Opening model
+            model = opening_model(f'RFC_for_class_{t_class}.pkl')
+
+            # Predicting
+            if prob:
+                prediction = model.predict_proba(processed_features)
+            else:
+                prediction = model.predict(processed_features)
+
+            
 
     
 
