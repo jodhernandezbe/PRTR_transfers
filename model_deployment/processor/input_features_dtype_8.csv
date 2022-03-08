@@ -1,9 +1,0 @@
-,0
-transfer_amount_kg,object
-generic_sector_code,object
-AUTOCORR2D_100,float32
-AUTOCORR2D_107,float32
-AUTOCORR2D_139,float32
-BCUT2D_CHGHI,float32
-MaxAbsPartialCharge,float32
-MinEStateIndex,float32
