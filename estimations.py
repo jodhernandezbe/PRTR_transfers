@@ -104,7 +104,7 @@ def opening_model(modelfile):
     '''
     Function to open the model
     '''
-    
+
     path_model = os.path.join(classifier_path, modelfile)
 
     with open(path_model, 'rb') as f:
