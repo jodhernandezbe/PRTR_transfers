@@ -130,37 +130,43 @@ def get_estimations(input_features_dict, prob: bool = False, transfer_class='mlc
 
         # Predicting
         t_classes = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10']
-        predict_result = {}
+        prediction = model.predict(processed_features)
+        predict_belonging = {val: True if prediction[0][i] == 1 else False for i, val in enumerate(t_classes)}
+        predict_prob = {}
         if prob:
             prediction = model.predict_proba(processed_features)
-            for i, val in enumerate(t_classes):
-                predict_result.update({val: round(prediction[i][0][1], 2)})
-        else:
-            prediction = model.predict(processed_features)
-            predict_result = {val: True if prediction[0][i] == 1 else False for i, val in enumerate(t_classes)}
-        
-        return predict_result
+            predict_prob.update({val: round(prediction[i][0][1], 2) for i, val in enumerate(t_classes)})
+            return {'belong_to': predict_belonging, 'probability': predict_prob}
+
+        return {'belong_to': predict_belonging}
     
     else:
 
+        predict_belonging = {}
+        predict_prob = {}
         for t_class in transfer_class:
 
             id_number = dict_to_process[t_class]
 
             # Processing input features
-            processed_features = organizing_features(input_features_dict, id_number)
+            input_features_dict_class = input_features_dict.copy()
+            processed_features = organizing_features(input_features_dict_class, id_number)
 
             # Opening model
             model = opening_model(f'RFC_for_class_{t_class}.pkl')
 
             # Predicting
+            prediction = model.predict(processed_features)
+            predict_belonging.update({t_class: True if prediction[0] == 1 else False})
             if prob:
                 prediction = model.predict_proba(processed_features)
-            else:
-                prediction = model.predict(processed_features)
-
+                predict_prob.update({t_class: round(prediction[0][1], 2)})
             
-
+        if prob:
+            return {'belong_to': predict_belonging, 'probability': predict_prob}
+        else:
+            return {'belong_to': predict_belonging}
+            
     
 
 def rdkit_descriptors(methods_to_keep):

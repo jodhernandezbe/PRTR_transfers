@@ -3,6 +3,7 @@
 
 # Importing libraries
 from pydantic import BaseModel
+from typing import Dict, Optional
 
 
 class RequestModel(BaseModel):
@@ -12,3 +13,8 @@ class RequestModel(BaseModel):
     epsi: float
     gva: float
     price_usd_g: float
+
+
+class ResponseModel(BaseModel):
+    belong_to: Dict[str, bool]
+    probability: Optional[Dict[str, float]] = None

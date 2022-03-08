@@ -1,5 +1,5 @@
-fastapi==0.74.0
-pydantic==1.9.0
+fastapi==0.66.0
+pydantic==1.8.2
 uvicorn==0.17.5
 rdkit-pypi==2021.9.4
 numpy==1.22.2
